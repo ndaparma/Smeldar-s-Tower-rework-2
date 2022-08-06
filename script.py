@@ -58,7 +58,8 @@ line805 = "The tree appears to have been struck by lightning and broke; it's tip
 line805b = "The tree appears to have been struck by lightning and broke; it's tipped over and is blocking the path SOUTH. You'll need to finish knocking it down to get through. Your AXE should be perfect for the job. CUT the tree down, or LEAVE it be?"
 line806 = "You take your AXE and begin chopping into the tree. After a few good whacks the tree finishes toppling over. A familiy of squirrels curses you for destroying their home. Don't worry though; squirrel magic is lame. You can easily step over the trunk and continue now." 
 line806b = "You decide to leave the tree alone."
-line811 = "The tree has been cleared from the path. You can head SOUTH now." 
+line811 = "The tree has been cleared from the path. You can head SOUTH now."
+line812 = "The way SOUTH is blocked by a damaged tree. If only you had a way to finish knocking the tree over..."
 #9.CAVE**************************************
 line901 = "As you enter the cave a foul stench fills your nostrils. You soon discover the source; a sleeping BEAR lies in front of you." #122
 line902 = "As you enter the cave a foul stench fills your nostrils. The BEAR is gone but its smell lingers." #123
@@ -288,8 +289,8 @@ line2001 = "You approach a massive OAK standing several stories above the surrou
   #EXPLORE
 line2002 = "It's said that massive trees like this house the spirit of the woods they reside in. This Great OAK must have stood here for over a thousand years; it's easily the oldest tree in these woods. There doesn't appear to be any other paths around the OAK, however you do spy a rope LADDER. You should EXAMINE it for a closer look."
   #EXAMINE
-line2003 = "You come closer to the OAK and take a look at the rope LADDER dangling from the tree. Looking up you can see the LADDER goes past the canopy. It seems sturdy enough to hold your weight without trouble. Should you CLIMB, or go BACK?"
-line2004 = "You grab either end of the LADDER and start making your way up, carefully."
+line2003 = "You come closer to the OAK and take a look at the rope LADDER dangling from the tree. Looking up you can see the LADDER goes past the canopy. It seems sturdy enough to hold your weight without trouble; you could probably CLIMB it."
+line2004 = "You grab either end of the LADDER and start making your way up, carefully.\n"
 line2005 = "You decide that climbing the OAK is an unnecessary risk and walk away from the tree."
   #NORTH/EAST/SOUTH
 line2006 = "It doesn't appear there is a path through the woods in this direction."
@@ -306,7 +307,7 @@ line2105 = "You have another look around in case you missed something. After hav
   #/EXAMINE
 line2105b = "You approach the cell of glowing honey and give some a taste... It reminds you of REZZBERRIES! This honey probably has the same healing effects, so you fill some vials for later."
 line2106 = "You triple check and come up short on anything. Looks like you got it all on your last sweep. Time to climb down."
-line2106b = "You look inside the cell you found the glowing honey in. You got every drop the first time though and it's empty."
+line2106b = "You look inside the cell you found the glowing honey in. You got every drop the first time; now it's empty."
   #LEAVE FAIL
 line2107 = "The HIVE is big, but it doesn't look like there's any other areas in here. You'll need to CLIMB down once you're done."
   #LEAVE

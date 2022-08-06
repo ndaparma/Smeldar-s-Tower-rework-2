@@ -1,4 +1,5 @@
 import random
+from slowprint import *
 
 class player:
 #instance player
@@ -32,44 +33,20 @@ class player:
         self.gobCount = gobCount
       
 #check player stats
-    def stat_check(self):
-        print('Current Stats:')
-        print(self.name)
-        print(f'{self.job} Lvl {self.lvl}')
-        print(f'{self.xp}/{self.Nlvl}EXP')
-        print(f'{self.HP}/{self.MaxHP} HP')
-        print(f'{self.MP}/{self.MaxMP} MP')
-        print(f'{self.ATK} ATK')
-        print(f'{(10 - self.DEF) * 10}% DEF')
-        print(f'{self.GP} GP')
-        print(f'{self.POTS}/{self.MaxPOTS} POTIONS')
-        print(f'{self.ANT}/{self.MaxANT} ANTIDOTES')
-        print(f'{self.ETR}/{self.MaxETR} ETHERS')
-        print(f'{self.SMB}/{self.MaxSMB} SMOKE BOMBS \n')
+    def stat_check(self, typingActive):
+        print_slow(f'\nCurrent Stats:\n{self.name}\n{self.job} Lvl {self.lvl}\n{self.xp}/{self.Nlvl}EXP\n{self.HP}/{self.MaxHP} HP\n{self.MP}/{self.MaxMP} MP\n{self.ATK} ATK\n{(10 - self.DEF) * 10}% DEF\n{self.GP} GP\n{self.POTS}/{self.MaxPOTS} POTIONS\n{self.ANT}/{self.MaxANT} ANTIDOTES\n{self.ETR}/{self.MaxETR} ETHERS\n{self.SMB}/{self.MaxSMB} SMOKE BOMBS \n', typingActive)
       
 #define combat structure
-    def item_check(self):
-      while True:
-        print(f'\nInventory: {self.inventory}')
-        print('Type item name for more info or BACK to exit menu.\n')
-        selc = input().upper().strip()
-        if selc in self.inventory:
-          print(f"\n{key_items[selc]['description']}")
-        elif selc == 'BACK':
-          break
-        else:
-          print('Invalid selection. Try again.')
-
-    def level_up(self):
+    def level_up(self, typingActive):
       while self.xp < self.Nlvl:
-          print(f'{self.name} has {self.xp}/{self.Nlvl} EXP. \n')
+          print_slow(f'{self.name} has {self.xp}/{self.Nlvl} EXP. \n', typingActive)
           break
       while self.xp >= self.Nlvl:
           self.lvl += 1
           self.xp -= self.Nlvl
           self.Nlvl = round(self.Nlvl * 1.65)
-          print("*****LEVEL UP!*****")
-          print(f'{self.name} Leveled up! {self.name} is now {self.lvl} \n')
+          print_slow("*****LEVEL UP!*****", typingActive)
+          print_slow(f'{self.name} Leveled up! {self.name} is now {self.lvl} \n', typingActive)
           if self.job == "WARRIOR" and (self.lvl % 2) != 0:
               self.MaxHP += 20
               self.HP = self.MaxHP 
@@ -114,16 +91,13 @@ class player:
               self.DEF = max(self.DEF - .5, 3)
           self.stat_check()
 
-   
-
-      
 
 
-
-def stat_check_menu():
-    print(
-        'Starting STATS:\nWARRIOR\nLvl 1\n70 HP\n3 MP\n12 ATK\n30% DEF\n100 GP\n4 POTIONS\n1 ANTIDOTE\n0 ETHER\n1 SMOKE BOMBS\nHARDEN: Restores HP and raises Temp. DEF\nSTRIKE: Wildly strike at foe up to 3 times.\n\nWIZARD\nLvl 1\n40 HP\n8 MP\n18 ATK\n10% DEF\n100 GP\n3 POTIONS\n1 ANTIDOTE\n1 ETHER\n1 SMOKE BOMBS\nBOLT: Powerful magic attack\nFOCUS: Concentrate power for next attack. Chance to restore MP.\n \nTHIEF\nLvl 1\n55 HP\n5 MP\n15 ATK\n20% DEF\n100 GP\n3 POTIONS\n2 ANTIDOTES\n1 ETHER\n3 SMOKE BOMBS\nSTEAL: Steals GP. Chance to fail.\nTHROW: Throws up to 3 daggers to inflect damage/poison.'
+def stat_check_menu(typingActive):
+    print_slow(
+        'Starting STATS:\nWARRIOR\nLvl 1\n70 HP\n3 MP\n12 ATK\n30% DEF\n100 GP\n4 POTIONS\n1 ANTIDOTE\n0 ETHER\n1 SMOKE BOMBS\nHARDEN: Restores HP and raises Temp. DEF\nSTRIKE: Wildly strike at foe up to 3 times.\n\nWIZARD\nLvl 1\n40 HP\n8 MP\n18 ATK\n10% DEF\n100 GP\n3 POTIONS\n1 ANTIDOTE\n1 ETHER\n1 SMOKE BOMBS\nBOLT: Powerful magic attack\nFOCUS: Concentrate power for next attack. Chance to restore MP.\n \nTHIEF\nLvl 1\n55 HP\n5 MP\n15 ATK\n20% DEF\n100 GP\n3 POTIONS\n2 ANTIDOTES\n1 ETHER\n3 SMOKE BOMBS\nSTEAL: Steals GP. Chance to fail.\nTHROW: Throws up to 3 daggers to inflect damage/poison.\n', typingActive
     )
+
 
 class enemy:
     def __init__(self, name, skill, exp, MaxHP, HP, MaxMP, MP, ATK, DEF, TDEF, MaxGP, MinGP, MaxPOTS, POTS, POISON, boss):
@@ -144,13 +118,8 @@ class enemy:
         self.POISON = POISON
         self.boss = boss
 
-    def stat_check(self):
-          print(self.name)
-          print(f'{self.HP}/{self.MaxHP} HP')
-          print(f'{self.MP}/{self.MaxMP} MP')
-          print(f'{self.ATK} ATK')
-          print(f'{(10 - self.DEF) * 10}% DEF\n')
-
+    def stat_check(self, typingActive):
+          print_slow(f'\n{self.name}\n{self.HP}/{self.MaxHP} HP\n{self.MP}/{self.MaxMP} MP\n{self.ATK} ATK\n{(10 - self.DEF) * 10}% DEF\n', typingActive)
 
 
 p2 = enemy("Goblin", 2, 20, 25, 25, 3, 3, 10, 9.5, 10, 20, 5, 0, 0, 0, 0)
@@ -166,7 +135,9 @@ p11 = enemy("Skade", 6, 999, 999, 999, 99, 99, 99, 1, 10, 999, 99, 9, 9, 0, 0)
 p12 = enemy("Bear", 3, 65, 75, 75, 3, 3, 16, 8.5, 10, 65, 45, 1, 1, 0, 1)
 p13 = enemy("Thief", 5, 35, 55, 55, 3, 3, 11, 8.5, 10, 65, 40, 1, 1, 0, 0)
 p14 = enemy("Giant Bee", 7, 20, 15, 15, 2, 2, 8, 9, 10, 20, 5, 0, 0, 0, 0)
+p14b = enemy("Giant Bee", 7, 20, 15, 15, 2, 2, 8, 9, 10, 20, 5, 0, 0, 0, 1)
 p15 = enemy("Giant Bee Swarm", 7, 50, 75, 75, 3, 3, 16, 8.5, 10, 20, 5, 1, 1, 0, 0)
+p15b = enemy("Giant Bee Swarm", 7, 50, 75, 75, 3, 3, 16, 8.5, 10, 20, 5, 1, 1, 0, 1)
 p16 = enemy("Mandragora", 8, 90, 120, 120, 3, 3, 24, 7.5, 10, 40, 15, 1, 1, 0, 1)
 p17 = enemy("'Shroomling", 8, 30, 60, 60, 1, 1, 16, 8.5, 10, 30, 10, 1, 1, 0, 0)
 p18 = enemy("Gnome", 5, 25, 35, 35, 2, 2, 9, 9, 10, 25, 5, 1, 1, 0, 0)
@@ -174,13 +145,13 @@ p19 = enemy("Zomblin", 2, 30, 30, 30, 2, 2, 13, 8, 10, 25, 5, 1, 1, 0, 0)
 p20 = enemy("Kapa", 1, 25, 55, 55, 3, 3, 15, 8, 10, 30, 10, 1, 1, 0, 0)
 p21 = enemy("Moldy Zomblin", 2, 40, 40, 40, 2, 2, 17, 7.5, 10, 30, 10, 1, 1, 0, 0)
 p22 = enemy("Goblin Gang", 2, 40, 60, 60, 4, 4, 19, 8.5, 10, 50, 20, 1, 1, 0, 0)
+p22b = enemy("Goblin Gang", 2, 40, 60, 60, 4, 4, 19, 8.5, 10, 50, 20, 1, 1, 0, 1)
 p23 = enemy("Goblin Queen", 9, 120, 200, 200, 5, 5, 25, 8, 10, 80, 40, 0, 0, 0, 1)
 p24 = enemy("Giant Bee Queen", 10, 130, 175, 175, 4, 4, 21, 8, 10, 60, 45, 0, 0, 0, 1)
 p25 = enemy("Killer Bee", 7, 50, 75, 75, 5, 5, 19, 9, 10, 25, 10, 1, 1, 0, 0)
 p26 = enemy("Mercenary Rat", 2, 35, 50, 50, 3, 3, 17, 8, 10, 50, 10, 1, 1, 0, 0)
 p27 = enemy("Hawk", 1, 30, 40, 40, 2, 2, 15, 8.5, 10, 15, 5, 1, 1, 0, 0)
 p28 = enemy("Smeldar", 4, 1, 300, 300, 5, 5, 24, 8, 10, 100, 50, 0, 0, 0, 1)
-
 
 
 enemy_spawn0 = [p2, p5, p7]  #cliff enemies
@@ -193,4 +164,4 @@ enemy_spawn6 = [p2, p4, p7, p13]  #hill enemies
 enemy_spawn7 = [p2, p3, p17, p18, p21]  #mushroom enemies
 enemy_spawn8 = [p2, p2, p3, p3, p22]  #Goblin Den
 enemy_spawn9 = [p14, p15, p26, p27]  #meadow
-enemy_spawn10 = [p14, p15] #hive enemies
+enemy_spawn10 = [p14b, p15b] #hive enemies
