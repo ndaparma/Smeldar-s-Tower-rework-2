@@ -83,38 +83,38 @@ def standard_battle(p1, foe, typingActive):
                   print_slow(f'{p1.name} is unable to escape from the boss!\n', typingActive)
   
               #Player skills commands
-              elif command in skill_command and p1.MP > 0:
-                  if command == "HARDEN" and p1.job == "WARRIOR":
+              elif command in p1.skills and p1.MP > 0:
+                  if command == "HARDEN":
                       warrior_skill(p1, foe, typingActive)
                       turn_count += 1
                       player_turn = 0
                       enemy_turn = 1
                       break
-                  elif command == "STRIKE" and p1.job == "WARRIOR":
+                  elif command == "STRIKE":
                       warrior_wildstrikes(p1, foe, typingActive)
                       turn_count += 1
                       player_turn = 0
                       enemy_turn = 1
                       break
-                  elif command == "BOLT" and p1.job == "WIZARD":
+                  elif command == "BOLT":
                       wizard_spell(p1, foe, typingActive)
                       turn_count += 1
                       player_turn = 0
                       enemy_turn = 1
                       break
-                  elif command == "FOCUS" and p1.job == "WIZARD":
+                  elif command == "FOCUS":
                       wizard_focus(p1, foe, typingActive)
                       turn_count += 1
                       player_turn = 0
                       enemy_turn = 1
                       break
-                  elif command == "STEAL" and p1.job == "THIEF":
+                  elif command == "STEAL":
                       thief_steal(p1, foe, typingActive)
                       turn_count += 1
                       player_turn = 0
                       enemy_turn = 1
                       break
-                  elif command == "THROW" and p1.job == "THIEF":
+                  elif command == "THROW":
                       thief_poisondagger(p1, foe, typingActive)
                       turn_count += 1
                       player_turn = 0
@@ -225,17 +225,68 @@ def enemy_death(p1, foe, command, damage, typingActive):
       p1.xp = p1.xp + foe.exp
       if foe.name in goblin_mobs:
           p1.gobCount += 1
-      if command == "BOLT" and p1.job == "WIZARD":
+      if command == "BOLT":
           print_slow(f'{p1.name} vaporized the enemy!\n', typingActive)
       elif damage >= foe.MaxHP // 2:
           print_slow(f'{p1.name} obliterated the enemy!\n', typingActive)
-      elif command == "STRIKE" and p1.job == "WARRIOR":
+      elif command == "STRIKE":
           print_slow(f'{p1.name} pulverised the enemy!\n', typingActive)
       else:
           print_slow(f'{p1.name} killed the enemy.\n', typingActive)
       print_slow(
           f'{p1.name} gained {GPE}GP and {foe.exp}EXP. {p1.name} has {p1.GP}GP\n', typingActive
       )
+      inv = "FULL"
+      itemDrop = random.randrange(1,100)
+      if itemDrop > foe.drop:
+        if 'CRAFTING POUCH' in p1.inventory:
+          inv = "OPEN"
+          if foe.item == 1:
+            p1.PlantP += 1
+            spoils = "PLANT PART"
+          if foe.item == 2:
+            p1.MonP += 1
+            spoils = "MONSTER PART"
+          if foe.item == 3:
+            p1.RareP += 1
+            spoils = "RARE MONSTER PART"
+          if foe.item == 4:
+            p1.FaeP += 1
+            spoils = "FAE DUST"
+          if foe.item == 5:
+            p1.DragonP += 1
+            spoils = "DRAGON SCALE"
+        if foe.item == 6:
+          if p1.POTS < p1.MaxPOTS:
+            p1.POTS = min(self.POTS + 1, p1.MaxPOTS)
+            spoils = "POTION"
+          else:
+            inv = "FULL"
+        if foe.item == 7:
+          if p1.ANT < p1.MaxANT:
+            p1.ANT = min(self.ANT + 1, p1.MaxANT)
+            spoils = "ANTIDOTE"
+            inv = "OPEN"
+          else:
+            inv = "FULL"
+        if foe.item == 8:
+          if p1.ETR < p1.MaxETR:
+            p1.ETR = min(self.ETR + 1, p1.MaxETR)
+            spoils = "ETHER"
+            inv = "OPEN"
+          else:
+            inv = "FULL"
+        if foe.item == 9:
+          if p1.SMB < p1.MaxSMB:
+            p1.SMB = min(self.SMB + 1, p1.MaxSMB)
+            spoils = "SMOKE BOMB"
+            inv = "OPEN"
+          else:
+            inv = "FULL"
+        
+        if inv != "FULL":
+          print_slow(f'The enemy {foe.name} dropped a {spoils}.\n', typingActive)
+          print_slow(f'{p1.name} has added the {spoils} to their inventory.\n', typingActive)
       p1.level_up(typingActive)
       print_slow("********** VICTORY!!! **********\n", typingActive)
       foe.HP = foe.MaxHP
@@ -292,7 +343,7 @@ def warrior_skill(p1, foe, typingActive):
     p1.MP -= 1
     foe.TDEF = 10
     print_slow(
-        f'{p1.name} has bolstered their constitution. {p1.name} healed {heal} HP and shielded themp1 this turn. {p1.name} has {p1.HP}/{p1.MaxHP} HP \n', typingActive
+        f'{p1.name} has bolstered their constitution. {p1.name} healed {heal} HP and shielded themself this turn. {p1.name} has {p1.HP}/{p1.MaxHP} HP \n', typingActive
     )
 
 def warrior_wildstrikes(p1, foe, typingActive):
