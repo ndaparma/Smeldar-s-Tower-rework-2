@@ -32,18 +32,19 @@ line508 = '"I see you carry our kingdoms symbol of the HERO. A shame such an hon
 #6.CLIFF*************************
 line601 = "The woods begin to thin as you approach another clearing. You stand near a CLIFF over-looking the vast FOREST and surrounding lands.\n" #66
   #EXPLORE
-line602 = "Taking a look over the cliff you can see the lands below. To the NORTH looming over the surrounding area is the dark, gnarled spire known as the TOWER of SMELDAR. Looking WEST you can make out a RIVER flowing NORTH feeding into a sizable LAKE. You can make out a feint glow in the EAST of the FOREST just past a rocky hill.\nAt the base of an olive tree near the edge of the CLIFF you notice something shining in the sun. Type EXAMINE to inspect.\n"
-line603 = "Taking a look over the cliff you can see the lands below. To the NORTH looming over the surrounding area is the dark, gnarled spire known as the TOWER of SMELDAR. Looking WEST you can make out a RIVER flowing NORTH feeding into a sizable LAKE. You can make out a feint glow in the EAST of the FOREST just past a rocky hill.\n"
+line602 = "Taking a look over the cliff you can see the lands below. To the NORTH looming over the surrounding area is the dark, gnarled spire known as the TOWER of SMELDAR. Looking WEST you can make out a RIVER flowing NORTH feeding into a sizable LAKE. You can make out a feint glow in the EAST of the FOREST just past a rocky hill. Unless you can fly there doesn't look to be any safe way down the cliff.\nAt the base of an olive tree near the edge of the CLIFF you notice something shining in the sun. Type EXAMINE to inspect.\n"
+line603 = "Taking a look over the cliff you can see the lands below. To the NORTH looming over the surrounding area is the dark, gnarled spire known as the TOWER of SMELDAR. Looking WEST you can make out a RIVER flowing NORTH feeding into a sizable LAKE. You can make out a feint glow in the EAST of the FOREST just past a rocky hill. Unless you can fly there doesn't look to be any safe way down the cliff.\n"
   #EXAMINE
 line604 = "Near the base of the olive tree's trunk is a round, shining object embeded in a burl. The tree must have grown around whatever it is. If you had something to cut the wood you may be able to retrieve it...\n" #71
 line605 = "Near the base of the olive tree's trunk is a round, shining object embeded in a burl. You could probably CUT it away with your AXE, or BACK out and leave it alone." 
 line605b = "You take your AXE and carefully start choping the burl off. After some time you manage to free the item and discover it is an old PENDANT. You place it in your bag." #72
 line605c = "You decide not to disturb the object.\n" #72
 line605d = 'The PENDANT has been freed from the olive tree.\n'
- 
-line609 = "You look to the WEST down the edge of the CLIFF. Unless you're a bird, good luck getting down from here.\n" #80
-line610 = "You look to the WEST down the edge of the CLIFF. Unless you're a bird, good luck getting down from here.\n" #81
-line611 = "Miraculously, you survive the fall. You don't know if those branches you fell through broke your fall or your ribs. Maybe don't do that again?\n" #82
+
+line609 = "You look to the WEST down the edge of the CLIFF. Unless you're a bird, good luck getting down from here.\n" #81
+line610 = "You look down the edge of the cliff and decide to jump off. Not the bightest thing to do was it?\n" #80
+
+line611 = "Miraculously, you survive the fall. You cant tell if those branches you fell through broke your fall or your ribs. Maybe don't do that again?\n" #82
 #7.FOREST*************************************
 line701 = "You come to a cross roads deep in the FOREST. It's so dark it almost appears to be night. You stand there and ponder your next steps.\n" #84
   #EXPLORE
@@ -306,9 +307,13 @@ line2206 = """ "Thank you so much for bringing me the feed. You came just in tim
 line2207 = """ "Haven't gotten the feed yet? Thats fine... Hamila is hanging in there..." \n"""
 line2208 = """ "Why if it isn't my favorite ADVENTURER. After what you've done for me you are always welcome in these parts! There isn't much I have to offer, but I tell you what, for every 10 PLANT PARTS you bring me I can whip you up a mighty fine healing salve as good as any ANTIDOTE! Just let me know if you'd like me to CRAFT you some." \n"""
 
-
-
 #24.WITCH****************************
+line2401 = 'You come to a dingy cabin in the middle of a small clearing. A crooked old woman is hunched over tending to a small garden.'
+ #EXPLORE
+line2402 = 'The cabin is surrounded by old, twisted trees and stumps. Outside the cabin a wrought iron cauldron sits above a fire, its contents bubbling to the brim. The old woman is dressed in dark dusty robes and a pointed hat, bent slightly near the tip. '
+ #SPEAK
+line2403 = """"Oh these pesky Mandrakes are giving me trouble again. Do you see these leaves? Terrible! I need fertilizer. Not just any fertilizer, I need ! Yes, that should perk these pesky plants up!" """
+
 #25.THICKET**************************
 line2501 = "You continue down the path for a while until you come to a dense THICKET. A wall of thorny branches blocks your path forward\n"
 line2502 = "You continue down the path for a while until you come to a dense THICKET. The wall of thorny branches has been cut down; the path to the NORTH is clear.\n"

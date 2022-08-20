@@ -55,48 +55,70 @@ class player:
           self.Nlvl = round(self.Nlvl * 1.65)
           print_slow("*****LEVEL UP!*****", typingActive)
           print_slow(f'{self.name} Leveled up! {self.name} is now {self.lvl} \n', typingActive)
-          if self.job == "WARRIOR" and (self.lvl % 2) != 0:
+          if (self.lvl % 3) != 0:
+            if self.job == "WARRIOR": 
               self.MaxHP += 20
               self.HP = self.MaxHP 
-              self.MaxMP += 0
               self.MP = self.MaxMP
-              self.ATK += 0
               self.DEF = max(self.DEF - .3, 3)
-          elif self.job == "WARRIOR" and (self.lvl % 3) == 0:
+            elif self.job == 'WIZARD':
+              self.MaxHP += 10
+              self.HP = self.MaxHP
+              self.MP = self.MaxMP
+              self.ATK += 1
+              self.DEF += 0
+            elif self.job == 'THIEF':
+              self.MaxHP += 15
+              self.HP = self.MaxHP
+              self.MP = self.MaxMP
+              self.ATK += 1
+              self.DEF = max(self.DEF - .2, 3)
+              
+          if (self.lvl % 3) == 0:
+            if self.job == "WARRIOR": 
               self.MaxHP += 30
               self.HP = self.MaxHP
               self.MaxMP += 1
               self.MP = self.MaxMP
               self.ATK += 2
               self.DEF = max(self.DEF - .5, 3)
-          elif self.job == 'WIZARD' and (self.lvl % 3) != 0:
-              self.MaxHP += 10
-              self.HP = self.MaxHP
-              self.MaxMP += 0
-              self.MP = self.MaxMP
-              self.ATK += 1
-              self.DEF += 0
-          elif self.job == 'WIZARD' and (self.lvl % 3) == 0:
+            elif self.job == 'WIZARD':
               self.MaxHP += 15
               self.HP = self.MaxHP
               self.MaxMP += 2
               self.MP = self.MaxMP
               self.ATK += 2
               self.DEF = max(self.DEF - .5, 3)
-          elif self.job == 'THIEF' and (self.lvl % 3) != 0:
-              self.MaxHP += 15
-              self.HP = self.MaxHP
-              self.MaxMP += 0
-              self.MP = self.MaxMP
-              self.ATK += 1
-              self.DEF = max(self.DEF - .2, 3)
-          elif self.job == 'THIEF' and (self.lvl % 3) == 0:
+            elif self.job == 'THIEF':
               self.MaxHP += 20
               self.HP = self.MaxHP
               self.MaxMP += 1
               self.MP = self.MaxMP
               self.ATK += 1
               self.DEF = max(self.DEF - .5, 3)
+              
+          if self.lvl == 2:
+            if self.job == 'WARRIOR':
+              self.skills.append('STRIKE')
+            elif self.job == 'WIZARD':
+              self.skills.append('BOLT')
+            elif self.job == 'THIEF':
+              self.skills.append('THROW')      
+          if self.lvl == 5:
+            if self.job == 'WARRIOR':
+              self.skills.append('BERSERK')
+            elif self.job == 'WIZARD':
+              self.skills.append('STORM')
+            elif self.job == 'THIEF':
+              self.skills.append('MUG') 
+          if self.lvl == 10:
+            if self.job == 'WARRIOR':
+              self.skills.append('BLOOD')
+            elif self.job == 'WIZARD':
+              self.skills.append('BLAST')
+            elif self.job == 'THIEF':
+              self.skills.append('HASTE')
+   
           self.stat_check(typingActive)
 
     def materials_list(self):
@@ -126,7 +148,7 @@ class player:
       
 def stat_check_menu(typingActive):
     print_slow(
-        'Starting STATS:\nWARRIOR\nLvl 1\n70 HP\n3 MP\n12 ATK\n30% DEF\n100 GP\n4 POTIONS\n1 ANTIDOTE\n0 ETHER\n1 SMOKE BOMBS\nHARDEN: Restores HP and raises Temp. DEF\nSTRIKE: Wildly strike at foe up to 3 times.\n\nWIZARD\nLvl 1\n40 HP\n8 MP\n18 ATK\n10% DEF\n100 GP\n3 POTIONS\n1 ANTIDOTE\n1 ETHER\n1 SMOKE BOMBS\nBOLT: Powerful magic attack\nFOCUS: Concentrate power for next attack. Chance to restore MP.\n \nTHIEF\nLvl 1\n55 HP\n5 MP\n15 ATK\n20% DEF\n100 GP\n3 POTIONS\n2 ANTIDOTES\n1 ETHER\n3 SMOKE BOMBS\nSTEAL: Steals GP. Chance to fail.\nTHROW: Throws up to 3 daggers to inflect damage/poison.\n', typingActive
+        'Starting STATS:\nWARRIOR\nLvl 1\n70 HP\n3 MP\n12 ATK\n30% DEF\n100 GP\n4 POTIONS\n1 ANTIDOTE\n0 ETHER\n1 SMOKE BOMBS\nHARDEN: Restores HP and raises Temp. DEF\n\nWIZARD\nLvl 1\n40 HP\n8 MP\n18 ATK\n10% DEF\n100 GP\n3 POTIONS\n1 ANTIDOTE\n1 ETHER\n1 SMOKE BOMBS\nFOCUS: Concentrate power to increase damage for next few turns.\n \nTHIEF\nLvl 1\n55 HP\n5 MP\n15 ATK\n20% DEF\n100 GP\n3 POTIONS\n2 ANTIDOTES\n1 ETHER\n3 SMOKE BOMBS\nSTEAL: Steals GP. Chance to fail.\n', typingActive
     )
 
 
@@ -171,8 +193,8 @@ p12 = enemy("Bear", 3, 2, 55, 65, 75, 75, 3, 3, 16, 8.5, 10, 65, 45, 1, 1, 0, 1)
 p13 = enemy("Thief", 5, 9, 95, 35, 55, 55, 3, 3, 11, 8.5, 10, 65, 40, 1, 1, 0, 0)
 p14 = enemy("Giant Bee", 7, 2, 85, 20, 15, 15, 2, 2, 8, 9, 10, 20, 5, 0, 0, 0, 0)
 p14b = enemy("Giant Bee", 7, 2, 85, 20, 15, 15, 2, 2, 8, 9, 10, 20, 5, 0, 0, 0, 1)
-p15 = enemy("Giant Bee Swarm", 7, 2, 80, 50, 75, 75, 3, 3, 16, 8.5, 10, 20, 5, 1, 1, 0, 0)
-p15b = enemy("Giant Bee Swarm", 7, 2, 80, 50, 75, 75, 3, 3, 16, 8.5, 10, 20, 5, 1, 1, 0, 1)
+p15 = enemy("Giant Bee Swarm", 7, 2, 80, 50, 60, 60, 3, 3, 16, 8.5, 10, 20, 5, 1, 1, 0, 0)
+p15b = enemy("Giant Bee Swarm", 7, 2, 80, 50, 60, 60, 3, 3, 16, 8.5, 10, 20, 5, 1, 1, 0, 1)
 p16 = enemy("Mandragora", 8, 1, 0, 90, 120, 120, 3, 3, 24, 7.5, 10, 80, 65, 1, 1, 0, 1)
 p17 = enemy("'Shroomling", 8, 1, 65, 30, 60, 60, 1, 1, 16, 8.5, 10, 30, 10, 1, 1, 0, 0)
 p18 = enemy("Gnome", 5, 4, 80, 25, 35, 35, 2, 2, 9, 9, 10, 25, 5, 1, 1, 0, 0)
