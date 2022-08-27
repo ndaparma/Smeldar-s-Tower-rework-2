@@ -13,7 +13,8 @@ line202 = "From the TOWN center there is a SHOP for ADVENTURERS to the EAST, a s
 line301 = 'The SHOP keep greets you and welcomes you to browse his wares.\n"Please let me know if you would like to BUY anything.\n' 
   #EXPLORE
 line304 = "Looking around the SHOP you see cluttered shelves filled with various strange bits of monsters, small vials filled with every color and viscocity of liquid, and carefully placed SMOKE BOMBS in a glass case. The SHOP keep smiles and urges you to BUY anything that catches your eye.\n" #37
-  #LEAVE
+    #traveling merchant
+line305 =  'Out of the blue you can hear the sound of cart wheels rapidly approaching you. Before you know it a lanky gnome pulling a cart filled with supplies runs up next to you\n\n"OH OH OH! A customer! Yes yes yes! Come check my wares! Buy buy buy!"'
 #4.INN*************************************
 line401 = "The Inn keep motions you to the counter and offers you a bed.\nTaking a REST in a proper bed will surely rejuvinate you before your next battle.\nREST at the Inn for 40GP, or EXIT?\n" #42
 line401b = "The TAVERN owner rushes over to greet you. He eagerly offers you an available bed.\Taking a REST in a proper bed will surely rejuvinate you before your next battle.\nREST at the Tavern for 40GP, or EXIT?\n" 
@@ -312,35 +313,117 @@ line2401 = 'You come to a dingy cabin in the middle of a small clearing. A crook
  #EXPLORE
 line2402 = 'The cabin is surrounded by old, twisted trees and stumps. Outside the cabin a wrought iron cauldron sits above a fire, its contents bubbling to the brim. The old woman is dressed in dark dusty robes and a pointed hat, bent slightly near the tip. '
  #SPEAK
-line2403 = """"Oh these pesky Mandrakes are giving me trouble again. Do you see these leaves? Terrible! I need fertilizer. Not just any fertilizer, I need ! Yes, that should perk these pesky plants up!" """
+line2403 = """"I've been waiting for you adventurer... come closer, I wont bite! I've seen your coming and would like to offer you my services, hehehe! If you can bring me 10 pinches of FAE DUST I can whip you up an ETHER. You'll need a CRAFTING POUCH if you want to carry the materials... I'm sure you can find one somewhere in that stuffy CITY."\n """
+line2404 = """"Already back? I hope you brought me some FAE DUST hehehe! Let me know if you'd like me to CRAFT you an ETHER."\n """
+
 
 #25.THICKET**************************
 line2501 = "You continue down the path for a while until you come to a dense THICKET. A wall of thorny branches blocks your path forward\n"
 line2502 = "You continue down the path for a while until you come to a dense THICKET. The wall of thorny branches has been cut down; the path to the NORTH is clear.\n"
   #EXPLORE
-line2503 = "The path here is narrow. Trees on either side form an impenetrable wall that prevents you from leaving the path. At the NORTH end is a wall of thorny branches that might be worth trying to EXAMINE for a way through.\n" 
+line2503 = "The path here is narrow. Trees on either side form an impenetrable wall that prevents you from leaving the path. At the NORTH end is a wall of thorny branches that prevent you from moving forward\n" 
 line2504 = "The path here is narrow. Trees on either side form an impenetrable wall that prevents you from leaving the path. At the NORTH end the wall of thorns has been chopped down. A chill wind blows through the now open path. You sense a dark presence beyond this point.\n"
   #EXAMINE
 line2505 = "The thorny branches completely block the way forward, however you can see the path is clear just on the other side. If you could cut down these branches you could easily continue NORTH...\n"
-line2506 = "You take hold of your AXE and begin hacking away at the branches. Before long the entire path is open. You are one step closer to reaching SMELDAR'S TOWER.\n"
+line2506 = "The thorny branches completely block the way forward, however you can see the path is clear just on the other side. You could easily take care of them with your AXE. CUT them away or LEAVE them alone?\n"
+line2507 = "You take hold of your AXE and begin hacking away at the branches. Before long the entire path is open. You are one step closer to reaching SMELDAR'S TOWER.\n"
   #NORTH
-line2507 = "You take a deep breath before walking NORTH, to the wicked TOWER."
-line2508 = "You attempt to continue NORTH, but are stopped by a wall of thorny branches. If only you had a way to cut them down...\n"
+line2508 = "You take a deep breath before walking NORTH, to the wicked TOWER.\n"
+line2509 = "You attempt to continue NORTH, but are stopped by a wall of thorny branches. If only you had a way to cut them down...\n"
 
 
 #26.ROTTING WOODS********************************************
-line2601 = "As you continue you on the path you find yourself standing in mud surrounded by half rotted trees."
+line2601 = "As you continue you on the path you find yourself standing in mud surrounded by half rotted trees.\n"
   #EXPLORE
 line2602 = 'The plants here are all rotting and sickly. Signs of a parasitic fungus can be seen on the leaves and trunks of the trees here. It would seem the mushrooms in the SOUTH are aggressively spreading here thanks to the humid air. Loud croaking can be head coming from the way NORTH. A breeze coming from the WEST carries with it the scent of soil and sulfur and you spy a broken sign standing crooked off the path. All you can read is:\nBew...\nOgr...\n'
 
 
+#27.ROTTEN SWAMP********************************************
+  #Swap 1
+line2701 = "You step into a murky swamp. Thick gas hangs in the air between the rotting trees sticking up from the mud and muk.\n"
+  #EXPLORE
+line2702 = 'All around you are rotting trees covered in moss. The swamp is filled with a  thick, brown sludge that is hard to call water, or even mud. It smells like rotting eggs and decaying leaves here. Further WEST the path continues deeper into the swamp.\n'
 
+  #Swamp 2
+line2703 = "You continue walking through the swamp until you reach a 3-way junction. You try not to stand in one spot too long so you dont sink in the mud. \n"
+  #EXPLORE
+line2704 = 'The ground here is wet and muddy. You take extra care as to where you walk to avoid becoming stuck. You see the path continues deeper into the swamp going SOUTH and WEST. Several trees can be seen knocked over; something (or somethings) very big lives here.\n'
 
+  #Swamp 3
+line2705 = "You come to a 3-way junction deep in the swamp. It is starting to feel like you are being watched...\n"
+  #EXPLORE
+line2706 = 'You look around and try to see through the thick swamp gas. A deep pool of sludge lies to the WEST. You see signs something was recently dragged across here to the NORTH. The path through the swamp also continues EAST and SOUTH from here.\n'
 
+  #Swamp 4
+line2707 = "You step into a small clearing in the swamp with some more stable ground. In front of you are two wooden chests.\n"
+  #EXPLORE
+line2708 = 'The stench of the swamp isnt quite as stong here, but is still very unpleasant. Directly ahead are two wooden chests that have been dragged over to the middle of the clearing. It looks like whatever was moving these left them in a hurry. EXAMINE for a closer look?\n'
+  #EXAMINE
+line2709 = 'You walk up to the two chests. Both appear to be tightly shut, but neither is locked. Would you like to open the chest on the LEFT, RIGHT, or BACK away and leave them be?\n'
+line2710 = 'You walk up to the two chests. The one on the right appears to be tightly shut, but is not locked. The chest on the left has already been opened. Would you like to open the chest on the RIGHT or BACK away and leave them be?\n'
+line2711 = 'You walk up to the two chests. The one on the left appears to be tightly shut, but is not locked. The chest on the right has already been opened. Would you like to open the chest on the LEFT or BACK away and leave them be?\n'
+line2712 = 'You walk up to the two chests. Both chests have been opened and are now sitting there, empty.\n'
+line2713 = 'You open the chest on the LEFT and go to examine the contents. Before you are able to a noxious gas from within the chest fills your nostrils and makes you sick. An OOZING SLIME pours from the chest and begins to attack!.\n'
+line2714 = 'The OOZING SLIME defeated, you go to check the chest again... unfortunately it looks like you just killed the only contents...\n'
+line2715 = 'You open the chest on the RIGHT and examine the contents. You find the a MOUTH-PIECE!\n'
+line2716 = 'You combine the BROKEN HORN with the MOUTH-PIECE. You now have the COMPLETE HORN!\n'
 
-
-
-
+  #swamp 5
+line2717 = "The path leads to a wide cross road in the middle of the swamp. You stand on a fallen log in middle of the area to get your feet out of the muk.\n"
+  #EXPLORE
+line2718 = "The paths that lie NORTH, EAST, SOUTH, and WEST are masked by a thick cloud of swamp gas. It is hard to tell what is in any direction from here. The fallen log lies next to a large stone with unnatural markings carved onto one side. It may be some sort of writing, but you've never seen any language like this before. Carved into the rock next to the markings are a pair of crude arrows pointing NORTH and SOUTH.\n" 
+  #swamp 6
+line2719 = "You come to a bend in the path and sit on a tree stump next to a large pool of swamp water while you plan your next steps.\n"
+  #EXPLORE
+line2720 = "The path here bends from NORTH to WEST, curving past a putrid pool of swamp water in the EAST and SOUTH. A dead fish floats past you while you look at the water. Probably not a good sign. You see a set of tracks in the SOUTH-WEST corner of the area. They look like they were made by something with hooves that came by recently...\n"
+line2721 = "Maybe its the swamp gas going to your head, but that water is looking pretty tasty right now... You reach down and take a sip. You arent feeling so good...\n"
+line2722 = "You continue to stare at the water and think to yourself how much like a chocolate jelly pond it looks like. You soon find yourself consumed by thoughts telling you to jump in. You eventually break and dive straight into the pool! Something grabs your leg and you are immediately dragged down to the bottom.\n"
+ #swamp 7
+line2723 = 'Deeper into the swamp you begin to hear a chorus of frogs ribbiting as you approach a murky pond.\n'
+  #EXPLORE
+line2724 = 'Surrounding you is a stagnant pond of filthy water. Dragonflys buzzing around and the loud ribbitting of frogs form a surprisingly pleasant symphony. You take a moment to enjoy the sounds, forgetting for a moment that you are enveloped in the smell of rotten eggs. \n'
+line2725 = 'You start ribbiting back in harmony with the frogs. After a moment you realize the noises from the swamp have ceased and it is now silent. Bubbles begin to appear at the surface of the pond; slowly an algea covered log raises from the water. A massive red frog sitting on the log opens its mouth and spits out a GOLD RING in front of you. As soon as you grab the ring the log begins to lower back into the water and the sounds of the swamp return.\n'
+line2726 = 'You try to mimic the frog-siren song again, but nothing else happens...\n'
+  #swamp 8
+line2727 = 'You step onto a muddy peninsula deep within the swamp. A chill fills the air here and all the sounds of the swamp cease.\n'
+  #EXPLORE
+line2728 = 'The smell of death lingers around you. You can see bones with the meat picked clean and shattered weapons and armor littering the ground. Something ferocious lives here, and it is not likely to be pleased with your presence. This seems to be the deepest reaches of the swamp...\n'
+line2729 = 'The smell of death lingers around you. You can see bones with the meat picked clean and shattered weapons and armor littering the ground. Something ferocious lives here, and it is not likely to be pleased with your presence. This seems to be the deepest reaches of the swamp... The Frog-Man said this would be the place to PLAY the horn to summon an audience with the Ogre Chief.\n'
+line2730 = 'The Ogre Chief is gone, but the swamp is still a dangerous place. It would be unwise to continue hanging around here without cause.'
+  #special
+line2731 = 'You begin playing the horn, letting out a note that echos across the swamp. Soon you can hear another horn blowing in the distance, returning your call. Out of the sawmp gas a small boat emerges. When the boat reaches the shore a hulking mass of muscle and flesh steps off.\n'
+line2732 = 'The Ogre Chief looks down at you; you can see the anger burning in his eyes. Your intrusion will not go unpunished.\n'
+line2733 = 'The Ogre Chief looks down at you; "What offering have you brought for me puny one?"\n'
+line2734 = 'You look in you bag and see you have the WAFFLE dropped from the donkey. Would you like to GIVE the Ogre Chief the WAFFLE or KEEP it?\n'
+line2735 = 'The Ogre Chief takes the waffle and nods at you silently. He soon turns around and returns to his boat. You notice that something fall from his key ring as he was getting back on his vessel. You pick it up and discover it is a GILDED DRAGON BONE KEY. Thinking that this is an important item you quickly place it in your bag.\n'
+line2736 = 'You reach into your bag and pull out your middle finger. The Ogre Chief is enraged by your insult and begins thrashing wround widly. Have fun with that.\n'
+line2737 = 'You play the horn once again. This time there is no response.\n'
+line2738 = 'After a fierce battle with the Ogre Chief, you land a finishing blow and the chief takes his last breath. As he falls to the ground you let out a sigh of relief. After searching his body you find a GILDED DRAGON BONE KEY. Thinking that this is an important item you quickly place it in your bag.\n'
+#28. Frog MArsh
+line2801 = 'You step onto a series of piers stretching across a reed filled marsh. A Frog-Man sits on a rocking chair outside a hut built right over the marsh. It looks like he is interested in SPEAKING.\n'
+  #EXPLORE
+line2802 = 'The marsh is filled with the sounds of creatures roaming the area. Herons can be spotted fishing further across the water and tadpoles can be seen hiding under the piers. The path across the piers continues EAST from here.\n'
+  #Speach
+line2803 = """"Why if it isn't an honest to goodness Adventurer in my marsh! It's quite the honor to have visitors way out in these parts. Say, I've got some great info that you might find useful. My grandpappy told me when I was just a tadpole that he fought against a great Ogre Chief ages ago. That Chief was appointed by that wicked warlock Smeldar and was gifted an imporant item sometime ago. I bet that will be handy in your journey!\n" "I'll tell you what I can help you out even more than that! I have here a BROKEN HORN used by the Ogres Chief's army to call to each other on the battlefield. If you can find a MOUTH PIECE you should be able to repair it."\n"Come back and visit again sometime. I love tellin' all my grandpappy's stories!"\n """
+line2804 = """"Look whos back to visit! I just thought of another way I can help you on your journey. My grandpappy tought me years back how to make a potent SMOKE BOMB that will get you out of all sorts of sticky situations! You bring me 15 MONSTER PARTS and I'll CRAFT one right up for you!"\n """
+line2805 = """"Welcome back! If you have any MONSTER PARTS let me know so I can CRAFT you some special SMOKE BOMBS!"\n """
+line2806 = """""Look whos back to visit! Hey there Adventurer, come to hear another one of my granpappy's stories? Let me tell you all about the Sirens. My grandpappy said that there are the beautiful singing creatures who sing to passing travelers. It's said that their song can make you forget all your cares and even your own surroundings. If you're not careful you could end up trapped their forever, listening to their song for the rest of your days. My grandpappy tells me that there's a secret about the Sirens though! He said if you join them in song they will reward you with treasure and riches!"\n"Well thanks again for visiting, come again sometime! Good luck in your quest!"\n """
+#29.Fairy Circle
+line2901 = "Making your way through the Mushroom Grove, you find a circle of mushrooms in a field of strange purple flowers.\n"
+  #EXPLORE
+line2902 = "Sunbeams penetrate the canopy here illuminateing the circle of mushrooms and many flowers that cover the ground. You recall that these circle of mushrooms are known as Fairy Circles, but you have never seen or heard of the strange purple flowers that grow here. There is an especially dense patch of them in the center of the Fairy Circle. You feel drawn towards them...\n"
+line2903 = "Sunbeams penetrate the canopy here illuminateing the circle of mushrooms and many flowers that cover the ground. You recall that these circle of mushrooms are known as Fairy Circles, but you have never seen or heard of the strange purple flowers that grow here. There is an especially dense patch of them in the center of the Fairy Circle. A fairy with the appearance of a young man sits in the center of the circle.\n"
+line2904 = "Sunbeams penetrate the canopy here illuminateing the now shriveled circle of mushrooms. The purple flowers that were once growing here have died with the Dark Fairy Prince. This place has lost its magical presence, but it feels much safer than before.\n"
+  #EXAMINE
+line2905 = "You step into the Fairy Circle and kneel over to examine the flowers in the middle. You dont find anything of interest at this time..."
+line2906 = """You step into the Fairy Circle and kneel over to examine the flowers in the middle.\n"Why hello there. Can you please help me?.."\nYou look up and see a young man sitting in the Fairy Circle you previously hadn't noticed. He has pointed ears and a flowing purple robe the same color as the flowers surrounding you. It takes a moment before you realize he has a pair of translucent wings.\n"I am the prince of Fairies. I was trapped here ages ago by wicked Dark Fae that sought to overthrow my kingdom... I am quite weak now... Please, if you can defeat Dark Fae some of my power should return to me. As my magic returns I should be able to reward you for your efforts. Come back to me to check to see how many Dark Fae you have defeated." """
+line2907 = "You see the Fairy Prince calmly sitting in the Fairy Circle. It looks like he may be confined within it..."
+line2908 = "The Dark Fairy Prince has been defeated. The flowers have all wilted and the Fairy Circle mushrooms have began to shrivle. Hopefully the evil Fae is gone for good this time..."
+  #speak
+line2909 = """"Thank you for coming. I can feel my power starting to return. Take this gift as my thank you for your help. Please, continue to defeat more Dark Fae. I am still feeling very weak..."\n """
+line2910 = """"Thank you for coming. I can feel my power returning. Take this gift as my thank you for your help. Please, continue to defeat more Dark Fae. I need more power..."\n """
+line2911 = """"Thank you for coming... You have done well helping my power return to me. Now for your reward... As a gift I will impart with you this knowledge; I am not the Fairy Prince. No, I am the Prince of the Dark Fae! You have foolishly helped me regain my strength! Smeldar will be quite pleased to hear of my return! I will be granted another army and I shall be the lord of all Fae! Now be good and surrender. If you do I will reward you with a final gift; a quick death! HEHEHEHE!"\n"""
+line2912 = "The Dark Fairy Prince lets out a shriek before dissipating into nothing. The flowers all around begind to instantly wither away and the Fairy Circle shrivels up. On the ground where the Dark Fairy Prince had been sitting lies a CRYSTAL NECKLACE. You take it and put it on. You can feel a rush of magical energy flow through you."
 ##26.TOWER OUTER*******************************
 #line2601 = "You approach the dark TOWER and gaze up the crooked spire. A shiver runs down your spine as the sky darkens and the air becomes cold. You take a step closer to the TOWER when you hear a distant roar and pause. Before you are able to take another step you hear it again, this time much closer. You manage to draw your weapon just a moment before a DRAGON crashes through the canopy!\n"
 #line2602 = "The DRAGON lets out an ear piercing screach that echos through the entire woods before meeting it's demise. You narrrowly avoided being made into a meal. You rest a moment before carrying on with your quest.\n"

@@ -8,6 +8,7 @@ import pickle
 
 
 
+
 def save_rooms2(savefile3):
   global rooms
   with open(f'saved_rooms/{savefile3}', 'wb') as f:
@@ -20,6 +21,78 @@ def load_rooms2(savefile3):
 
     
 #define room mechanics/events  
+def key_itemBought(p1, selc, typingActive):
+  if selc == 'MAP':
+    print_slow(f"{p1.name} purchases a MAP! Now {p1.name} can stop getting lost all the time! (Type MAP or LOCATION to view current area) {p1.GP}GP remaining.\n", typingActive)
+  if selc == 'LANTERN':
+    print_slow(f'{p1.name} purchases a LANTERN and straps it to their belt. {p1.name} can quit being so afraid of the dark! {p1.GP}GP remaining.\n', typingActive)
+  if selc == 'CRAFTING POUCH':
+    print_slow(f'{p1.name} purchases a CRAFTING POUCH and attaches it to their pack. {p1.name} can store all sorts of weird things now! {p1.GP}GP remaining.\n', typingActive)
+  if selc == 'SPECIAL FEED':
+    print_slow(f'{p1.name} purchases the SPECIAL FEED. Hopefully the Farmers pig is still doing fine... {p1.GP}GP remaining.\n', typingActive)
+
+
+def sales_mechanic(p1, rooms, typingActive):
+  global shop_open
+  sale = 0
+  selc = (input().upper()).strip()
+  print_slow("\n", typingActive)
+  
+  if selc in shop_items:
+    
+    if p1.GP < key_items[selc]['price']:
+      print_slow(""""Sorry, it doesn't look like you have enough GP for that."\n""", typingActive)
+
+    if p1.GP >= key_items[selc]['price']: 
+      
+      if selc == 'POTION':
+        if p1.POTS < p1.MaxPOTS:
+          p1.POTS += 1
+          sale = 2
+        else:
+          sale = 1
+      if selc == 'ANTIDOTE':
+        if p1.ANT < p1.MaxANT:
+          p1.ANT += 1
+          sale = 2
+        else:
+          sale = 1
+      if selc == 'ETHER':
+        if p1.ETR < p1.MaxETR:
+          p1.ETR += 1
+          sale = 2
+        else:
+          sale = 1
+      if selc == 'SMOKE BOMB':
+        if p1.SMB < p1.MaxSMB:
+          p1.SMB += 1
+          sale = 2
+        else:
+          sale = 1
+      if selc in shop_keyItems:
+        if selc in rooms['Shop']['items']:
+          p1.GP -= key_items[selc]['price']
+          rooms['Shop']['items'].remove(selc)
+          p1.inventory.append(selc)
+          key_itemBought(p1, selc, typingActive)
+        else:
+          print_slow(f""""Hey, it looks like that isn't available, sorry about that!"\n""", typingActive)
+          sale = 3
+
+      if sale == 3:
+        pass
+      if sale == 2:
+          p1.GP -= key_items[selc]['price']
+          print_slow(f"{p1.name} purchases a {selc} for {key_items[selc]['price']} GP and adds it to their inventory. {p1.name} has {p1.GP} GP.\n", typingActive)
+      if sale == 1:
+          print_slow('"Looks like your inventory is full."\n', typingActive)
+                 
+  elif selc == "BACK":
+        shop_open = 0
+  else:
+     print_slow('\nInvalid selection. Try again.\n', typingActive)
+  return
+    
 def potion_healing(p1, typingActive):
   heal = 15 + p1.RJ
   p1.POTS -= 1
@@ -58,136 +131,61 @@ def shrine_pray(p1, typingActive):
   else:
     print_slow(f"{p1.name} is too poor to spend on charity.\n", typingActive)
 
-def city_shop(p1, rooms, typingActive): #City Shop mechanics   
-    potion_price = 35
-    smoke_bomb_price = 30
-    antd_price = 25
-    ether_price = 40
-    map_price = 50
-    lantern_price = 200
-    craftingp_price = 300
-    feed_price = 500 
+def city_shop(p1, rooms, typingActive):
+  global shop_open
+  shop_open = 1
+
+    
+  if rooms['Shop']['event'] == 1 and p1.MonP >= 5:
+    print_slow(""""I can tell you've got those MONSTER GUTS! Quick, pass them here before anyone else walks in!"\nThe Shop Keep frantically grabs the MONSTER GUTS and slips them into a jar tucked away under the counter.\n"Now I suppose I should hold up my end of the deal. I'll discount that SPECIAL FEED just for you." """, typingActive)
+    p1.MonP -= 5
+    rooms['Shop']['event'] = 2
+    key_items['SPECIAL FEED']['price'] = key_items['SPECIAL FEED']['price']//2
+    
+  if rooms['Farm House']['speach'] == 3 and 'SPECIAL FEED' in rooms['Shop']['items'] and rooms['Shop']['event'] == 1:
+      print_slow('If you can find me those 5 MONSTER GUTS I will give you a big discount on that SPECIAL FEED. Just be sure not to tell anyone I want them...', typingActive)
+    
+  if rooms['Farm House']['speach'] == 3 and 'SPECIAL FEED' in rooms['Shop']['items'] and rooms['Shop']['event'] == 0:
+    print_slow(f"""\n"Hmm? Looking for SPECIAL FEED? We have some in the back. That will be [{key_items['SPECIAL FEED']['price']}GP]...Unless you are looking to barter? (Input selection: YES or NO)"\n""", typingActive)
     while True:
-      
-        if rooms['Farm House']['speach'] == 3 and 'SPECIAL FEED' in rooms['Shop']['items'] and rooms['Shop']['event'] == 0:
-          print_slow(f'\n"Hmm? Looking for SPECIAL FEED? We have some in the back. That will be [{feed_price}GP]...Unless you are looking to BARTER."\n', typingActive)
-        if rooms['Farm House']['speach'] == 3 and 'SPECIAL FEED' in rooms['Shop']['items'] and rooms['Shop']['event'] == 1:
-          print_slow('If you can find me those 5 MONSTER GUTS I will give you a big discount on that SPECIAL FEED. Just be sure not to tell anyone I want them...', typingActive)
-        if rooms['Shop']['event'] == 1 and p1.MonP >= 5:
-          print_slow(""""I can tell you've got those MONSTER GUTS! Quick, pass them here before anyone else walks in!"\nThe Shop Keep frantically grabs the MONSTER GUTS and slips them into a jar tucked away under the counter.\n"Now I suppose I should hold up my end of the deal. I'll discount that SPECIAL FEED just for you." """, typingActive)
-          p1.MonP -= 5
-          rooms['Shop']['event'] = 2
-          feed_price = feed_price//2
-
-          
-        print_slow(""""Well what will it be?"\n """, typingActive)
-        print_slow(f"POTION:[{potion_price}GP]\n", typingActive)
-        print_slow(f"SMOKE BOMB:[{smoke_bomb_price}GP]\n", typingActive)
-        print_slow(f"ANTIDOTE:[{antd_price}GP]\n", typingActive)
-        print_slow(f"ETHER:[{ether_price}GP]\n", typingActive)
-        if 'MAP' in rooms['Shop']['items']:
-          print_slow(f"MAP:[{map_price}GP]\n", typingActive)
-        if 'LANTERN' in rooms['Shop']['items']:
-          print_slow(f"LANTERN:[{lantern_price}GP]\n", typingActive)
-        if 'CRAFTING POUCH' in rooms['Shop']['items']:
-          print_slow(f"CRAFTING POUCH:[{craftingp_price}GP]\n", typingActive)
-        if rooms['Farm House']['speach'] == 3 and 'SPECIAL FEED' in rooms['Shop']['items']:
-          print_slow(f"SPECIAL FEED:[{feed_price}GP]\n", typingActive)
-        print_slow(f"\n{p1.name}'s Wallet:[{p1.GP}GP]\n", typingActive)
-        print_slow('\nType your selection or BACK to leave shopping window.\n', typingActive)
-        selc = (input().upper()).strip()
-        print_slow("\n", typingActive)
-
-      
-        if (selc == 'POTION' and p1.GP >= potion_price) and p1.POTS < p1.MaxPOTS:
-            p1.GP -= potion_price
-            p1.POTS = min(p1.POTS + 1, p1.MaxPOTS)
-            print_slow(
-                f'{p1.name} purchases a POTION and puts it in their bag. {p1.name} now has {p1.POTS} POTIONS and {p1.GP}GP.\n', typingActive
-            )          
-
-        elif (selc == 'SMOKE BOMB'
-              and p1.GP >= smoke_bomb_price) and p1.SMB < p1.MaxSMB:
-            p1.GP -= smoke_bomb_price
-            p1.SMB = min(p1.SMB + 1, p1.MaxSMB)
-            print_slow(
-                f'{p1.name} purchases a SMOKE BOMB and puts it in their bag. {p1.name} now has {p1.SMB} SMOKE BOMBS and {p1.GP}GP.\n', typingActive
-            )
-
-        elif (selc == 'ANTIDOTE' and p1.GP >= antd_price) and p1.ANT < p1.MaxANT:
-            p1.GP -= antd_price
-            p1.ANT = min(p1.ANT + 1, p1.MaxANT)
-            print_slow(
-                f'{p1.name} purchases an ANTIDOTE and puts it in their bag. {p1.name} now has {p1.ANT} ANTIDOTES and {p1.GP}GP.\n', typingActive
-            )
-
-        elif (selc == 'ETHER' and p1.GP >= ether_price) and p1.ETR < p1.MaxETR:
-            p1.GP -= ether_price
-            p1.ETR = min(p1.ETR + 1, p1.MaxETR)
-            print_slow(
-                f'{p1.name} purchases an ETHER and puts it in their bag. {p1.name} now has {p1.ETR} ETHERS and {p1.GP}GP.\n', typingActive
-            )     
-
-        elif (selc == 'CRAFTING POUCH'
-              and 'CRAFTING POUCH' in rooms['Shop']['items']) and p1.GP >= craftingp_price:
-            p1.GP -= craftingp_price
-            p1.inventory.append('CRAFTING POUCH')
-            rooms['Shop']['items'].remove('CRAFTING POUCH')
-            print_slow(
-                f'{p1.name} purchases a CRAFTING POUCH and attaches it to their pack. {p1.name} can store all sorts of weird things now! {p1.GP}GP remaining.\n', typingActive
-            )
-
-      
-        elif (selc == 'LANTERN'
-              and 'LANTERN' in rooms['Shop']['items']) and p1.GP >= lantern_price:
-            p1.GP -= lantern_price
-            p1.inventory.append('LANTERN')
-            rooms['Shop']['items'].remove('LANTERN')
-            print_slow(
-                f'{p1.name} purchases a LANTERN and straps it to their belt. {p1.name} can quit being so afraid of the dark! {p1.GP}GP remaining.\n', typingActive
-            )
-
-        elif (selc == 'MAP'
-              and 'MAP' in rooms['Shop']['items']) and p1.GP >= map_price:
-            p1.GP -= map_price
-            p1.inventory.append('MAP')
-            rooms['Shop']['items'].remove('MAP')
-            print_slow(
-                f"{p1.name} purchases a MAP! Now {p1.name} can stop getting lost all the time! {p1.GP}GP remaining.\n", typingActive
-            )
-
-        elif selc == 'SPECIAL FEED' and rooms['Farm House']['speach'] == 3 and 'SPECIAL FEED' in rooms['Shop']['items'] and p1.GP >= feed_price:
-            p1.GP -= feed_price
-            p1.inventory.append('SPECIAL FEED')
-            rooms['Shop']['items'].remove('SPECIAL FEED')
-            print_slow(
-                f'{p1.name} purchases the SPECIAL FEED. Hopefully the Farmers pig is still doing fine... {p1.GP}GP remaining.\n', typingActive)
-            if 'CRAFTING POUCH' not in p1.inventory:
-              p1.inventory.append('CRAFTING POUCH')
-              rooms['Shop']['items'].remove('CRAFTING POUCH')
-              print_slow(""""Since you have been such a great customer I'll throw in this CRAFTING POUCH too. Should help you store any materials you find in your travels." """, typingActive)
-
-        elif selc == 'BARTER' and rooms['Farm House']['speach'] == 3 and rooms['Shop']['event'] == 0:
-            if 'CRAFTING POUCH' in rooms['Shop']['items']:
-              print_slow(""""I'll tell you what, if you can bring me 5 MONSTER GUTS I'll knock off half the price on that SPECIAL FEED. I'll even give you a CRAFTING POUCH to store those MONSTER GUTS in. It should also fit other materials. Don't worry what they're for... it's ah, for a project.\n" """, typingActive)
-              p1.inventory.append('CRAFTING POUCH')
-              rooms['Shop']['items'].remove('CRAFTING POUCH')
-            else:
-              print_slow(""""I'll tell you what, if you can bring me 5 MONSTER GUTS I'll knock off half the price on that SPECIAL FEED. Don't worry what they're for... it's ah, for a project.\n" """, typingActive)
-            rooms['Shop']['event'] = 1
-      
-        elif (selc == 'POTION' and p1.GP < potion_price) or (selc == 'SMOKE BOMB' and p1.GP < smoke_bomb_price) or (selc == 'ANTIDOTE' and p1.GP < antd_price) or (selc == 'ETHER' and p1.GP < ether_price) or ((selc == 'LANTERN' and 'Lantern' in rooms['Shop']['items']) and p1.GP < lantern_price) or ((selc == 'SPECIAL FEED'  and 'SPECIAL FEED' in rooms['Shop']['items']) and p1.GP < feed_price) or ((selc == 'MAP' and 'MAP' in rooms['Shop']['items']) and p1.GP < map_price) or ((selc == 'CRAFTING POUCH' and 'CRAFTING POUCH' in rooms['Shop']['items']) and p1.GP < craftingp_price):
-            print_slow(
-                f'{p1.name} does not have enough GP to purchase this item.\n', typingActive)
-
-        elif (selc == "POTION" and p1.POTS == p1.MaxPOTS) or (selc == "SMOKE BOMB" and p1.SMB == p1.MaxSMB) or (selc == "ANTIDOTE" and p1.ANT == p1.MaxANT) or (selc == "ETHER" and p1.ETR == p1.MaxETR) or (selc == 'LANTERN' and 'LANTERN' in p1.inventory) or (selc == 'MAP' and 'MAP' in p1.inventory) or (selc == 'CRAFTING POUCH' and 'CRAFTING POUCH' in p1.inventory):
-            print_slow(
-                f'\n"Hey, looks like your inventory is full."\n\n{p1.name} is unable to purchase more of this item.\n', typingActive
-            )
-        elif selc == "BACK":
-          break
+      selc = (input().upper()).strip()
+      print_slow("\n", typingActive)
+      if selc == 'YES':
+        if 'CRAFTING POUCH' not in rooms['Shop']['items']:
+          print_slow(""""I'll tell you what, if you can bring me 5 MONSTER GUTS I'll knock off half the price on that SPECIAL FEED. Don't worry what they're for... it's ah, for a project.\n" """, typingActive)
         else:
-           print_slow('\nInvalid selection. Try again.\n', typingActive)
+          print_slow(""""I'll tell you what, if you can bring me 5 MONSTER GUTS I'll knock off half the price on that SPECIAL FEED. I'll even give you a CRAFTING POUCH to store those MONSTER GUTS in. It should also fit other materials. Don't worry what they're for... it's ah, for a project.\n" """, typingActive)
+          p1.inventory.append('CRAFTING POUCH')
+          rooms['Shop']['items'].remove('CRAFTING POUCH')
+          
+        rooms['Shop']['event'] = 1
+        break
+      elif selc == 'NO':
+        print_slow(""""Hmm... Alright, well let me know if you change your mind next time.\n """, typingActive)
+        break
+      else:
+        print_slow('\nInvalid selection. Try YES or NO.\n', typingActive)
+        
+
+  while shop_open == 1:    
+    print_slow(""""Well what will it be?"\n """, typingActive)
+    print_slow(f"POTION:[{key_items['POTION']['price']} GP]\n", typingActive)
+    print_slow(f"SMOKE BOMB:[{key_items['SMOKE BOMB']['price']} GP]\n", typingActive)
+    print_slow(f"ANTIDOTE:[{key_items['ANTIDOTE']['price']} GP]\n", typingActive)
+    print_slow(f"ETHER:[{key_items['ETHER']['price']} GP]\n", typingActive)
+    if 'MAP' in rooms['Shop']['items']:
+      print_slow(f"MAP:[{key_items['MAP']['price']} GP]\n", typingActive)
+    if 'LANTERN' in rooms['Shop']['items']:
+      print_slow(f"LANTERN:[{key_items['LANTERN']['price']} GP]\n", typingActive)
+    if 'CRAFTING POUCH' in rooms['Shop']['items']:
+      print_slow(f"CRAFTING POUCH:[{key_items['CRAFTING POUCH']['price']} GP]\n", typingActive)
+    if rooms['Farm House']['speach'] == 3 and 'SPECIAL FEED' in rooms['Shop']['items']:
+      print_slow(f"SPECIAL FEED:[{key_items['SPECIAL FEED']['price']}GP]\n", typingActive)
+    print_slow(f"\n{p1.name}'s Wallet:[{p1.GP} GP]\n", typingActive)
+
+    
+    print_slow('\nType your selection or BACK to leave shopping window.\n', typingActive)    
+    sales_mechanic(p1, rooms, typingActive)
 
 def city_inn(p1, typingActive):  #Inn Mechanics
     inn_room = 40
@@ -494,6 +492,100 @@ def mushroom_examine(p1, rooms, typingActive):
     else:
       print_slow(line1603, typingActive)
       break
+def fairy_examine(p1, rooms, typingActive):
+  while True:
+    if p1.faeCount == 0:
+      print_slow(line2905, typingActive)
+      break
+    elif p1.faeCount >= 1 and rooms['Fairy Circle']['speach'] == 0:
+      print_slow(line2906, typingActive)
+      rooms['Fairy Circle']['speach'] = 1
+      rooms['Fairy Circle']['EXPLORE'] = line2903
+      break
+    elif "Dark Fairy Prince" in rooms['Fairy Circle']['boss'] and rooms['Fairy Circle']['speach'] == 1:
+      print_slow(line2907, typingActive)
+      break
+    elif "Dark Fairy Prince" not in rooms['Fairy Circle']['boss']:
+      print_slow(line2908, typingActive)
+      break
+def swamp4_examine(p1, rooms, typingActive):
+  while True:
+    if rooms['Rotten Swamp 4']['event'] == 0:
+      print_slow(line2709, typingActive)
+      selc = (input().upper()).strip()
+      print_slow("", typingActive)
+      if selc == 'LEFT':
+        print_slow(line2713, typingActive)
+        p1.POISON += 3
+        foe = rooms['Rotten Swamp 4']['foe']
+        standard_battle(p1, foe, typingActive)
+        print_slow(line2714, typingActive)
+        rooms['Rotten Swamp 4']['map'] = swamp4_map2
+        rooms['Rotten Swamp 4']['event'] = 1
+        break
+      elif selc == 'RIGHT':
+        print_slow(line2715, typingActive)
+        p1.inventory.append('MOUTH-PIECE')
+        rooms['Rotten Swamp 4']['map'] = swamp4_map3
+        if ('MOUTH-PIECE' and 'BROKEN HORN') in p1.inventory:
+          p1.inventory.append('COMPLETE HORN')
+          p1.inventory.remove('MOUTH-PIECE')
+          p1.inventory.remove('BROKEN HORN')
+          rooms['Rotten Swamp 8']['EXPLORE'] = line2729
+          print_slow(line2716, typingActive)
+          rooms['Rotten Swamp 4']['event'] = 2
+        break
+      elif selc == 'BACK':
+        print_slow('You decide to leave the chests be for now.\n', typingActive)
+        break
+      else:
+        print_slow('\nInvalid selection. Try again.\n', typingActive)
+        
+    elif rooms['Rotten Swamp 4']['event'] == 1:
+      print_slow(line2710, typingActive)
+      selc = (input().upper()).strip()
+      print_slow("", typingActive)
+      if selc == 'RIGHT':
+        print_slow(line2715, typingActive)
+        p1.inventory.append('MOUTH-PIECE')
+        rooms['Rotten Swamp 4']['map'] = swamp4_map4
+        if ('MOUTH-PIECE' and 'BROKEN HORN') in p1.inventory:
+          p1.inventory.append('COMPLETE HORN')
+          p1.inventory.remove('MOUTH-PIECE')
+          p1.inventory.remove('BROKEN HORN')
+          print_slow(line2716, typingActive)
+          rooms['Rotten Swamp 4']['event'] = 3
+        break
+      elif selc == 'BACK':
+        print_slow('You decide to leave the chests be for now.\n', typingActive)
+        break
+      else:
+        print_slow('\nInvalid selection. Try again.\n', typingActive)
+        
+    elif rooms['Rotten Swamp 4']['event'] == 2:  
+      print_slow(line2711, typingActive)
+      selc = (input().upper()).strip()
+      print_slow("", typingActive)
+      if selc == 'LEFT':
+        print_slow(line2713, typingActive)
+        p1.POISON = 3
+        foe = rooms['Rotten Swamp 4']['foe']
+        standard_battle(p1, foe, typingActive)
+        print_slow(line2714, typingActive)
+        rooms['Rotten Swamp 4']['map'] = swamp4_map4
+        rooms['Rotten Swamp 4']['event'] = 3
+        break
+      elif selc == 'BACK':
+        print_slow('You decide to leave the chests be for now.\n', typingActive)
+        break
+      else:
+        print_slow('\nInvalid selection. Try again.\n', typingActive)
+        
+    elif rooms['Rotten Swamp 4']['event'] == 3:
+      print_slow(line2712, typingActive)
+      break
+
+        
 def hill_lock(p1, selc, rooms, typingActive):
  while True:
     if rooms['Rocky Hill']['SOUTH'] == 'LOCKED':
@@ -702,14 +794,89 @@ def farm_speak(p1, rooms, typingActive):
 
 
 #define rooms/areas for game
+def witch_speak(p1, rooms, typingActive):
+  while True:
+    if rooms["Witch's Cabin"]['speach'] == 0:
+      print_slow(line2403,typingActive)
+      rooms["Witch's Cabin"]['speach'] = 1
+      rooms["Witch's Cabin"]['crafting'] = 'ACTIVE'
+      break
+    if rooms["Witch's Cabin"]['speach'] == 1:
+      print_slow(line2404,typingActive)
+      break
+def fairy_speak(p1, rooms, typingActive):
+  while True:
+    if rooms['Fairy Circle']['speach'] == 0:
+      print_slow('\nInvalid selection. Try again.', typingActive)
+      break
+    elif rooms['Fairy Circle']['speach'] == 1:
+      if p1.faeCount < rooms['Fairy Circle']['fairy_reward']:
+        print_slow(f""""Hello, thank you for returning. I appreciate all of your assistance. If you can return after defeating {fairy_reward - p1.faeCount} more Dark Fae I should regain enough strength to reward you."\n """,typingActive)
+        break
+      elif p1.faeCount >= rooms['Fairy Circle']['fairy_reward']:
+        if rooms['Fairy Circle']['fairy_reward'] == 5:      
+          print_slow(line2909,typingActive)
+          p1.GP += 100
+          print_slow(f'{p1.name} is given 100 GP! {p1.name} has {p1.GP} GP in their wallet.',typingActive)
+          rooms['Fairy Circle']['fairy_reward'] = 10
+          break
+        if rooms['Fairy Circle']['fairy_reward'] == 10:      
+          print_slow(line2910,typingActive)
+          p1.ETR = min(p1.ETR + 3, p1.MaxETR)
+          print_slow(f'{p1.name} is given 3 ETHERS! {p1.name} has {p1.ETR}/{p1.MaxETR} ETHERS in their bag.',typingActive)
+          rooms['Fairy Circle']['fairy_reward'] = 20
+          break
+        if rooms['Fairy Circle']['fairy_reward'] == 20:      
+          print_slow(line2911,typingActive)
+          foe = rooms['Fairy Circle']['foe'] 
+          standard_battle(p1, foe, typingActive)
+          print_slow(line2912,typingActive)
+          p1.inventory.append('CRYSTAL NECKLACE')
+          p1.MaxMP += 2
+          p1.MP = p1.MaxMP
+          print_slow(f"{p1.name} equips the CRYSTAL NECKLACE! {p1.name}'s max MP has increased.\n",typingActive)
+          p1.stat_check(typingActive)
+          rooms['Fairy Circle']['boss'].remove('Dark Fairy Prince') 
+          rooms['Fairy Circle']['speach'] = 2
+          rooms['Fairy Circle']['EXPLORE'] = line2904
+          break
+    elif rooms['Fairy Circle']['speach'] == 2:
+          print_slow('You try talking to the Dark Fairy Prince, but remember you killed him. Oh well. He was kind of a jerk.',typingActive)
+          break
+def marsh_speak(p1, rooms, typingActive):
+  while True:
+    if rooms["Frog Marsh"]['speach'] == 0:
+      print_slow(line2803,typingActive)
+      rooms["Frog Marsh"]['speach'] = 1
+      p1.inventory.append('BROKEN HORN')
+      if 'MOUTH-PIECE' in p1.inventory and 'BROKEN HORN' in p1.inventory:
+          p1.inventory.append('COMPLETE HORN')
+          p1.inventory.remove('MOUTH-PIECE')
+          p1.inventory.remove('BROKEN HORN')
+          rooms['Rotten Swamp 8']['EXPLORE'] = line2729
+          print_slow(line2716, typingActive)
+     
+      break
+    elif rooms["Frog Marsh"]['speach'] == 1:
+      print_slow(line2806,typingActive)
+      rooms["Frog Marsh"]['speach'] = 2
+      break
+    elif rooms["Frog Marsh"]['speach'] == 2:
+      print_slow(line2804,typingActive)
+      rooms["Frog Marsh"]['crafting'] = 'ACTIVE'
+      rooms["Frog Marsh"]['speach'] = 3
+      break
+    elif rooms["Frog Marsh"]['speach'] == 3:
+      print_slow(line2805,typingActive)
+      break
 def farm_crafting(p1, typingActive):
   while True:
-    print_slow("Would you like to craft a ANTIDOTE using 5 PLANT PARTS? YES or NO.\n", typingActive)
+    print_slow("Would you like to craft an ANTIDOTE using 5 PLANT PARTS? YES or NO.\n", typingActive)
     selc = (input().upper()).strip()
     if (selc == "YES" and p1.PlantP >= 5) and p1.ANT != p1.MaxANT:
       p1.PlantP -= 5
       p1.ANT = min(p1.ANT + 1, p1.MaxANT)
-      print_slow(""" "Here you go! One healing salve coming right up.\n" """, typingActive)
+      print_slow(""""Here you go! One healing salve coming right up.\n" """, typingActive)
       print_slow(f'{p1.name} now has {p1.ANT} ANTIDOTES\n', typingActive)
     elif selc == "YES" and p1.ANT == p1.MaxANT:
       print_slow(f"Unable to craft more ANTIDOTES; {p1.name}'s inventory is full.\n", typingActive)
@@ -719,9 +886,45 @@ def farm_crafting(p1, typingActive):
       break
     else:
       print_slow('\nInvalid selection. Try again. Please select YES or NO\n')
+      
+def witch_crafting(p1, typingActive):
+  while True:
+    print_slow("Would you like to craft an ETHER using 10 FAE DUST? YES or NO.\n", typingActive)
+    selc = (input().upper()).strip()
+    print_slow('\n', typingActive)
+    if (selc == "YES" and p1.FaeP >= 10) and p1.ETR != p1.MaxETR:
+      p1.FaeP -= 10
+      p1.ETR = min(p1.ETR + 1, p1.MaxETR)
+      print_slow(""""Hehehe! One freshly concocted ETHER for you.\n" """, typingActive)
+      print_slow(f'{p1.name} now has {p1.ETR} ETHER\n', typingActive)
+    elif selc == "YES" and p1.ETR == p1.MaxETR:
+      print_slow(f"Unable to craft more ETHERS; {p1.name}'s inventory is full.\n", typingActive)
+    elif selc == "YES" and p1.FaeP < 10:
+      print_slow(f'{p1.name} does not have enough FAE DUST. {p1.name} only has {p1.FaeP} FAE DUST\n', typingActive)
+    elif selc == "NO":
+      break
+    else:
+      print_slow('\nInvalid selection. Try again. Please select YES or NO\n')
+def marsh_crafting(p1, typingActive):
+  while True:
+    print_slow("Would you like to craft a SMOKE BOMB using 15 MONSTER PARTS? YES or NO.\n", typingActive)
+    selc = (input().upper()).strip()
+    print_slow('\n', typingActive)
+    if (selc == "YES" and p1.MonP >= 15) and p1.SMB != p1.MaxSMB:
+      p1.MonP -= 15
+      p1.SMB = min(p1.SMB + 1, p1.MaxSMB)
+      print_slow(""""Oh grandpappy would be proud of this one! Hope you get some good use out of this SMOKE BOMB.\n" """, typingActive)
+      print_slow(f'{p1.name} now has {p1.ETR} SMOKE BOMBS\n', typingActive)
+    elif selc == "YES" and p1.SMB == p1.MaxSMB:
+      print_slow(f"Unable to craft more SMOKE BOMBS; {p1.name}'s inventory is full.\n", typingActive)
+    elif selc == "YES" and p1.MonP < 15:
+      print_slow(f'{p1.name} does not have enough MONSTER PARTS. {p1.name} only has {p1.MonP} MONSTER PARTS\n', typingActive)
+    elif selc == "NO":
+      break
+    else:
+      print_slow('\nInvalid selection. Try again. Please select YES or NO\n')
 
-
-def cliff_special(p1, typingActive): 
+def cliff_special(p1, selc, typingActive): 
     print_slow(line610,typingActive)
     damage = 69
     p1.HP = min(max(p1.HP - damage, 0), p1.MaxHP)
@@ -731,104 +934,134 @@ def cliff_special(p1, typingActive):
       print_slow(line611,typingActive)
     return
 
-def cave4_special(p1, typingActive):
+def cave4_special(p1, selc, typingActive):
     print_slow(line946,typingActive)
     p1.HP = 0
     player_death(p1, typingActive)
     return
-def river_special(p1, typingActive):
+def berry_special(p1, selc, typingActive):
+    if rooms['Berry Patch']['chest'] == "OPEN":
+      if selc == 'WAIT':
+        print_slow(f"{p1.name} waits for the REZZBERRIES to regrow. In that year SMELDAR's forces have conquered the kingdom. What do you think was going to happen?",typingActive)
+        p1.HP = 0
+        player_death(p1, typingActive)
+      if selc == 'PICK':
+        print_slow(line1006, typingActive)
+        rooms['Berry Patch']['secret_path'] = 2 
+    else:
+      print_slow('\nInvalid selection. Try again.', typingActive)
+      rooms['Berry Patch']['secret_path'] = 2 
+    return
+def river_special(p1, selc, typingActive):
     print_slow(line1207,typingActive)
     p1.HP = 0
     player_death(p1, typingActive)
     return
-def lake_special(p1, typingActive):
+def lake_special(p1, selc, typingActive):
     print_slow(line1414,typingActive)
     p1.HP = 0
-    player_death(p1, typingActive)
+    player_death(p1, selc, typingActive)
     return
-
+def swamp_special(p1, selc, typingActive):
+    if selc == 'DRINK':
+      print_slow(line2721,typingActive)
+      p1.POISON += 3
+      p1.HP -= 5
+      if p1.HP <= 0:
+        player_death(p1, typingActive)
+      else:
+        print_slow(f'{p1.name} takes 5 damage. {p1.name} has {p1.HP}/{p1.MaxHP} HP.\n',typingActive)
+    elif selc == 'SWIM' or selc == 'DIVE':
+      print_slow(line2722,typingActive)
+      p1.HP = 0
+      player_death(p1, typingActive)
+    return
+def swamp6_special(p1, selc, typingActive):
+    swamp_special(p1, selc, typingActive)
+    rooms['Rotten Swamp 6']['secret_path'] = 2   
+    return
+def swamp7_special(p1, selc, typingActive):
+    if selc in song_term and rooms['Rotten Swamp 7']['event'] == 1:
+      print_slow(line2726,typingActive)
+    elif selc in song_term and rooms['Rotten Swamp 7']['event'] == 0:
+      print_slow(line2725,typingActive)
+      p1.GR += 1.5
+      p1.inventory.append('GOLD RING')
+      print_slow(f'{p1.name} recieved a GOLD RING! {p1.name} feels their fortune improving with the ring in hand.\n',typingActive)
+      rooms['Rotten Swamp 7']['event'] = 1
+    else:
+      swamp_special(p1, selc, typingActive)
+    rooms['Rotten Swamp 7']['secret_path'] = 2
+    return
+def swamp8_special(p1, selc, typingActive):
+    if selc == 'PLAY' and rooms['Rotten Swamp 8']['event'] == 1:
+      print_slow(line2737, typingActive)
+    elif selc == 'PLAY' and rooms['Rotten Swamp 8']['event'] == 0:
+      print_slow(line2731, typingActive)
+      if 'WAFFLE' in p1.inventory:
+        print_slow(line2733, typingActive)
+        selc = (input().upper()).strip()
+        print_slow('\n', typingActive)
+        if selc == 'GIVE':
+          print_slow(line2735, typingActive)
+          p1.inventory.remove('WAFFLE')
+          p1.inventory.append('GILDED DRAGON BONE KEY')
+          rooms['Rotten Swamp 8']['event'] = 1
+        if selc == 'KEEP':
+          print_slow(line2736, typingActive)
+          foe = rooms['Rotten Swamp 8']['foe']
+          standard_battle(p1, foe, typingActive)
+          p1.inventory.append('GILDED DRAGON BONE KEY')
+          rooms['Rotten Swamp 8']['event'] = 1
+          print_slow(line2738, typingActive)
+        else: 
+          print_slow('\nInvalid selection. Try again.', typingActive)
+      elif 'WAFFLE' not in p1.inventory:
+          print_slow(line2732, typingActive)
+          foe = rooms['Rotten Swamp 8']['foe']
+          standard_battle(p1, foe, typingActive)
+          p1.inventory.append('GILDED DRAGON BONE KEY')
+          rooms['Rotten Swamp 8']['event'] = 1
+          print_slow(line2738, typingActive)
+    else:
+          swamp_special(p1, selc, typingActive)
+          rooms['Rotten Swamp 8']['secret_path'] = 2
+          return
+  
 def traveling_merchant(p1, foe, typingActive):
-  potion_price = 30
-  smoke_bomb_price = 25
-  antd_price = 20
-  ether_price = 35
-  map_price = 50
+  global shop_open
+  shop_open = 1
+  
   print_slow(line305, typingActive)
-  while True:
+  while shop_open == 1:
     print_slow(""""Take a look!"\n """, typingActive)
-    print_slow(f"POTION:[{potion_price}GP]\n", typingActive)
-    print_slow(f"SMOKE BOMB:[{smoke_bomb_price}GP]\n", typingActive)
-    print_slow(f"ANTIDOTE:[{antd_price}GP]\n", typingActive)
-    print_slow(f"ETHER:[{ether_price}GP]\n", typingActive)
+    print_slow(f"POTION:[{key_items['POTION']['price']} GP]\n", typingActive)
+    print_slow(f"SMOKE BOMB:[{key_items['SMOKE BOMB']['price']} GP]\n", typingActive)
+    print_slow(f"ANTIDOTE:[{key_items['ANTIDOTE']['price']} GP]\n", typingActive)
+    print_slow(f"ETHER:[{key_items['ETHER']['price']} GP]\n", typingActive)
     if 'MAP' in rooms['Shop']['items']:
-      print_slow(f"MAP:[{map_price}GP]\n", typingActive)
-    print_slow('\nEnter command or type EXIT to leave the Traveling Merchant:\n', typingActive)
-    selc = (input().upper()).strip()
-    print_slow("\n", typingActive)
-  
-    if (selc == 'POTION' and p1.GP >= potion_price) and p1.POTS < p1.MaxPOTS:
-              p1.GP -= potion_price
-              p1.POTS = min(p1.POTS + 1, p1.MaxPOTS)
-              print_slow(
-                  f'{p1.name} purchases a POTION and puts it in their bag. {p1.name} now has {p1.POTS} POTIONS and {p1.GP}GP.\n', typingActive
-              )          
-  
-    elif (selc == 'SMOKE BOMB'
-          and p1.GP >= smoke_bomb_price) and p1.SMB < p1.MaxSMB:
-        p1.GP -= smoke_bomb_price
-        p1.SMB = min(p1.SMB + 1, p1.MaxSMB)
-        print_slow(
-            f'{p1.name} purchases a SMOKE BOMB and puts it in their bag. {p1.name} now has {p1.SMB} SMOKE BOMBS and {p1.GP}GP.\n', typingActive
-        )
-  
-    elif (selc == 'ANTIDOTE' and p1.GP >= antd_price) and p1.ANT < p1.MaxANT:
-        p1.GP -= antd_price
-        p1.ANT = min(p1.ANT + 1, p1.MaxANT)
-        print_slow(
-            f'{p1.name} purchases an ANTIDOTE and puts it in their bag. {p1.name} now has {p1.ANT} ANTIDOTES and {p1.GP}GP.\n', typingActive
-        )
-  
-    elif (selc == 'ETHER' and p1.GP >= ether_price) and p1.ETR < p1.MaxETR:
-        p1.GP -= ether_price
-        p1.ETR = min(p1.ETR + 1, p1.MaxETR)
-        print_slow(
-            f'{p1.name} purchases an ETHER and puts it in their bag. {p1.name} now has {p1.ETR} ETHERS and {p1.GP}GP.\n', typingActive
-        )
-  
-    elif (selc == 'MAP'
-                and 'MAP' in rooms['Shop']['items']) and p1.GP >= map_price:
-              p1.GP -= map_price
-              p1.inventory.append('MAP')
-              rooms['Shop']['items'].remove('MAP')
-              print_slow(
-                  f"{p1.name} purchases a MAP! Now {p1.name} can stop getting lost all the time! {p1.GP}GP remaining.\n", typingActive
-              )
-    elif (selc == 'POTION' and p1.GP < potion_price) or (selc == 'SMOKE BOMB' and p1.GP < smoke_bomb_price) or (selc == 'ANTIDOTE' and p1.GP < antd_price) or (selc == 'ETHER' and p1.GP < ether_price) or ((selc == 'MAP' and 'MAP' in rooms['Shop']['items']) and p1.GP < map_price):
-              print_slow(
-                  f'{p1.name} does not have enough GP to purchase this item.\n', typingActive)
-    
-    elif (selc == "POTION" and p1.POTS == p1.MaxPOTS) or (selc == "SMOKE BOMB" and p1.SMB == p1.MaxSMB) or (selc == "ANTIDOTE" and p1.ANT == p1.MaxANT) or (selc == "ETHER" and p1.ETR == p1.MaxETR) or (selc == 'MAP' and 'MAP' in p1.inventory):
-              print_slow(
-                  f'\n"Hey, looks like your inventory is full."\n\n{p1.name} is unable to purchase more of this item.\n', typingActive
-              )
+      print_slow(f"MAP:[{key_items['MAP']['price']} GP]\n", typingActive)
+    print_slow(f"\n{p1.name}'s Wallet:[{p1.GP} GP]\n", typingActive)
+    print_slow('\nType your selection or BACK to leave merchant.\n', typingActive) 
+    sales_mechanic(p1, rooms, typingActive)
       
-    elif selc == "EXIT" or selc == "BACK":
+    if shop_open == 0:
       print_slow('You bid farewell to the merchant and continue on your way.\n',typingActive)
       break
-    else:
-       print_slow('\nInvalid selection. Try again.\n', typingActive)
-  
+
+
+
 rooms = {
     '' : {
         'name' : '',
-        'intro' : '',
+        'intro' : None,
         'map' : None,
         'discovered' : [],
         'NORTH' : None,
         'EAST' : None,
         'SOUTH' : None,
         'WEST' : None,
-        'EXPLORE': '',
+        'EXPLORE': None,
         'EXAMINE' : None,
         'SPEAK' : None,
         'REST' : 'rest',
@@ -837,6 +1070,8 @@ rooms = {
         'CRAFT' : 'craft',
         'speach' : None,
         'crafting' : None,
+        'secrets' : [],
+        'secret_path' : 0,
         'spawn_rate' : 0,
         'enemy_spawn_set' : None,
         'boss' : [],
@@ -1128,6 +1363,9 @@ rooms = {
         'EAST' : 'Flower Meadow',
         'EXPLORE': line1002,
         'EXAMINE' : berry_examine,
+        'secrets' : ['WAIT', 'PICK'],
+        'special' : berry_special,
+        'secret_path' : 0,
         'spawn_rate' : 2,
         'enemy_spawn_set' : enemy_spawn3,
         'foe' : p15b,
@@ -1139,7 +1377,7 @@ rooms = {
         'intro' : line1701,
         'map' : meadow_map1,
         'discovered' : [],
-        #'NORTH' : "Witch's Cabin",
+        'NORTH' : "Witch's Cabin",
         'EAST' : 'Great Oak',
         'SOUTH' : 'Quiet Village',
         'WEST' : 'Berry Patch',
@@ -1157,14 +1395,13 @@ rooms = {
         'discovered' : [],
         'SOUTH' : 'Flower Meadow',
         'EXPLORE': line2402,
-        'EXAMINE' : None,
-        'SPEAK' : None,
-        'speach' : None,
-        'spawn_rate' : 0,
-        'enemy_spawn_set' : None,
-        'chest' : None,
-        'event' : None,
+        'SPEAK' : witch_speak,
+        'CRAFT' : witch_crafting,
+        'speach' : 0,
+        'crafting' : 'INACTIVE',
+        'spawn_rate' : 0, 
     },
+  
 #Quite Village start
   'Quiet Village' : {
         'name' : 'Quiet Village',
@@ -1217,8 +1454,8 @@ rooms = {
         'speach' : 0,
         'spawn_rate' : 0,
     },
-
 #Quite Village end
+  
   'Great Oak' : {
         'name' : 'Great Oak',
         'intro' : line2001,
@@ -1255,7 +1492,7 @@ rooms = {
         'map' : mushroom_map1,
         'discovered' : [],
         'NORTH' : 'Rotting Woods',
-        #'SOUTH' : 'Fairy',
+        'SOUTH' : 'Fairy Circle',
         'WEST' : 'Lake Beach',
         'EXPLORE': line1602,
         'EXAMINE' : mushroom_examine,
@@ -1266,20 +1503,165 @@ rooms = {
         #'event' : None,
     },'secrets' : ['JUMP', 'FLY', 'DIVE'],
 
+  'Fairy Circle' : {
+        'name' : 'Fairy Circle',
+        'intro' : line2901,
+        'map' : fairy_map1,
+        'discovered' : [],
+        'NORTH' : 'Mushroom Grove',
+        'EXPLORE': line2902,
+        'EXAMINE' : fairy_examine,
+        'SPEAK' : fairy_speak,
+        'speach' : 0,
+        'spawn_rate' : 0,
+        'boss': ["Dark Fairy Prince"],
+        'foe' : p40,
+        'fairy_reward' : 5,
+        
+    },
+  
   'Rotting Woods' : {
         'name' : 'Rotting Woods',
         'intro' : line2601,
         'map' : rot_map1,
         'discovered' : [],
-        #'NORTH' : 'Marsh',
+        'NORTH' : 'Frog Marsh',
         'SOUTH' : 'Mushroom Grove',
-        #'WEST' : 'Swamp',
+        'WEST' : 'Rotten Swamp 1',
         'EXPLORE': line2602,
         'spawn_rate' : 2,
         'enemy_spawn_set' : enemy_spawn11,
     },
+
+  #Ogre Dungeon start
+  'Rotten Swamp 1' : {
+        'name' : 'Rotten Swamp 1',
+        'intro' : line2701,
+        'map' : swamp1_map1,
+        'discovered' : [],
+        'EAST' : 'Rotting Woods',
+        'WEST' : 'Rotten Swamp 2',
+        'EXPLORE': line2702,
+        'spawn_rate' : 3,
+        'enemy_spawn_set' : enemy_spawn12,
+    },
+  'Rotten Swamp 2' : {
+        'name' : 'Rotten Swamp 2',
+        'intro' : line2703,
+        'map' : swamp2_map1,
+        'discovered' : [],
+        'EAST' : 'Rotten Swamp 1',
+        'SOUTH' : 'Rotten Swamp 6',
+        'WEST' : 'Rotten Swamp 3',
+        'EXPLORE': line2704,
+        'spawn_rate' : 4,
+        'enemy_spawn_set' : enemy_spawn13,
+    },
+  'Rotten Swamp 3' : {
+        'name' : 'Rotten Swamp 3',
+        'intro' : line2705,
+        'map' : swamp3_map1,
+        'discovered' : [],
+        'NORTH' : 'Rotten Swamp 4',
+        'EAST' : 'Rotten Swamp 2',
+        'SOUTH' : 'Rotten Swamp 5',
+        'EXPLORE': line2706,
+        'spawn_rate' : 4,
+        'enemy_spawn_set' : enemy_spawn13,
+    },
+  'Rotten Swamp 4' : {
+        'name' : 'Rotten Swamp 4',
+        'intro' : line2707,
+        'map' : swamp4_map1,
+        'discovered' : [],
+        'SOUTH' : 'Rotten Swamp 3',
+        'EXPLORE': line2708,
+        'EXAMINE' : swamp4_examine,
+        'event' : 0,
+        'spawn_rate' : 4,
+        'enemy_spawn_set' : enemy_spawn12,
+        'foe' : p29b,
+    },
+  'Rotten Swamp 5' : {
+        'name' : 'Rotten Swamp 5',
+        'intro' : line2717,
+        'map' : swamp5_map1,
+        'discovered' : [],
+        'NORTH' : 'Rotten Swamp 3',
+        'EAST' : 'Rotten Swamp 6',
+        'SOUTH' : 'Rotten Swamp 8',
+        'WEST' : 'Rotten Swamp 7',
+        'EXPLORE': line2718,
+        'spawn_rate' : 4,
+        'enemy_spawn_set' : enemy_spawn13,
+    },
+  'Rotten Swamp 6' : {
+        'name' : 'Rotten Swamp 6',
+        'intro' : line2719,
+        'map' : swamp6_map1,
+        'discovered' : [],
+        'NORTH' : 'Rotten Swamp 2',
+        'WEST' : 'Rotten Swamp 5',
+        'EXPLORE': line2720,
+        'special' : swamp6_special,
+        'secrets' : ['DRINK', 'SWIM', 'DIVE'],
+        'secret_path' : 0,
+        'spawn_rate' : 4,
+        'enemy_spawn_set' : enemy_spawn14,
+    },
+  'Rotten Swamp 7' : {
+        'name' : 'Rotten Swamp 7',
+        'intro' : line2723,
+        'map' : swamp7_map1,
+        'discovered' : [],
+        'EAST' : 'Rotten Swamp 5',
+        'EXPLORE': line2724,
+        'special' : swamp7_special,
+        'secrets' : ['DRINK', 'SWIM', 'DIVE', 'RIBBIT', 'RIBBITING', 'CROAK','CROAKING', 'KERO', 'KEROKERO'],
+        'secret_path' : 0,
+        'spawn_rate' : 4,
+        'enemy_spawn_set' : enemy_spawn12,
+        'event' : 0,
+     },
+  'Rotten Swamp 8' : {
+        'name' : 'Rotten Swamp 8',
+        'intro' : line2727,
+        'map' : swamp8_map1,
+        'discovered' : [],
+        'NORTH' : 'Rotten Swamp 5',
+        'EXPLORE': line2728,
+        'special' : swamp8_special,
+        'secrets' : ['PLAY', 'DRINK', 'SWIM', 'DIVE'],
+        'secret_path' : 0,
+        'spawn_rate' : 4,
+        'enemy_spawn_set' : enemy_spawn13,
+        'foe': p35,
+        'event' : 0,
+     },
+  #Ogre Dungeon End
+
+  'Frog Marsh' : {
+        'name' : 'Frog Marsh',
+        'intro' : line2801,
+        'map' : marsh_map1,
+        'discovered' : [],
+        #'EAST' : None,
+        'SOUTH' : 'Rotting Woods',
+        'EXPLORE': line2802,
+        'SPEAK' : marsh_speak,
+        'CRAFT' : marsh_crafting,
+        'speach' : 0,
+        'crafting' : 'INACTIVE',
+        #'secrets' : [],
+        #'secret_path' : 0,
+        'spawn_rate' : 0,
+        'chest' : None,
+        'event' : None,
+    },
+  
 }
 
+song_term = ['RIBBIT', 'RIBBITING', 'CROAK','CROAKING', 'KERO', 'KEROKERO']
 #define player key items
 
 
@@ -1288,17 +1670,43 @@ key_items = {
         'name': '',
         'description': '',
     },
+
+  'POTION': {
+        'name': 'POTION',
+        'description': None,
+        'price' : 35,
+    },
+  'ANTIDOTE': {
+        'name': 'ANTIDOTE',
+        'description': None,
+        'price' : 25,
+    },
+  'ETHER': {
+        'name': 'ETHER',
+        'description': None,
+        'price' : 40,
+    },
+  'SMOKE BOMB': {
+        'name': 'SMOKE BOMB',
+        'description': None,
+        'price' : 30,
+    },
+
+  
     'MAP': {
         'name': 'MAP',
-        'description': 'A map coated in magical ink. The ink reacts to your surroundings and changes depending on your location.',
+        'description': 'A map coated in magical ink. The ink reacts to your surroundings and changes depending on your location. (Type MAP or LOCATION to view current area)',
+        'price' : 50,
     },
     'CRAFTING POUCH': {
         'name': 'CRAFTING POUCH',
         'description': "A special pouch in your pack for storing crafting materials. You're not sure how it can hold so much, but you're not about to question it either.",
+        'price' : 300,
     },
     'LANTERN': {
         'name': 'LANTERN',
-        'description': 'A lantern that attaches to a belt for hands free use. Allows travel through dark areas.',   
+        'description': 'A lantern that attaches to a belt for hands free use. Allows travel through dark areas.',  
+        'price' : 200,
     },
     'AXE': {
         'name': 'AXE',
@@ -1333,6 +1741,10 @@ key_items = {
         'name': 'DRAGON BONE KEY',
         'description': 'A key made of Dragon bone. Dragon Bone Keys are said to be used to secure magical seals.',
     },
+    'GILDED DRAGON BONE KEY': {
+        'name': 'GILDED DRAGON BONE KEY',
+        'description': 'A key made of Dragon bone. Dragon Bone Keys are said to be used to secure magical seals. This one has been covered in a layer of thin gold.',
+    },
     'ROYAL JELLY': {
         'name': 'ROYAL JELLY',
         'description':'A jar of Giant Bee Royal Jelly. This substance is capable of enhancing the healing properties of potions. Just a tiny bit mixed in will greatly increase the potancy.',
@@ -1340,9 +1752,37 @@ key_items = {
     'SPECIAL FEED': {
         'name': 'SPECIAL FEED',
         'description': 'A medicated feed for pigs. Quite pricey; the Farmer better have the GP to cover the costs...',
+        'price' : 500,
+    },
+    'MOUTH-PIECE': {
+        'name': 'MOUTH-PIECE',
+        'description': 'A mouth piece belonging to a musical horn. Not much use on its own, but it could be attached to the right instrument...',
+    },
+    'BROKEN HORN': {
+        'name': 'BROKEN HORN',
+        'description': 'A musical horn that is missing its mouth piece. The Frog-Man claims you will need this to seek an audience with the Ogre Chief. but it cant be played without the missing part.',
+    },
+    'COMPLETE HORN': {
+        'name': 'COMPLETE HORN',
+        'description': 'A complete musical horn. Made by combining the BROKEN HORN and the MOUTH PIECE. Can be played in the deepest part of the swamp to seak an audience with the Ogre Chief.',
+    },
+  'WAFFLE': {
+        'name': 'WAFFLE',
+        'description': 'A large, perfectly made breakfast waffle dropped by a donkey in the swamp. Probably not safe to eat, but maybe you will find some use for it?..',
+    },
+  'GOLD RING': {
+        'name': 'GOLD RING',
+        'description': 'A perfectly polished gold ring. Given to you by one of the Frog-Sirens of the swamp. You feel luckier holding this, like your wealth is about to grow.',
+    },
+  'CRYSTAL NECKLACE': {
+        'name': 'CRYSTAL NECKLACE',
+        'description': 'A necklace made from an unusual crystal. A faint warmth can be felt emanating from it. Wearing it fills you with magical energy.',
     },
 }
 
+
+shop_items = ['POTION', 'ANTIDOTE', 'ETHER', 'SMOKE BOMB', 'MAP', 'LANTERN', 'CRAFTING POUCH', 'SPECIAL FEED']
+shop_keyItems = ['MAP', 'LANTERN', 'CRAFTING POUCH', 'SPECIAL FEED']
 
 crafting_items = {
       '': {

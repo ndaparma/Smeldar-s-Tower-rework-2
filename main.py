@@ -44,20 +44,25 @@ def setup():
             if player_job == "WARRIOR":
                 p1 = player(player_name, player_job, ['HARDEN',], [],
                             [], 1, 100, 0, 70, 70, 3, 3, 11, 7, 10, 100, 10, 4,
-                            5, 1, 5, 0, 5, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0,
+                            5, 1, 5, 0, 5, 1, 0, 0, 1, 0, 0, 0, 0, 0, 0, 0, 0,
                             'alive')
                 gameSetup = 3
-            elif player_job == "WIZARD":
+            elif player_job == "WIZARD" or player_job == "WITCH":
                 p1 = player(player_name, player_job, ['FOCUS',], [], [],
                             1, 100, 0, 40, 40, 8, 8, 18, 9, 10, 100, 10, 3, 5,
-                            1, 5, 1, 5, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 'alive')
+                            1, 5, 1, 5, 1, 0, 0, 1, 0, 0, 0, 0, 0, 0, 0, 0, 'alive')
                 gameSetup = 3
             elif player_job == "THIEF":
                 p1 = player(player_name, player_job, ['STEAL',], [],
                             [], 1, 100, 0, 55, 55, 5, 5, 13, 8, 10, 100, 10, 3,
-                            5, 2, 5, 1, 5, 3, 0, 0, 0, 0, 0, 0, 0, 0, 0,
+                            5, 2, 5, 1, 5, 3, 0, 0, 1, 0, 0, 0, 0, 0, 0, 0, 0,
                             'alive')
                 gameSetup = 3
+            #elif player_job == "SUMMONER":
+             #   p1 = player(player_name, player_job, ['FOCUS',], [], [],
+              #              1, 100, 0, 40, 40, 8, 8, 18, 9, 10, 100, 10, 3, 5,
+               #             1, 5, 1, 5, 1, 0, 0, 1, 0, 0, 0, 0, 0, 0, 0, 'alive')
+                #gameSetup = 3
             elif player_job == "GOD":
                 p1 = player(
                     player_name, player_job,
@@ -66,7 +71,7 @@ def setup():
                         'MAP',
                         'AXE',
                     ], [], 1, 999999, 0, 999, 999, 99, 99, 99, 3, 10, 5000, 10,
-                    10, 5, 5, 5, 5, 5, 5, 0, 0, 0, 0, 10, 10, 10, 10, 10,
+                    10, 5, 5, 5, 5, 5, 5, 0, 0, 1, 0, 0, 20, 10, 10, 10, 10, 10,
                     'alive')
                 gameSetup = 3
             elif player_job == "INFO":
@@ -113,6 +118,9 @@ def move_rooms():
   
     while True:
         if 'secret_path' in rooms[current_room]:
+          if rooms[current_room]['secret_path'] == 2:
+            rooms[current_room]['secret_path'] = 0
+            break
           if rooms[current_room]['secret_path'] == 1:
             current_room = rooms[current_room]['SECRET_ROUTE']
             rooms[previous_room]['secret_path']  = 0
@@ -150,7 +158,7 @@ def special_actions():
     global current_room
     while True:
       if selc in rooms[current_room]['secrets']:
-        rooms[current_room]['special'](p1, typingActive)
+        rooms[current_room]['special'](p1, selc, typingActive)
         move_rooms()
       break
         
@@ -316,6 +324,9 @@ def encounter_initiaiton(current_room, typingActive):
         foe = random.choice(rooms[current_room]['enemy_spawn_set'])
         if foe == p28:
           traveling_merchant(p1, foe, typingActive)
+        elif foe == p34:
+          standard_battle(p1, foe, typingActive)
+          enemy_spawn14.remove(p34)
         else:
           standard_battle(p1, foe, typingActive)
 
@@ -402,7 +413,7 @@ actions = [
     "CRAFT"
 ]
 
-special_list = ['JUMP', 'FLY', 'SWIM', 'DIVE']
+special_list = ['JUMP', 'FLY', 'SWIM', 'DIVE', 'DRINK', 'RIBBIT', 'RIBBITING', 'CROAK','CROAKING', 'KERO', 'KEROKERO', 'PLAY', 'WAIT', 'PICK']
 
 helper = [
     'HELP', 'STATS', 'ITEMS', 'LOCATION', 'MAP', 'TYPE', 'SAVE', 'LOAD',

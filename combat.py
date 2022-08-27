@@ -3,6 +3,7 @@ import os
 import sys
 from slowprint import *
 goblin_mobs = ["Goblin", "Hobgoblin", "Goblin Gang", "Goblin Queen", "Zomblin", "Moldy Zomblin"]
+fae_mobs = ['Gnome', 'Traveling Merchant', 'Imp', 'Pixie', 'Fairy', 'Nymph', 'Dark Fairy Prince' ]
 
 rounds = 0
 player_special = None
@@ -39,6 +40,9 @@ def standard_battle(p1, foe, typingActive):
         if focus_turns > 0:
           focus_turns -= 1
           print_slow(f'{p1.name} is powered up for {focus_turns} more turns.\n',typingActive)
+        if focus_turns < 0:
+          focus_turns += 1
+          print_slow(f'{p1.name} is weakend for {focus_turns} more turns.\n',typingActive)
         if focus_turns == 0:
           focus = 1
         player_turn = 1
@@ -70,7 +74,8 @@ def standard_battle(p1, foe, typingActive):
     
             #DEF Command
             elif command == "DEF":
-                p1.TDEF = max(min(p1.DEF * 1.2, 8.5), 5)
+                block = max(min(p1.DEF * 1.2, 8.5), 5)
+                p1.TDEF -= 10 - block 
                 print_slow(f'{p1.name} is defending!\n', typingActive)
                 turn_update(p1, foe, typingActive)
                 break
@@ -174,7 +179,6 @@ def standard_battle(p1, foe, typingActive):
             #SKILL
             elif command2 == 6 and foe.MP > 0:  
                 enemy_skills(p1, foe, typingActive)
-                p1.TDEF = 10
                 enemy_turn = 0
                 break
             else:
@@ -247,11 +251,13 @@ def enemy_death(p1, foe, command, damage, typingActive):
   if foe.HP <= 0:
       enemy_turn = 0
       player_turn = 0
-      GPE = random.randrange(foe.MinGP, foe.MaxGP)
+      GPE = round(random.randrange(foe.MinGP, foe.MaxGP) * p1.GR)
       p1.GP = p1.GP + GPE
       p1.xp = p1.xp + foe.exp
       if foe.name in goblin_mobs:
           p1.gobCount += 1
+      if foe.name in fae_mobs:
+          p1.faeCount += 1
       if command == "BOLT":
           print_slow(f'{p1.name} vaporized the enemy!\n', typingActive)
       elif damage >= foe.MaxHP // 2:
@@ -320,6 +326,13 @@ def item_drop(p1, foe, mug, typingActive):
           if p1.SMB < p1.MaxSMB:
             p1.SMB = min(p1.SMB + 1, p1.MaxSMB)
             inv = "OPEN"
+          else:
+            inv = "FULL"
+        if foe.item == 10:
+          spoils = "WAFFLE"
+          if mug == 1 and 'WAFFLE' not in p1.inventory:
+            inv = "OPEN"
+            p1.inventory.append('WAFFLE')
           else:
             inv = "FULL"
         
@@ -444,7 +457,7 @@ def wizard_spell(p1, foe, typingActive):
 def wizard_focus(p1, foe, typingActive):
     global focus
     global focus_turns
-    focus = 1.6
+    focus = 1.5
     focus_turns = random.randrange(2, 6)
     p1.MP -= 1
     print_slow(f'{p1.name} focuses their power. {p1.name} is powered up for {focus_turns - 1} turns!\n', typingActive)
@@ -484,7 +497,7 @@ def wizard_blast(p1, foe, typingActive):
 def thief_steal(p1, foe, typingActive):
     mug = random.randrange(0, 5)
     if mug >= 2:
-        GPE = random.randrange(foe.MinGP, round(foe.MaxGP * 0.8))
+        GPE = round(random.randrange(foe.MinGP, round(foe.MaxGP * 0.8)) * p1.GR)
         p1.GP = p1.GP + GPE
         p1.MP -= 1
         print_slow(
@@ -552,14 +565,17 @@ def thief_haste(p1, foe, typingActive):
   else:
     print_slow('Unable to use skill twice in a row.', typingActive)
     print_slow(f'{p1.name} has {haste} more action(s) this turn.\n',typingActive)
-  
+
+
+#def summoner_
 def enemy_skills(p1, foe, typingActive):
     global battle
     global foe_special
     global foe_wait
+    global focus
+    global focus_turns
   
     if foe.skill == 1:  #FLee
-        foe.MP -= 1
         escape = random.randrange(0, 4)
         if escape >= 2:
             battle = 'INACTIVE'
@@ -568,43 +584,51 @@ def enemy_skills(p1, foe, typingActive):
             )
             print_slow("**********Enemy Escape!**********\n", typingActive)
             foe.HP = foe.MaxHP
+            foe.MP = foe.MaxMP
             foe.POTS = foe.MaxPOTS
+            foe.POISON = 0
+            p1.POISON = 0
         else:
             print_slow(
                 f'Enemy {foe.name} attempted to escape but stumbled and failed!\n', typingActive
             )
+        p1.TDEF = 10
+        foe.MP -= 1
 
     elif foe.skill == 2:  #Cleave
         dam = random.randrange(round(foe.ATK // 1.5), foe.ATK)
         damage = max(round(dam * (p1.DEF * 0.1 * p1.TDEF * 0.1)), 0)
         p1.HP = min(max(p1.HP - damage, 0), p1.MaxHP)
-        foe.MP -= 1
         print_slow(f'The enemy {foe.name} strikes with a cleaving blow!\n', typingActive)
         print_slow(
             f'{p1.name} has taken {damage} damage. {p1.name} has {p1.HP}/{p1.MaxHP} HP. \n', typingActive
         )
+        p1.TDEF = 10
+        foe.MP -= 1
 
     elif foe.skill == 3:  #Maul
         dam = random.randrange(foe.ATK // 2, foe.ATK)
         damage = damage = max(round(dam + 3 * (p1.DEF * 0.1 * p1.TDEF * 0.1)), 0)
         p1.HP = min(max(p1.HP - damage, 0), p1.MaxHP)
-        foe.MP -= 1
         print_slow(f'The enemy {foe.name} charges wildly and mauls {p1.name}!\n', typingActive)
         print_slow(
             f'{p1.name} has taken {damage} damage. {p1.name} has {p1.HP}/{p1.MaxHP} HP. \n', typingActive
         )
+        p1.TDEF = 10
+        foe.MP -= 1
 
     elif foe.skill == 4:  #Magic Bolt
         dam = random.randrange(foe.ATK, round(foe.ATK * 1.3))
         damage = max(round(dam * (p1.DEF * 0.1 * p1.TDEF * 0.1)), 0)
         p1.HP = min(max(p1.HP - damage, 0), p1.MaxHP)
-        foe.MP -= 1
         print_slow(
             f'The enemy {foe.name} concentrates their power into a magic bolt and hurls it at {p1.name}!\n', typingActive
         )
         print_slow(
             f'{p1.name} has taken {damage} damage. {p1.name} has {p1.HP}/{p1.MaxHP} HP. \n', typingActive
         )
+        p1.TDEF = 10
+        foe.MP -= 1
 
     elif foe.skill == 5:  #Steal
         pilfer = random.randrange(0, 3)
@@ -618,6 +642,7 @@ def enemy_skills(p1, foe, typingActive):
             print_slow(
                 f'{foe.name} attempted to steal but failed to grab anything!\n', typingActive
             )
+        p1.TDEF = 10
         foe.MP -= 1
 
     elif foe.skill == 6:  #Fire Breath
@@ -634,13 +659,15 @@ def enemy_skills(p1, foe, typingActive):
               f'{p1.name} has taken {damage} damage. {p1.name} has {p1.HP}/{p1.MaxHP} HP remaining. \n', typingActive
           )
           foe_wait = 0
+          p1.TDEF = 10
           break
         if foe_wait == 0:
           
           foe_special = enemy_skills
-          foe.MP -= 1
           print_slow(f'Smoke begins raising from {foe.name} mouth...\n', typingActive)
           foe_wait = 1
+          p1.TDEF = 10
+          foe.MP -= 1
           break
 
     elif foe.skill == 7:  #Sting
@@ -649,7 +676,6 @@ def enemy_skills(p1, foe, typingActive):
         pdamage = random.randrange(1, 3)
         p1.POISON += pdamage
         p1.HP = min(max(p1.HP - damage, 0), p1.MaxHP)
-        foe.MP -= 1
         damage2 = 5
         foe.HP = min(max(foe.HP - damage2, 0), foe.MaxHP)
 
@@ -660,6 +686,8 @@ def enemy_skills(p1, foe, typingActive):
         print_slow(
             f'{foe.name} has taken {damage2} damage. {foe.name} has {foe.HP}/{foe.MaxHP} HP. \n', typingActive
         )
+        p1.TDEF = 10
+        foe.MP -= 1
         if foe.HP <= 0:
             print_slow(f'{foe.name} killed themself.\n', typingActive)
             command = None
@@ -671,18 +699,21 @@ def enemy_skills(p1, foe, typingActive):
         print_slow(
             f'{foe.name} spews a poison mist at {p1.name}! {p1.name} is poisoned for {pdamage} turns.\n', typingActive
         )
+        p1.TDEF = 10
+        foe.MP -= 1
 
     elif foe.skill == 9:  #Quake
         damage = max(
             random.randrange(round(foe.ATK // 2), round(foe.ATK * 0.8)), 0)
         p1.HP = min(max(p1.HP - damage, 0), p1.MaxHP)
-        foe.MP -= 1
         print_slow(
             f'The enemy {foe.name} strikes with the ground causing a mighty quake!\n', typingActive
         )
         print_slow(
             f'{p1.name} has taken {damage} damage. {p1.name} has {p1.HP}/{p1.MaxHP} HP. \n', typingActive
         )
+        p1.TDEF = 10
+        foe.MP -= 1
 
     elif foe.skill == 10:  #Summon Swarm
         print_slow(
@@ -701,12 +732,69 @@ def enemy_skills(p1, foe, typingActive):
               print_slow(f'{p1.name} is stung for {damage} damage and is poisoned!\n', typingActive)
           else:
               print_slow(f'{p1.name} swats a BEE away!\n', typingActive)
-        p1.HP = min(max(p1.HP - tl_damage, 0), p1.MaxHP)
-        foe.MP -= 1
+        p1.HP = min(max(p1.HP - tl_damage, 0), p1.MaxHP)    
         print_slow(
             f'{p1.name} has taken {tl_damage} total damage. {p1.name} has {p1.HP}/{p1.MaxHP} HP.\n{p1.name} is poisoned for the next {p1.POISON} turns.', typingActive
         )
+        p1.TDEF = 10
+        foe.MP -= 1
 
+    elif foe.skill == 11:  #Roar
+        print_slow(
+            f"{foe.name} lets out a ferocious roar reducing {p1.name}'s defenses temporarily!\n", typingActive
+        )
+        p1.TDEF = 15
+        foe.MP -= 1
+
+    elif foe.skill == 12:  #Kancho
+        print_slow(
+            f"{foe.name} grabs {p1.name} from behind!\n", typingActive
+        )
+        hit = random.randrange(0, 4)
+        if hit >= 2:
+            dam = random.randrange(foe.ATK // 3, foe.ATK // 1.5)
+            damage = max(round(dam * (p1.DEF * 0.1 * p1.TDEF * 0.1)), 0)
+            p1.HP = min(max(p1.HP - damage, 0), p1.MaxHP)
+            foe.HP = min(max(foe.HP + damage // 2, 0), foe.MaxHP)
+            print_slow(f'{p1.name} has their life force ripped from their body and takes {damage} damage! {p1.name} has {p1.HP}/{p1.MaxHP} HP.\n{foe.name} consumes the life force and gains {damage//2} HP! {foe.name} has {foe.HP}/{foe.MaxHP}.\n', typingActive)
+        else:
+            print_slow(f"{p1.name} escapes the {foe.name}'s hold!\n", typingActive)      
+        p1.TDEF = 10
+        foe.MP -= 1
+
+    elif foe.skill == 13:  #Poison Bite
+        dam = random.randrange(foe.ATK // 2.5, foe.ATK)
+        damage = max(round(dam * (p1.DEF * 0.1 * p1.TDEF * 0.1)), 0)
+        p1.HP = min(max(p1.HP - damage, 0), p1.MaxHP)
+        pdamage = random.randrange(1, 4)
+        p1.POISON += pdamage
+        print_slow(
+            f'{foe.name} bites down on {p1.name} with their toxic fangs! {p1.name} is poisoned for {pdamage} turns and takes {damage} damage! {p1.name} has {p1.HP}/{p1.MaxHP} HP.\n', typingActive
+        )
+        p1.TDEF = 10
+        foe.MP -= 1
+
+    elif foe.skill == 14:  #dales pocket sand
+        focus = .7
+        focus_turns = -4
+        print_slow(f"{foe.name} throws a blue powder in {p1.name}'s face! {p1.name} has their power lowered for {(focus_turns * -1) + 1} turns!\n", typingActive)
+        p1.TDEF = 10
+        foe.MP -= 1
+      
+    elif foe.skill == 15:  #Skewer
+        print_slow(f'The enemy {foe.name} charges forward with their weapon and skewers {p1.name}!\n', typingActive)
+        hit = random.randrange(0, 4)
+        dam = random.randrange(round(foe.ATK // 2), foe.ATK)
+        damage = max(round(dam * (p1.DEF * 0.1 * p1.TDEF * 0.1)), 0)
+        p1.HP = min(max(p1.HP - damage, 0), p1.MaxHP)
+        if hit >= 2:
+          print_slow(f"The enemy {foe.name} manages to break through {p1.name}'s armor'! {p1.name}'s defenses are temporarily lowered.\n", typingActive)
+          p1.TDEF += 5
+        elif hit < 2:
+          print_slow(f"{p1.name}'s armor saved them from being impaled!\n", typingActive)
+          p1.TDEF = 10
+        print_slow(f'{p1.name} has taken {damage} damage. {p1.name} has {p1.HP}/{p1.MaxHP} HP. \n', typingActive)
+        foe.MP -= 1
 
 #Help menu for combat
 def combat_menu(p1, typingActive):
@@ -721,7 +809,7 @@ def combat_menu(p1, typingActive):
         warrior_menu += 'BLOOD: Become filled with a lust for blood. Absorb 50% of damage dealt as HP.\n'
       print_slow(warrior_menu, typingActive)
   
-  elif p1.job == "WIZARD":
+  elif p1.job == "WIZARD" or p1.job == "WITCH":
       wizard_menu = "Battle commands:\nATK: Regular attack.\nDEF: Temp. increase DEF for 1 turn.\nITEM: Open items menu.\nFLEE: Use a SMOKE BOMB to escape combat. Does not work in Boss fights.\nFOCUS: Concentrates to increase damage of follow up attacks for several turns."
       if p1.lvl >= 2:
         wizard_menu += "\nBOLT: Cast magical bolt dealing high damage.\n"
