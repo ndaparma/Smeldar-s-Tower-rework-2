@@ -6,7 +6,7 @@ from world import *
 from script import line2004
 from slowprint import *
 from pathlib import Path
-global current_room
+
 
 
 def intro_load():
@@ -43,24 +43,24 @@ def setup():
             print_slow('', typingActive)
             if player_job == "WARRIOR":
                 p1 = player(player_name, player_job, ['HARDEN',], [],
-                            [], 1, 100, 0, 70, 70, 3, 3, 11, 7, 10, 100, 10, 4,
+                            [], 1, 100, 0, 70, 70, 3, 3, 16, 70, 100, 100, 10, 4,
                             5, 1, 5, 0, 5, 1, 0, 0, 1, 0, 0, 0, 0, 0, 0, 0, 0,
                             'alive')
                 gameSetup = 3
             elif player_job == "WIZARD" or player_job == "WITCH":
                 p1 = player(player_name, player_job, ['FOCUS',], [], [],
-                            1, 100, 0, 40, 40, 8, 8, 18, 9, 10, 100, 10, 3, 5,
+                            1, 100, 0, 45, 45, 6, 6, 22, 90, 100, 100, 10, 3, 5,
                             1, 5, 1, 5, 1, 0, 0, 1, 0, 0, 0, 0, 0, 0, 0, 0, 'alive')
                 gameSetup = 3
             elif player_job == "THIEF":
                 p1 = player(player_name, player_job, ['STEAL',], [],
-                            [], 1, 100, 0, 55, 55, 5, 5, 13, 8, 10, 100, 10, 3,
+                            [], 1, 100, 0, 55, 55, 5, 5, 19, 80, 100, 100, 10, 3,
                             5, 2, 5, 1, 5, 3, 0, 0, 1, 0, 0, 0, 0, 0, 0, 0, 0,
                             'alive')
                 gameSetup = 3
             #elif player_job == "SUMMONER":
              #   p1 = player(player_name, player_job, ['FOCUS',], [], [],
-              #              1, 100, 0, 40, 40, 8, 8, 18, 9, 10, 100, 10, 3, 5,
+              #              1, 100, 0, 40, 40, 8, 8, 18, 90, 100, 100, 10, 3, 5,
                #             1, 5, 1, 5, 1, 0, 0, 1, 0, 0, 0, 0, 0, 0, 0, 'alive')
                 #gameSetup = 3
             elif player_job == "GOD":
@@ -151,7 +151,7 @@ def move_rooms():
                 break
             break
         else:
-            print_slow(f"\nYou can't go to the {selc.lower()}\n", typingActive)
+            print_slow(f"\nYou can't go to the {selc.lower()}.\n", typingActive)
             break
 
 def special_actions():
@@ -169,49 +169,44 @@ def take_actions():
     while True:
 
         if selc == "EXPLORE":
-            print_slow(rooms[current_room][selc], typingActive)
-            break
+              print_slow(rooms[current_room][selc], typingActive)
+              break
         elif selc == "EXAMINE" and selc in rooms[current_room]:
-            rooms[current_room]['EXAMINE'](p1, rooms, typingActive)
-            break
+              rooms[current_room]['EXAMINE'](p1, rooms, typingActive)
+              break
         elif selc == "SPEAK" and selc in rooms[current_room]:
-            rooms[current_room]['SPEAK'](p1, rooms, typingActive)
-            break
+              rooms[current_room]['SPEAK'](p1, rooms, typingActive)
+              break
         elif selc == "HEAL":
             if p1.POTS > 0:
                 potion_healing(p1, typingActive)
                 break
             else:
                 print_slow(
-                    f'{p1.name} is out of POTIONS and unable to heal at this time\n',
-                    typingActive)
+                  f'{p1.name} is out of POTIONS and unable to heal at this time\n',
+                  typingActive)
         elif selc == 'BUY' and selc in rooms[current_room]:
-            city_shop(p1, rooms, typingActive)
-            break
-        elif (selc == 'REST' and selc in rooms[current_room]
-              ) and rooms[current_room]['REST'] == 'rest':
-            if rooms[current_room]['name'] == 'Camp Site':
-                camp_healing(p1, typingActive)
-                break
-            elif rooms[current_room]['name'] in inns:
-                city_inn(p1, typingActive)
-                break
+              rooms[current_room]['BUY'](p1, rooms, current_room, typingActive)
+              break
+        elif selc == 'REST' and selc in rooms[current_room]:
+              rooms[current_room]['REST'](p1, typingActive)
+              break
         elif selc == 'PRAY' and selc in rooms[current_room]:
-            shrine_pray(p1, typingActive)
-            break
+              rooms[current_room]['PRAY'](p1, typingActive)
+              break
         elif selc == "UPGRADE" and selc in rooms[current_room]:
-            village_smith(p1, typingActive)
-            break
+              rooms[current_room]['UPGRADE'](p1, typingActive)
+              break
         elif (selc == "CRAFT" and selc in rooms[current_room]
               ) and rooms[current_room]['crafting'] == 'ACTIVE':
-            rooms[current_room]['CRAFT'](p1, typingActive)
-            break
+              rooms[current_room]['CRAFT'](p1, typingActive)
+              break
         elif selc == "TEST" and selc in rooms[current_room]:
-            rooms[current_room]['TEST']()
-            break
+              rooms[current_room]['TEST']()
+              break
         else:
-            print_slow('Unable to do that here.\n', typingActive)
-            break
+              print_slow('Unable to do that here.\n', typingActive)
+              break
 
 
 def helper_actions():
@@ -278,6 +273,9 @@ def helper_actions():
         elif selc == "LOAD":
             load()
             break
+        elif selc == "QUIT":
+            quit_game()
+            break
         elif selc == "PRINT":
             print(rooms[current_room])
             break
@@ -286,7 +284,7 @@ def helper_actions():
 def item_check(p1, typingActive):
     while True:
         print_slow(
-            f'\nPOTIONS: {p1.POTS}/{p1.MaxPOTS}\nANTIDOTES: {p1.ANT}/{p1.MaxANT}\nETHERS: {p1.ETR}/{p1.ETR}\nSMOKE BOMBS: {p1.SMB}/{p1.SMB}',
+            f'\nPOTIONS: {p1.POTS}/{p1.MaxPOTS}\nANTIDOTES: {p1.ANT}/{p1.MaxANT}\nETHERS: {p1.ETR}/{p1.MaxETR}\nSMOKE BOMBS: {p1.SMB}/{p1.MaxSMB}',
             typingActive)
         print_slow(f'\nKey Items: {p1.inventory}\n', typingActive)
         print_slow('Type Key Item name for more info or BACK to exit menu.\n',
@@ -323,7 +321,7 @@ def encounter_initiaiton(current_room, typingActive):
     if encounter <= rooms[current_room]['spawn_rate']:
         foe = random.choice(rooms[current_room]['enemy_spawn_set'])
         if foe == p28:
-          traveling_merchant(p1, foe, typingActive)
+          traveling_merchant(p1, foe, current_room, typingActive)
         elif foe == p34:
           standard_battle(p1, foe, typingActive)
           enemy_spawn14.remove(p34)
@@ -333,9 +331,9 @@ def encounter_initiaiton(current_room, typingActive):
 
 def ambush_initiaiton(current_room, typingActive):
     encounter = random.randrange(1, 6)
-    if encounter >= rooms[current_room]['spawn_rate'] * 2:
+    if encounter <= rooms[current_room]['spawn_rate']:
         print_slow(f'{p1.name} is ambushed by an enemy!', typingActive)
-        foe = random.choice(enemy_spawn_set)
+        foe = random.choice(rooms[current_room]['enemy_spawn_set'])
         standard_battle(p1, foe, typingActive)
 
 
@@ -401,9 +399,30 @@ def load_rooms1(savefile2):
         rooms = pickle.load(f)
 
 
+def quit_game():
+  while True:
+    print_slow('\nAre you sure you wish to exit? YES or NO:\n', typingActive)
+    selc = input().upper().strip()
+    print('\n')
+    if selc == 'YES':
+      while True:
+        print_slow('\nWould you like to save first? YES or NO:\n', typingActive)
+        selc = input().upper().strip()
+        print('\n')
+        if selc == 'YES':
+          save()
+          quit()
+        elif selc =='NO':
+          quit()
+        else:
+          print_slow('\nInvalid selection. Try again.', typingActive)
+    elif selc =='NO':
+      break
+    else:
+      print_slow('\nInvalid selection. Try again.', typingActive)
 def world_menu(typingActive):
     print_slow(
-        '\nWorld commands:\nNORTH: Move NORTH.\nEAST: Move EAST.\nSOUTH: Move SOUTH.\nWEST: Move WEST.\nEXIT: Move to EXIT\nEXPLORE: Check your surroundings.\nEXAMINE: Investigate area of interest\nSPEAK: Talk to NPCs\nHEAL: Use potion to restore HP.\nSTATS: View your current level and stats.\nITEMS: Check current inventory\nLOCATION: Display current area.\nTYPE: Change text display settings\nSome commands may be presented to you or hidden.\n',
+        '\nWorld commands:\nNORTH: Move NORTH.\nEAST: Move EAST.\nSOUTH: Move SOUTH.\nWEST: Move WEST.\nEXIT: Move to EXIT\nEXPLORE: Check your surroundings.\nEXAMINE: Investigate area of interest\nSPEAK: Talk to NPCs\nHEAL: Use potion to restore HP.\nSTATS: View your current level and stats.\nITEMS: Check current inventory\nMAP: Display current area.\nTYPE: Change text display settings\nSAVE: Create save file.\nLOAD: Load a save file.\nQUIT: Exit the game.\nSome commands may be presented to you or hidden.\n',
         typingActive)
 
 
@@ -417,10 +436,9 @@ special_list = ['JUMP', 'FLY', 'SWIM', 'DIVE', 'DRINK', 'RIBBIT', 'RIBBITING', '
 
 helper = [
     'HELP', 'STATS', 'ITEMS', 'LOCATION', 'MAP', 'TYPE', 'SAVE', 'LOAD',
-    'PRINT'
+    'PRINT', 'QUIT'
 ]
 
-inns = ['Inn', 'Tavern & Inn']
 current_room = 'Camp Site'
 previous_room = ''
 
@@ -431,25 +449,26 @@ while True:
         intro_load()
     while gameSetup == 1:
         setup()
-    print_slow(f"\n**********[ {rooms[current_room]['name']} ]**********\n",
-               typingActive)
-    print_slow(rooms[current_room]['intro'], typingActive)
-    player_choice = 0
-    while player_choice == 0:
-        print_slow('\nEnter command or type HELP:\n', typingActive)
-        selc = input().upper().strip()
-        print('\n')
-        if selc in directions:
-            move_rooms()
+    while gameSetup == 0:
+      print_slow(f"\n**********[ {rooms[current_room]['name']} ]**********\n",
+                 typingActive)
+      print_slow(rooms[current_room]['intro'], typingActive)
+      player_choice = 0
+      while player_choice == 0:
+          print_slow('\nEnter command or type HELP:\n', typingActive)
+          selc = input().upper().strip()
+          print('\n')
+          if selc in directions:
+              move_rooms()
+  
+          elif selc in actions:
+              take_actions()
+  
+          elif selc in special_list:
+              special_actions()
+  
+          elif selc in helper:
+              helper_actions()
 
-        elif selc in actions:
-            take_actions()
-
-        elif selc in special_list:
-            special_actions()
-
-        elif selc in helper:
-            helper_actions()
-
-        else:
-            print_slow('\nInvalid selection. Try again.', typingActive)
+          else:
+              print_slow('\nInvalid selection. Try again.', typingActive)

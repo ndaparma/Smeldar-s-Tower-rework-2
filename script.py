@@ -11,16 +11,23 @@ line202 = "From the TOWN center there is a SHOP for ADVENTURERS to the EAST, a s
 
 #3.SHOP********************************
 line301 = 'The SHOP keep greets you and welcomes you to browse his wares.\n"Please let me know if you would like to BUY anything.\n' 
+      #Harbor market
+line302 = 'You step into a bustling market along the piers. You stop at a trading cart with a sign advertising "everything an Adventurer needs here!".' 
   #EXPLORE
+      #Harbor market
+line303 = "Ships and their cargo can be seen being unloaded at the docks. Trading stands and carts fill the streets here; traders from all over have come to the Harbor Town to peddle their wares. Everything from fresh fish to fine jewelery can be found sold here. The Adventurer's cart looks like it will have some useful items to BUY..."
+      #city shop
 line304 = "Looking around the SHOP you see cluttered shelves filled with various strange bits of monsters, small vials filled with every color and viscocity of liquid, and carefully placed SMOKE BOMBS in a glass case. The SHOP keep smiles and urges you to BUY anything that catches your eye.\n" #37
     #traveling merchant
-line305 =  'Out of the blue you can hear the sound of cart wheels rapidly approaching you. Before you know it a lanky gnome pulling a cart filled with supplies runs up next to you\n\n"OH OH OH! A customer! Yes yes yes! Come check my wares! Buy buy buy!"'
+line305 =  'Out of the blue you can hear the sound of cart wheels rapidly approaching you. Before you know it a lanky gnome pulling a cart filled with supplies runs up next to you.\n\n"OH OH OH! A customer! Yes yes yes! Come check my wares! Buy buy buy!\n"'
 #4.INN*************************************
 line401 = "The Inn keep motions you to the counter and offers you a bed.\nTaking a REST in a proper bed will surely rejuvinate you before your next battle.\nREST at the Inn for 40GP, or EXIT?\n" #42
 line401b = "The TAVERN owner rushes over to greet you. He eagerly offers you an available bed.\Taking a REST in a proper bed will surely rejuvinate you before your next battle.\nREST at the Tavern for 40GP, or EXIT?\n" 
+line401c = 'You walk through the door of the Harbor Inn and are immediately greeted by the proprietor before she offers you a room.\nTaking a REST in a proper bed will surely rejuvinate you before your next battle.\nREST at the Inn for 40GP, or EXIT?\n'
   #EXPLORE
 line404 = 'Behind the counter is a plump, jolly older man finding things to clean. There are a number of patrons sitting around tables on the main floor discussing business and travel over drinks. you spot an orange cat is sleeping on a cushion with the name "MILO" embroidered on it. Near the entrance is a set of stairs leading to the INN beds on the second floor. \n' #48
 line404b = 'The TAVERN is a quaint building with a single room for guests. Travelers must not be too common around here. The TAVERN owners wife can be heard tending to the kitchen, prepping for dinner at the restaurant they run inside. A pair of ceramic pet bowls labeled "Yuffie" and "IGGY" sit behind the front counter.\n'
+line404c = 'The main room of the Harbor Inn is filled with travelers from all over making conversation and exchanging news. It would appear that only a few vacancies remain. Maybe getting a warm bed and a hot meal is exactly would be a wise idea. As you stand there and ponder you next actions a cat rubs up against your legs. The bell on his coller is engraved with the name "Ardyn".'
 #5.CASTLE*******************************
 line501 = "You step into the great hall of the royal CASTLE. The PRINCESS is seated on her throne awaiting those who seek audience with her ladyship. Type SPEAK to interact.\n" 
   #EXPLORE
@@ -114,6 +121,7 @@ line940 = "You step up to the IRON DOOR and try to open it. The door doesnt budg
 line940b = "You step up to the IRON DOOR and try to open it. The door doesnt budge. Of course it isn't that easy. You see that there is a KEY hole above the handle, and presume that there is a KEY somewhere around here to open the door.\nYou remember that you picked up an IRON KEY in the storage room. Would you like to try to OPEN the door, or BACK out?\n"
 line941 = "You insert the IRON KEY and successfully unlock the door. The way forward is now clear. You can sense an evil presence in this direction, however. Are you sure you are prepared for whatever lies behind this door?\n"
 line941b = "You decide now isn't the right time to try unlocking the door and put the IRON KEY away.\n"
+line943 = "You attempt to move EAST but the way is blocked by a large iron door.\n"
   #SOUTH/WEST
 line945 = "You look down into the pit to see below. Even the light from your LANTERN doesnt reach the bottom. You better not try going down there.\n"
   #JUMP/DIVE
@@ -177,7 +185,7 @@ line1303 = "You TAKE the SALMON and put it in your pack. Really isn't this fishe
 line1304 = "You dislodge the SALMON and set it free! The ungrateful fish carries on up the WATERFALL without thanking you. That was nice of you, even though that fish was a jerk." #235
 line1305 = "You leave the fish be. Best let nature sort itself out.\n" #236
 line1306 = "The sound of the WATERFALL pouring down drowns out everything else around. The water here is foamy and harder to see through. You can spot fish jumping over the WATERFALL, presumably to reach their spawning grounds. Doesn't look like any other fish are having trouble getting up the WATERFALL.\n" #237
-line1307 = "You take another look at the spot you saved the fish from. Looks like the SALMON did leave you a gift after all! You found gold nugget worth about 100GP.\n"
+line1307 = "You take another look at the spot you saved the fish from. Looks like the SALMON did leave you a gift after all! You found a gold nugget worth 100GP!\n"
 line1308 = "You take another look at the spot you found the fish. You dont find anything interesting.\n" #245
   #SOUTH
 line1309 = "The way SOUTH is blocked by the WATERFALL and a steep slope. No way through this way, unfortunately.\n" #247
@@ -402,7 +410,7 @@ line2738 = 'After a fierce battle with the Ogre Chief, you land a finishing blow
 #28. Frog MArsh
 line2801 = 'You step onto a series of piers stretching across a reed filled marsh. A Frog-Man sits on a rocking chair outside a hut built right over the marsh. It looks like he is interested in SPEAKING.\n'
   #EXPLORE
-line2802 = 'The marsh is filled with the sounds of creatures roaming the area. Herons can be spotted fishing further across the water and tadpoles can be seen hiding under the piers. The path across the piers continues EAST from here.\n'
+line2802 = 'The marsh is filled with the sounds of creatures roaming the area. Herons can be spotted fishing further across the water and tadpoles can be seen hiding under the piers. You take a minute to watch the dragonflys dancing over the reeds sprouting from the water. A cheerful Frog-Man sits outside a quaint hut built over the water, beckoning you over. The path across the piers continues EAST from here.\n'
   #Speach
 line2803 = """"Why if it isn't an honest to goodness Adventurer in my marsh! It's quite the honor to have visitors way out in these parts. Say, I've got some great info that you might find useful. My grandpappy told me when I was just a tadpole that he fought against a great Ogre Chief ages ago. That Chief was appointed by that wicked warlock Smeldar and was gifted an imporant item sometime ago. I bet that will be handy in your journey!\n" "I'll tell you what I can help you out even more than that! I have here a BROKEN HORN used by the Ogres Chief's army to call to each other on the battlefield. If you can find a MOUTH PIECE you should be able to repair it."\n"Come back and visit again sometime. I love tellin' all my grandpappy's stories!"\n """
 line2804 = """"Look whos back to visit! I just thought of another way I can help you on your journey. My grandpappy tought me years back how to make a potent SMOKE BOMB that will get you out of all sorts of sticky situations! You bring me 15 MONSTER PARTS and I'll CRAFT one right up for you!"\n """
@@ -424,6 +432,51 @@ line2909 = """"Thank you for coming. I can feel my power starting to return. Tak
 line2910 = """"Thank you for coming. I can feel my power returning. Take this gift as my thank you for your help. Please, continue to defeat more Dark Fae. I need more power..."\n """
 line2911 = """"Thank you for coming... You have done well helping my power return to me. Now for your reward... As a gift I will impart with you this knowledge; I am not the Fairy Prince. No, I am the Prince of the Dark Fae! You have foolishly helped me regain my strength! Smeldar will be quite pleased to hear of my return! I will be granted another army and I shall be the lord of all Fae! Now be good and surrender. If you do I will reward you with a final gift; a quick death! HEHEHEHE!"\n"""
 line2912 = "The Dark Fairy Prince lets out a shriek before dissipating into nothing. The flowers all around begind to instantly wither away and the Fairy Circle shrivels up. On the ground where the Dark Fairy Prince had been sitting lies a CRYSTAL NECKLACE. You take it and put it on. You can feel a rush of magical energy flow through you."
+#30. Grassy Plains
+line3001 = "You find yourself in a large grass field stretching across the NORTH of the kingdom.\n"
+  #EXPLORE
+line3002 = "A cool breeze blows in from the NORTH carrying with it the taste of salt and providing relief from the sun's rays beating down from above. In the distance to the EAST you can see a mountain range, and SOUTH you see the border of the Rotted Woods. In the WEST lies the Frog Marsh.\n"
+#31. Foot Hills
+line3101 = "You reach the Foot Hills of the great northern mountain range. You stand in the shade of the mountains while you plot your course.\n"
+  #EXPLORE
+line3102 = "The Foot Hills lead up into the great northern mountains. Travelers are warned to avoid attempting to travel across the range at all costs; the paths are too steep and are prone to collapse under foot. Few have even tempted the journey, and far fewer lived to tell the tale. The sea can be spotted in the distance NORTH of here, and the plains continue to stretch out WEST.\n"
+#32. Northern Coast
+line3201 = "Waves crash against the shore as you approach the Northern Coast. You pause for a moment to admire the sea.\n"
+  #EXPLORE
+line3202 = "Guls fly overhead and hermit crabs scuttle across the warm sands. A coral reef teeming with life can be seen through the crystal clear sea water. For just a moment you forget your worries and are able to relax. When you finish taking in the sights and smells of the seas you begin plotting your course once again. The beach continues to the EAST, and behind you to the SOUTH the Grassy Plains. WEST of here you can spot the entrance to a bustling Harbor Town.\n"
+#33. Shipwreck
+line3301 = "You approach a Shipwreck on the beach of the Northen Coast. Pieces of the wreckage litter the shore."
+  #EXPLROE
+line3302 = "Just off the coast the bow of a large ship can be seen poking up out of the water. Shattered planks, barrels, and crates can be spotted all along the beach. Although it looks like this ship crashed here quite some time ago, it looks like some of the cargo may have survived and there may still be of something of value to EXAMINE...\n"
+line3303 = "Just off the coast the bow of a large ship can be seen poking up out of the water. Shattered planks, barrels, and crates can be spotted all along the beach. The contents have been picked clean at this point. Anything valuable the ship was carrying is gone now.\n"
+  #EXAMINE
+line3304 = "You look around at the cargo strewn about the beach. Do you want to search it for anything valuable? Type YES or NO.\n"
+line3305 = "You decide it would be better to leave the cargo alone. No idea what could be in there.\n"
+line3306 = "You take a look around the wreckage to see if there is anything useful.\n"
+line3307 = "Suddenly something jumps out from the debris and attacks!\n"
+line3308 = "You open up a crate and rumage through the contents. Within you find a small jewel box with some gems worth 300 GP! Looks like there are also a couple of POTIONS inside. What a lucky find!\n"
+line3309 = "It doesn't seem like there is anything else worth searching around here.\n"
+#34. Harbor Town
+line3401 = "You enter the Harbor Town and make your way to the town center.\n"
+  #EXPLORE
+line3402 = 'Cobblestone streets weave through the cottages and shops throughout the town. NORTH of here you can see the harbor and the local markets. From here you can also see a large sign in the WEST that says "Harbor Inn". The people of the town pay little attention to you; travelers must be a frequent sight in a port city such as this one.\n'
+#35. Docked Ship
+line3501 = """"You step to the end of the docks and walk up to an old anchored galleon. An old man with an elogant captains hat steps down from the ship to greet you.\n"Come here! I've been looking for an Adventurer and you look like just the perfect one for the job!"\n """
+line3501b = """"You step to the end of the docks and walk up to an old anchored galleon. An old man with an elogant captains hat steps down from the ship to greet you.\n"""
+  #EXPLORE
+line3502 = 'The old galleon is a fine vessel, despite the signs of many years of wear and maintenance. The Captain looks quite proud of his ship. The Captain is as worn as his vessel; you spy several missing digits on top of his peg leg, eye-patch, and his gapped smile. He seems to have lived quite a full life on the sea.\n'
+  #SPEAK
+line3503 = """"Many years ago when I was jus' a young lad workin' the river, me eye was taken from me by a wicked serpent o' the falls. The beast left me half blind fer the better years o' me life, 'n I intend t' get me revenge afore I croak.  If ye agree I will teach ye where the secret passage in the falls lies. O' course ye will be rewarded handsomely..."\nDo you agree to help the old Captain, YES or NO."""
+line3503b = """"'Ave ye found yer courage 'n come t' help?" Do you agree to help the old Captain, YES or NO.\n """
+line3504 = """"Blisterin' barnacles! I knew ye we be right scallywag fer the job! Now t' get into the falls ye simply take this hidden route here... When ye make it inside ye'll needs t' enter the serpents chamber in the deepest reaches o' the cave. The beast guards a booty wit' its mighty life; ye're more than welcome t' it once the wretched creature has been slain. Bring me the SERPENTS EYE 'n I will pay ye a kings ransom."\n """
+line3505 = """"Blast ye! Ye're a yellow-bellied cur if I ever saw one. Come back once ye've grown a spine!"\n """
+line3506 = """"'Ave ye brought me the SERPENTS EYE? No? Then wha' are ye doin' wastin' me time! Go out 'n finish the job!"\n """
+line3507 = """"I see ye've brought the SERPENTS EYE wit' ye! Har har har! I knew ye had it in ye! Now this ole sea dog can rest easy. Jus' as promised here's yer reward."\n """
+line3508 = """"Back t' visit this ole Cap'n? Ye did a mighty fine job defeatin' the serpent fer me. I be forever grateful. If anyone can scuttle the fool Smeldar 'twill be ye! Har har har." """
+#38.Misty Woods - Bend
+line3801 = "As you make your way through the woods the path begins to narrow and a thick fog obscures your view. You take a moment to get your bearings.\n"
+  #EXPLORE
+line3802 = 'You try to look around, but between the fog and the trees you cannot see any deeper into the woods. You can barely make out the path you are on leading from the WEST to the NORTH. The wind blowing through the leaves sounds like whispers. You start to feel a chill.\n'
 ##26.TOWER OUTER*******************************
 #line2601 = "You approach the dark TOWER and gaze up the crooked spire. A shiver runs down your spine as the sky darkens and the air becomes cold. You take a step closer to the TOWER when you hear a distant roar and pause. Before you are able to take another step you hear it again, this time much closer. You manage to draw your weapon just a moment before a DRAGON crashes through the canopy!\n"
 #line2602 = "The DRAGON lets out an ear piercing screach that echos through the entire woods before meeting it's demise. You narrrowly avoided being made into a meal. You rest a moment before carrying on with your quest.\n"

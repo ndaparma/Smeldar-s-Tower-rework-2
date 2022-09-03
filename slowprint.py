@@ -5,7 +5,7 @@ def player_input():
 def print_slow(str, typingActive):
   if typingActive == "ON":
     for char in str:
-      time.sleep(.015)
+      time.sleep(.01)
       sys.stdout.write(char)
       sys.stdout.flush()
     #print('')

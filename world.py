@@ -7,8 +7,6 @@ import random
 import pickle
 
 
-
-
 def save_rooms2(savefile3):
   global rooms
   with open(f'saved_rooms/{savefile3}', 'wb') as f:
@@ -21,6 +19,40 @@ def load_rooms2(savefile3):
 
     
 #define room mechanics/events  
+def potion_healing(p1, typingActive):
+  heal = 15 + p1.RJ
+  p1.POTS -= 1
+  p1.HP = min(max(p1.HP + heal, 0), p1.MaxHP)
+  print_slow(
+      f'{p1.name} drinks a POTION and heals {heal} HP. {p1.name} has {p1.HP}/{p1.MaxHP} HP. \n', typingActive
+  )
+def camp_healing(p1, typingActive):
+  while True:
+    if rooms['Camp Site']['fire'] > 0:
+      heal = random.randrange(10, 20)
+      p1.HP = min(max(p1.HP + heal, 0), p1.MaxHP)
+      rooms['Camp Site']['fire'] -= 1
+      print_slow(f'\n{p1.name} has rested and restored {heal}HP. {p1.name} now has {p1.HP}/{p1.MaxHP}HP.\n', typingActive)
+      if rooms['Camp Site']['fire'] > 0:
+        print_slow(f"{p1.name} may rest {rooms['Camp Site']['fire']} times before the camp fire dies.\n", typingActive)
+        break
+      else:
+        rooms['Camp Site']['intro'] = line102
+        rooms['Camp Site']['map'] = camp_map2
+        print_slow(
+                f'The fire has finally died and {p1.name} is unable to rest here.\n', typingActive
+            )
+        break
+    else:
+      print_slow(
+              f'The fire has finally died and {p1.name} is unable to rest here.\n', typingActive
+          )
+      break
+
+def merchant_death():
+  enemy_spawn5.remove(p28)
+  enemy_spawn9.remove(p28)
+  enemy_spawn17.remove(p28)
 def key_itemBought(p1, selc, typingActive):
   if selc == 'MAP':
     print_slow(f"{p1.name} purchases a MAP! Now {p1.name} can stop getting lost all the time! (Type MAP or LOCATION to view current area) {p1.GP}GP remaining.\n", typingActive)
@@ -30,14 +62,36 @@ def key_itemBought(p1, selc, typingActive):
     print_slow(f'{p1.name} purchases a CRAFTING POUCH and attaches it to their pack. {p1.name} can store all sorts of weird things now! {p1.GP}GP remaining.\n', typingActive)
   if selc == 'SPECIAL FEED':
     print_slow(f'{p1.name} purchases the SPECIAL FEED. Hopefully the Farmers pig is still doing fine... {p1.GP}GP remaining.\n', typingActive)
+  if selc == 'EXTRA POUCH':
+    print_slow(f'{p1.name} purchases the EXTRA POUCH. Now {p1.name} can now store an additional 5 each of POTIONS, ANTIDOTES, ETHERS, and SMOKE BOMBS. {p1.GP}GP remaining.\n', typingActive)
+  if selc == 'DRAGON SCALE':
+    print_slow(f'{p1.name} purchases the DRAGON SCALE. What a lucky find for such a deal! {p1.GP}GP remaining.\n', typingActive)
+  if selc == 'GORGET':
+    print_slow(f'{p1.name} purchases the GORGET. Not the most comfortable piece of armor to wear, but it may just save your life! {p1.name} has gained 10% DEF! {p1.GP}GP remaining.\n', typingActive)
 
 
-def sales_mechanic(p1, rooms, typingActive):
+def sales_mechanic(p1, rooms, current_room, typingActive):
   global shop_open
+  global traveling_shop
+  global merchant_alive
   sale = 0
   selc = (input().upper()).strip()
   print_slow("\n", typingActive)
-  
+
+  if (selc == "ATK" or selc == "ATTACK") and traveling_shop == 1:
+    foe = p28
+    print_slow(f"{p1.name} assaults the Traveling Merchant! The Merchant narrowly avoids the attack before drawing his own weapon!\n", typingActive)
+    standard_battle(p1, foe, typingActive)
+    print_slow(f"{p1.name} slays the Merchant in cold blood. The gnome's body lays motionless on the ground. {p1.name} rummages through the Merchants wares for anything valuable that is still intact. {p1.name} finds some POTIONS, ANTIDOTES, and ETHERS. {p1.name} takes whatever they can carry; it's not like the Merchant will be needing them anymore.\n", typingActive)
+    p1.POTS = min(p1.POTS + 3, p1.MaxPOTS)
+    p1.ANT = min(p1.ANT + 2, p1.MaxANT)
+    p1.ETR = min(p1.ETR + 2, p1.MaxETR)
+    merchant_death()
+    p1.stat_check(typingActive)
+    shop_open = 0
+    traveling_shop = 0
+    merchant_alive = 0
+    return
   if selc in shop_items:
     
     if p1.GP < key_items[selc]['price']:
@@ -70,13 +124,35 @@ def sales_mechanic(p1, rooms, typingActive):
         else:
           sale = 1
       if selc in shop_keyItems:
-        if selc in rooms['Shop']['items']:
+        if selc in p1.inventory:
+          print_slow(f""""It looks like that isn't available, sorry about that!"\n""", typingActive)
+          sale = 3
+        elif traveling_shop == 1 and selc in travelingMerchant_items:
           p1.GP -= key_items[selc]['price']
-          rooms['Shop']['items'].remove(selc)
+          travelingMerchant_items.remove(selc)
           p1.inventory.append(selc)
+          if selc == "GORGET":
+            p1.DEF = max(p1.DEF - 10, 25)
           key_itemBought(p1, selc, typingActive)
+        elif 'items' in rooms[current_room]:
+          if selc in rooms[current_room]['items']:
+            p1.GP -= key_items[selc]['price']
+            rooms[current_room]['items'].remove(selc)
+            if selc == 'EXTRA POUCH':
+              p1.MaxPOTS += 5
+              p1.MaxANT += 5
+              p1.MaxETR += 5
+              p1.MaxSMB += 5
+            elif selc == 'DRAGON SCALE':
+              p1.DragonP += 1
+            elif selc == 'GORGET':
+              p1.DEF = max(p1.DEF - 10, 25)
+              p1.inventory.append(selc)
+            else:  
+              p1.inventory.append(selc)
+            key_itemBought(p1, selc, typingActive)
         else:
-          print_slow(f""""Hey, it looks like that isn't available, sorry about that!"\n""", typingActive)
+          print_slow(f""""It looks like that isn't available, sorry about that!"\n""", typingActive)
           sale = 3
 
       if sale == 3:
@@ -85,44 +161,14 @@ def sales_mechanic(p1, rooms, typingActive):
           p1.GP -= key_items[selc]['price']
           print_slow(f"{p1.name} purchases a {selc} for {key_items[selc]['price']} GP and adds it to their inventory. {p1.name} has {p1.GP} GP.\n", typingActive)
       if sale == 1:
-          print_slow('"Looks like your inventory is full."\n', typingActive)
-                 
+          print_slow('"Looks like your inventory is full."\n', typingActive)   
+        
   elif selc == "BACK":
         shop_open = 0
+        traveling_shop = 0
   else:
      print_slow('\nInvalid selection. Try again.\n', typingActive)
-  return
     
-def potion_healing(p1, typingActive):
-  heal = 15 + p1.RJ
-  p1.POTS -= 1
-  p1.HP = min(max(p1.HP + heal, 0), p1.MaxHP)
-  print_slow(
-      f'{p1.name} drinks a POTION and heals {heal} HP. {p1.name} has {p1.HP}/{p1.MaxHP} HP. \n', typingActive
-  )
-def camp_healing(p1, typingActive):
-  while True:
-    if rooms['Camp Site']['fire'] > 0:
-      heal = random.randrange(10, 20)
-      p1.HP = min(max(p1.HP + heal, 0), p1.MaxHP)
-      rooms['Camp Site']['fire'] -= 1
-      print_slow(f'\n{p1.name} has rested and restored {heal}HP. {p1.name} now has {p1.HP}/{p1.MaxHP}HP.\n', typingActive)
-      if rooms['Camp Site']['fire'] > 0:
-        print_slow(f"{p1.name} may rest {rooms['Camp Site']['fire']} times before the camp fire dies.\n", typingActive)
-        break
-      else:
-        rooms['Camp Site']['intro'] = line102
-        rooms['Camp Site']['map'] = camp_map2
-        print_slow(
-                f'The fire has finally died and {p1.name} is unable to rest here.\n', typingActive
-            )
-        break
-    else:
-      print_slow(
-              f'The fire has finally died and {p1.name} is unable to rest here.\n', typingActive
-          )
-      break
-
 def shrine_pray(p1, typingActive):
   if p1.GP >= 35:
     p1.MP = p1.MaxMP
@@ -131,10 +177,11 @@ def shrine_pray(p1, typingActive):
   else:
     print_slow(f"{p1.name} is too poor to spend on charity.\n", typingActive)
 
-def city_shop(p1, rooms, typingActive):
+def city_shop(p1, rooms, current_room, typingActive):
   global shop_open
+  global traveling_shop
   shop_open = 1
-
+  traveling_shop = 0
     
   if rooms['Shop']['event'] == 1 and p1.MonP >= 5:
     print_slow(""""I can tell you've got those MONSTER GUTS! Quick, pass them here before anyone else walks in!"\nThe Shop Keep frantically grabs the MONSTER GUTS and slips them into a jar tucked away under the counter.\n"Now I suppose I should hold up my end of the deal. I'll discount that SPECIAL FEED just for you." """, typingActive)
@@ -173,11 +220,11 @@ def city_shop(p1, rooms, typingActive):
     print_slow(f"SMOKE BOMB:[{key_items['SMOKE BOMB']['price']} GP]\n", typingActive)
     print_slow(f"ANTIDOTE:[{key_items['ANTIDOTE']['price']} GP]\n", typingActive)
     print_slow(f"ETHER:[{key_items['ETHER']['price']} GP]\n", typingActive)
-    if 'MAP' in rooms['Shop']['items']:
+    if 'MAP' not in p1.inventory:
       print_slow(f"MAP:[{key_items['MAP']['price']} GP]\n", typingActive)
-    if 'LANTERN' in rooms['Shop']['items']:
+    if 'LANTERN' not in p1.inventory:
       print_slow(f"LANTERN:[{key_items['LANTERN']['price']} GP]\n", typingActive)
-    if 'CRAFTING POUCH' in rooms['Shop']['items']:
+    if 'CRAFTING POUCH' not in p1.inventory:
       print_slow(f"CRAFTING POUCH:[{key_items['CRAFTING POUCH']['price']} GP]\n", typingActive)
     if rooms['Farm House']['speach'] == 3 and 'SPECIAL FEED' in rooms['Shop']['items']:
       print_slow(f"SPECIAL FEED:[{key_items['SPECIAL FEED']['price']}GP]\n", typingActive)
@@ -185,8 +232,63 @@ def city_shop(p1, rooms, typingActive):
 
     
     print_slow('\nType your selection or BACK to leave shopping window.\n', typingActive)    
-    sales_mechanic(p1, rooms, typingActive)
+    sales_mechanic(p1, rooms, current_room, typingActive)
 
+def harbor_shop(p1, rooms, current_room, typingActive):
+  global shop_open
+  global traveling_shop
+  shop_open = 1
+  traveling_shop = 0
+
+  while shop_open == 1:    
+    print_slow(""""Anything catch your eye?"\n """, typingActive)
+    print_slow(f"POTION:[{key_items['POTION']['price']} GP]\n", typingActive)
+    print_slow(f"SMOKE BOMB:[{key_items['SMOKE BOMB']['price']} GP]\n", typingActive)
+    print_slow(f"ANTIDOTE:[{key_items['ANTIDOTE']['price']} GP]\n", typingActive)
+    print_slow(f"ETHER:[{key_items['ETHER']['price']} GP]\n", typingActive)
+    if 'MAP' not in p1.inventory:
+      print_slow(f"MAP:[{key_items['MAP']['price']} GP]\n", typingActive)
+    if 'GORGET' not in p1.inventory:
+      print_slow(f"GORGET:[{key_items['GORGET']['price']} GP]\n", typingActive)
+    if 'CRAFTING POUCH' not in p1.inventory:
+      print_slow(f"CRAFTING POUCH:[{key_items['CRAFTING POUCH']['price']} GP]\n", typingActive)
+    if 'EXTRA POUCH' in rooms[current_room]['items']:
+      print_slow(f"EXTRA POUCH:[{key_items['EXTRA POUCH']['price']}GP]\n", typingActive)
+    if 'DRAGON SCALE' in rooms[current_room]['items']:
+      print_slow(f"DRAGON SCALE:[{key_items['DRAGON SCALE']['price']}GP]\n", typingActive)
+    print_slow(f"\n{p1.name}'s Wallet:[{p1.GP} GP]\n", typingActive)
+
+    
+    print_slow('\nType your selection or BACK to leave shopping window.\n', typingActive)    
+    sales_mechanic(p1, rooms, current_room, typingActive)
+
+def traveling_merchant(p1, foe, current_room, typingActive):
+  global shop_open
+  global traveling_shop
+  global merchant_alive 
+  shop_open = 1
+  traveling_shop = 1
+  merchant_alive = 1
+  
+  print_slow(line305, typingActive)
+  while shop_open == 1:
+    print_slow(""""Take a look!"\n""", typingActive)
+    print_slow(f"POTION:[{key_items['POTION']['price']} GP]\n", typingActive)
+    print_slow(f"SMOKE BOMB:[{key_items['SMOKE BOMB']['price']} GP]\n", typingActive)
+    print_slow(f"ANTIDOTE:[{key_items['ANTIDOTE']['price']} GP]\n", typingActive)
+    print_slow(f"ETHER:[{key_items['ETHER']['price']} GP]\n", typingActive)
+    if 'MAP' not in p1.inventory:
+      print_slow(f"MAP:[{key_items['MAP']['price']} GP]\n", typingActive)
+    if 'LANTERN' not in p1.inventory:
+      print_slow(f"LANTERN:[{key_items['LANTERN']['price']} GP]\n", typingActive)
+    print_slow(f"\n{p1.name}'s Wallet:[{p1.GP} GP]\n", typingActive)
+    print_slow('\nType your selection or BACK to leave merchant.\n', typingActive) 
+    sales_mechanic(p1, rooms, current_room, typingActive)
+      
+    if shop_open == 0:
+      if merchant_alive == 1:
+        print_slow('You bid farewell to the merchant and continue on your way.\n',typingActive)
+      break
 def city_inn(p1, typingActive):  #Inn Mechanics
     inn_room = 40
     
@@ -585,7 +687,36 @@ def swamp4_examine(p1, rooms, typingActive):
       print_slow(line2712, typingActive)
       break
 
-        
+def shipwreck_examine(p1, rooms, typingActive):
+  while True:
+    if rooms['Shipwreck']['chest'] == 'OPEN':
+      print_slow(line3309, typingActive)
+      break
+    elif rooms['Shipwreck']['chest'] == 'CLOSED':
+      print_slow(line3304, typingActive)
+      selc = input().upper().strip()
+      print('\n')
+      if selc == 'YES':
+        print_slow(line3306, typingActive)
+        hit = random.randrange(0,10) + rooms['Shipwreck']['event']
+        if hit >= 9:
+          print_slow(line3308, typingActive)
+          p1.GP += 300
+          p1.POTS = min(p1.POTS + 2, p1.MaxPOTS)
+          print_slow(f"{p1.name} has {p1.GP} GP and {p1.POTS}/{p1.MaxPOTS} POTIONS.\n", typingActive)
+          rooms['Shipwreck']['chest'] = 'OPEN'
+          break
+        elif hit < 9:
+          print_slow(line3307, typingActive)
+          foe = random.choice(rooms['Shipwreck']['enemy_spawn_set'])
+          standard_battle(p1, foe, typingActive)
+          rooms['Shipwreck']['event'] += 2
+          break
+      elif selc == 'NO':
+        print_slow(line3305, typingActive)
+        break
+      else:
+        print_slow('\nInvalid selection. Select YES or NO.', typingActive)
 def hill_lock(p1, selc, rooms, typingActive):
  while True:
     if rooms['Rocky Hill']['SOUTH'] == 'LOCKED':
@@ -624,7 +755,13 @@ def cave4_lock(p1, selc, rooms, typingActive):
       break
     else:
       continue
-
+def waterfall_lock(p1, selc, rooms, typingActive):
+  while True:
+    if rooms['Waterfall Pool']['SOUTH'] == 'LOCKED':
+      print_slow("\nYou can't go to the south.\n", typingActive)
+      break
+    else:
+      continue
 def cave4_boss_ambush(p1, typingActive): 
   while True:
     if 'Hobgoblin Gang' in rooms['Rocky Cave 4']['boss']:
@@ -651,7 +788,6 @@ def hive_boss_ambush(p1, typingActive):
   global enemy_spawn3
   global enemy_spawn9 
   while True:
-    rooms['Great Oak']['map'] = oak_map2
     if 'Giant Bee Queen' in rooms['Bee Hive']['boss']:
       print_slow(line2101, typingActive)
       foe = random.choice(rooms['Bee Hive']['enemy_spawn_set'])
@@ -688,7 +824,7 @@ def castle_speak(p1, rooms, typingActive):
     elif 'HEROS MEDAL' in p1.inventory and rooms['Royal Castle']['event'] == 0:
       print_slow(line505, typingActive)
       print_slow(line508, typingActive)
-      p1.MaxHP += 25
+      p1.MaxHP += 10
       p1.HP = p1.MaxHP
       p1.stat_check(typingActive)
       rooms['Royal Castle']['event'] = 1
@@ -710,8 +846,8 @@ def boat_speak(p1, rooms, typingActive):
       print_slow("\n", typingActive)
       if selc == "GIVE":
         print_slow(line1508, typingActive)
-        print_slow(f'{p1.name} was given a BUCKLER! This sturdy steel shield should help block damage. {p1.name} has gained 5% DEF!\n', typingActive)
-        p1.DEF = max(p1.DEF - 1.5, 3)
+        print_slow(f'{p1.name} was given a BUCKLER! This sturdy steel shield should help block damage. {p1.name} has gained 10% DEF!\n', typingActive)
+        p1.DEF = max(p1.DEF - 10, 25)
         rooms['Boat House']['speach'] = 2
         rooms['Boat House']['EXPLORE'] = line1503
         p1.inventory.remove('SALMON')
@@ -765,7 +901,8 @@ def farm_speak(p1, rooms, typingActive):
         print_slow(f'{p1.name} was given a 100GP. The Farmer expects you to use his money to buy his pig some special feed from the City\n', typingActive)
         p1.GP += 100
         rooms['Farm House']['speach'] = 3
-        rooms['Shop']['Event'] = 1
+        rooms['Shop']['event'] = 1
+        rooms['Shop']['items'].append('SPECIAL FEED')
         break
       elif selc == "NO":
         print_slow(line2204, typingActive)
@@ -811,7 +948,7 @@ def fairy_speak(p1, rooms, typingActive):
       break
     elif rooms['Fairy Circle']['speach'] == 1:
       if p1.faeCount < rooms['Fairy Circle']['fairy_reward']:
-        print_slow(f""""Hello, thank you for returning. I appreciate all of your assistance. If you can return after defeating {fairy_reward - p1.faeCount} more Dark Fae I should regain enough strength to reward you."\n """,typingActive)
+        print_slow(f""""Hello, thank you for returning. I appreciate all of your assistance. If you can return after defeating {rooms['Fairy Circle']['fairy_reward'] - p1.faeCount} more Dark Fae I should regain enough strength to reward you."\n """,typingActive)
         break
       elif p1.faeCount >= rooms['Fairy Circle']['fairy_reward']:
         if rooms['Fairy Circle']['fairy_reward'] == 5:      
@@ -839,6 +976,7 @@ def fairy_speak(p1, rooms, typingActive):
           rooms['Fairy Circle']['boss'].remove('Dark Fairy Prince') 
           rooms['Fairy Circle']['speach'] = 2
           rooms['Fairy Circle']['EXPLORE'] = line2904
+          rooms['Fairy Circle']['map'] = fairy_map2
           break
     elif rooms['Fairy Circle']['speach'] == 2:
           print_slow('You try talking to the Dark Fairy Prince, but remember you killed him. Oh well. He was kind of a jerk.',typingActive)
@@ -868,6 +1006,45 @@ def marsh_speak(p1, rooms, typingActive):
       break
     elif rooms["Frog Marsh"]['speach'] == 3:
       print_slow(line2805,typingActive)
+      break
+def ship_speak(p1, rooms, typingActive):
+  while True:
+    if rooms['Docked Ship']['speach'] == 0:
+      if rooms['Docked Ship']['event'] == 0:
+        print_slow(line3503, typingActive)
+      elif rooms['Docked Ship']['event'] == 1:
+        print_slow(line3503b, typingActive)
+      choice = 1
+      while choice == 1:
+        selc = input().upper().strip()
+        print('\n')
+        if selc == "YES":
+          print_slow(line3504, typingActive)
+          rooms['Docked Ship']['speach'] = 1
+          rooms['Waterfall Pool']['SOUTH'] = 'Waterfall Cave'
+          choice = 0
+          break
+        elif selc == "NO":
+          print_slow(line3505, typingActive)
+          rooms['Docked Ship']['event'] = 1
+          choice = 0
+          break
+        else:
+           print_slow('\nInvalid selection. Select YES or NO.\n', typingActive)
+      rooms['Docked Ship']['intro'] = line3501b
+      break
+    elif rooms['Docked Ship']['speach'] == 1 and 'SERPENTS EYE' not in p1.inventory:
+      print_slow(line3506, typingActive)
+      break
+    elif rooms['Docked Ship']['speach'] == 1 and 'SERPENTS EYE' in p1.inventory:
+      print_slow(line3507, typingActive)
+      p1.inventory.remove('SERPENTS EYE')
+      p1.GP += 500
+      print_slow(f"{p1.name} received a small treasure chest filled with gold coins worth 500 GP! {p1.name} has {p1.GP} GP in their wallet.", typingActive)
+      rooms['Docked Ship']['speach'] = 2
+      break
+    elif rooms['Docked Ship']['speach'] == 2:
+      print_slow(line3508, typingActive)
       break
 def farm_crafting(p1, typingActive):
   while True:
@@ -1028,27 +1205,6 @@ def swamp8_special(p1, selc, typingActive):
           rooms['Rotten Swamp 8']['secret_path'] = 2
           return
   
-def traveling_merchant(p1, foe, typingActive):
-  global shop_open
-  shop_open = 1
-  
-  print_slow(line305, typingActive)
-  while shop_open == 1:
-    print_slow(""""Take a look!"\n """, typingActive)
-    print_slow(f"POTION:[{key_items['POTION']['price']} GP]\n", typingActive)
-    print_slow(f"SMOKE BOMB:[{key_items['SMOKE BOMB']['price']} GP]\n", typingActive)
-    print_slow(f"ANTIDOTE:[{key_items['ANTIDOTE']['price']} GP]\n", typingActive)
-    print_slow(f"ETHER:[{key_items['ETHER']['price']} GP]\n", typingActive)
-    if 'MAP' in rooms['Shop']['items']:
-      print_slow(f"MAP:[{key_items['MAP']['price']} GP]\n", typingActive)
-    print_slow(f"\n{p1.name}'s Wallet:[{p1.GP} GP]\n", typingActive)
-    print_slow('\nType your selection or BACK to leave merchant.\n', typingActive) 
-    sales_mechanic(p1, rooms, typingActive)
-      
-    if shop_open == 0:
-      print_slow('You bid farewell to the merchant and continue on your way.\n',typingActive)
-      break
-
 
 
 rooms = {
@@ -1061,10 +1217,10 @@ rooms = {
         'EAST' : None,
         'SOUTH' : None,
         'WEST' : None,
-        'EXPLORE': None,
+        'EXPLORE' : None,
         'EXAMINE' : None,
         'SPEAK' : None,
-        'REST' : 'rest',
+        'REST' : None,
         'PRAY' : 'pray',
         'BUY' : "BUY",
         'CRAFT' : 'craft',
@@ -1076,22 +1232,54 @@ rooms = {
         'enemy_spawn_set' : None,
         'boss' : [],
         'boss_ambush' : None,
+        'items' : [],
         'foe' : None,
         'LOCK' : None,
         'chest' : None,
         'event' : None,
     },
-
+    
+    'TESTING GROUND' : {
+        'name' : 'TESTING GROUND',
+        'intro' : "How'd you end up here?",
+        'map' : blank_map1,
+        'discovered' : [],
+        'NORTH' : 'Docked Ship',
+        'EAST' : 'Camp Site',
+        'SOUTH' : 'Camp Site',
+        'WEST' : 'Camp Site',
+        'EXPLORE' : 'Nothing to see here....',
+       # 'EXAMINE' : None,
+        #'SPEAK' : None,
+        #'REST' : None,
+        #'PRAY' : 'pray',
+        #'BUY' : "BUY",
+        #'CRAFT' : 'craft',
+        #'speach' : None,
+        #'crafting' : None,
+        #'secrets' : [],
+        #'secret_path' : 0,
+        'spawn_rate' : 5,
+        'enemy_spawn_set' : enemy_spawnT,
+        #'boss' : [],
+        #'boss_ambush' : None,
+        #'foe' : None,
+        #'LOCK' : None,
+        #'chest' : None,
+        #'event' : None,
+    },
+  
     'Camp Site' : {
         'name' : 'Camp Site',
         'intro' : line101,
         'map' : camp_map1,
         'discovered' : [],
         'NORTH' : 'Deep Forest',
+        'EAST' : 'TESTING GROUND',
         'SOUTH' : 'Town Center',
         'WEST' : 'Cliff Side',
-        'EXPLORE': line103,
-        'REST': 'rest',
+        'EXPLORE' : line103,
+        'REST': camp_healing,
         'fire' : 3,
         'spawn_rate' : 0,
     },
@@ -1103,7 +1291,7 @@ rooms = {
         'discovered' : [],
         'EAST' : 'Camp Site',
         'SECRET_ROUTE' : 'Waterfall Pool',
-        'EXPLORE': line602,
+        'EXPLORE' : line602,
         'EXAMINE' : cliff_examine,
         'secrets' : ['JUMP', 'FLY', 'DIVE'],
         'secret_path' : 0,
@@ -1122,7 +1310,7 @@ rooms = {
         'EAST' : 'Shop',
         'SOUTH' : 'Royal Castle',
         'WEST' : 'Inn',
-        'EXPLORE': line202,
+        'EXPLORE' : line202,
         'spawn_rate' : 0,
     },
 
@@ -1133,11 +1321,11 @@ rooms = {
         'discovered' : [],
         'WEST' : 'Town Center',
         'EXIT' : 'Town Center',
-        'EXPLORE': line304,
-        'BUY' : "BUY",
+        'EXPLORE' : line304,
+        'BUY' : city_shop,
         'spawn_rate' : 0,
         'event' : 0,
-        'items' : ['MAP', 'LANTERN', 'CRAFTING POUCH', 'SPECIAL FEED'],
+        'items' : ['MAP', 'LANTERN', 'CRAFTING POUCH',],
     },
 
   'Inn' : {
@@ -1147,8 +1335,8 @@ rooms = {
         'discovered' : [],
         'EAST' : 'Town Center',
         'EXIT' : 'Town Center',
-        'EXPLORE': line404,
-        'REST' : 'rest',
+        'EXPLORE' : line404,
+        'REST' : city_inn,
         'spawn_rate' : 0,
     },
 
@@ -1159,7 +1347,7 @@ rooms = {
         'discovered' : [],
         'NORTH' : 'Town Center',
         'EXIT' : 'Town Center',
-        'EXPLORE': line502,
+        'EXPLORE' : line502,
         'spawn_rate' : 0,
         'SPEAK' : castle_speak,
         'speach' : 0,
@@ -1175,7 +1363,7 @@ rooms = {
         'EAST' : 'Rocky Hill',
         'SOUTH' : 'Camp Site',
         'WEST' : 'River Channel',
-        'EXPLORE': line702,
+        'EXPLORE' : line702,
         'spawn_rate' : 2,
         'enemy_spawn_set' : enemy_spawn1,
     },
@@ -1201,10 +1389,11 @@ rooms = {
         'intro' : line1101,
         'map' : shrine_map1,
         'discovered' : [],
+        'EAST' :'Misty Woods - Bend',
         'SOUTH' : 'Rocky Hill',
-        'EXPLORE': line1102,
+        'EXPLORE' : line1102,
         'SPEAK' : shrine_speak,
-        'PRAY' : 'PRAY',
+        'PRAY' : shrine_pray,
         'speach' : 0,
         'spawn_rate' : 3,
         'enemy_spawn_set' : enemy_spawn4,
@@ -1217,7 +1406,7 @@ rooms = {
         'discovered' : [],
         'WEST' : 'Rocky Hill',
         'EAST' : 'LOCKED',
-        'EXPLORE': line906,
+        'EXPLORE' : line906,
         'EXAMINE' : cave_examine,
         'spawn_rate' : 0,
         'boss' : ['Bear'],
@@ -1233,7 +1422,7 @@ rooms = {
         'NORTH' : 'Rocky Cave 2',
         'SOUTH' : 'Rocky Cave 3',
         'WEST' : 'Bear Cave',
-        'EXPLORE': line917,
+        'EXPLORE' : line917,
         'spawn_rate' : 4,
         'enemy_spawn_set' : enemy_spawn8,
     },
@@ -1244,7 +1433,7 @@ rooms = {
         'map' : cave2_map1,
         'discovered' : [],
         'SOUTH' : 'Rocky Cave 1',
-        'EXPLORE': line923,
+        'EXPLORE' : line923,
         'EXAMINE' : cave2_examine,
         'spawn_rate' : 4,
         'enemy_spawn_set' : enemy_spawn8,
@@ -1258,7 +1447,7 @@ rooms = {
         'discovered' : [],
         'NORTH' : 'Rocky Cave 1',
         'SOUTH' : 'Rocky Cave 4',
-        'EXPLORE': line932a,
+        'EXPLORE' : line932a,
         'spawn_rate' : 4,
         'enemy_spawn_set' : enemy_spawn8,
     },
@@ -1286,7 +1475,7 @@ rooms = {
         'map' : cave5_map1,
         'discovered' : [],
         'WEST' : 'Rocky Cave 4',
-        'EXPLORE': line950,
+        'EXPLORE' : line950,
         'spawn_rate' : 0,
         'boss' : ['Goblin Queen'],
         'boss_ambush' : cave5_boss_ambush,
@@ -1301,7 +1490,7 @@ rooms = {
         'NORTH' : 'Lake Beach',
         'EAST' : 'Deep Forest',
         'SOUTH' : 'Waterfall Pool',
-        'EXPLORE': line1202,
+        'EXPLORE' : line1202,
         'secrets' : ['JUMP', 'SWIM', 'DIVE'],
         'special' : river_special,
         'spawn_rate' : 3,
@@ -1314,7 +1503,8 @@ rooms = {
         'map' : waterfall_map1,
         'discovered' : [],
         'NORTH' : 'River Channel',
-        'EXPLORE': line1302,
+        'SOUTH' : 'LOCKED',
+        'EXPLORE' : line1302,
         'EXAMINE' : waterfall_examine,
         'secrets' : ['JUMP', 'SWIM', 'DIVE'],
         'special' : river_special,
@@ -1322,6 +1512,36 @@ rooms = {
         'enemy_spawn_set' : enemy_spawn5,
         'chest' : 'CLOSED',
         'event' : 0,
+    },
+  'Waterfall Cave' : {
+        'name' : 'Waterfall Cave',
+        'intro' : None,
+        'map' : None,
+        'discovered' : [],
+        'NORTH' : None,
+        'EAST' : None,
+        'SOUTH' : None,
+        'WEST' : None,
+        'EXPLORE' : None,
+        'EXAMINE' : None,
+        'SPEAK' : None,
+        'REST' : None,
+        'PRAY' : 'pray',
+        'BUY' : "BUY",
+        'CRAFT' : 'craft',
+        'speach' : None,
+        'crafting' : None,
+        'secrets' : [],
+        'secret_path' : 0,
+        'spawn_rate' : 0,
+        'enemy_spawn_set' : None,
+        'boss' : [],
+        'boss_ambush' : None,
+        'items' : [],
+        'foe' : None,
+        'LOCK' : None,
+        'chest' : None,
+        'event' : None,
     },
 
   'Lake Beach' : {
@@ -1332,7 +1552,7 @@ rooms = {
         'NORTH' : 'Boat House',
         'EAST' : 'LOCKED',
         'SOUTH' : 'River Channel',
-        'EXPLORE': line1402,
+        'EXPLORE' : line1402,
         'EXAMINE': lake_examine,
         'secrets' : ['JUMP', 'SWIM', 'DIVE'],
         'special' : lake_special,
@@ -1348,7 +1568,7 @@ rooms = {
         'map' : boat_map1,
         'discovered' : [],
         'SOUTH' : 'Lake Beach',
-        'EXPLORE': line1502,
+        'EXPLORE' : line1502,
         'SPEAK' : boat_speak,
         'speach' : 0,
         'spawn_rate' : 0,
@@ -1361,7 +1581,7 @@ rooms = {
         'discovered' : [],
         'NORTH' : 'Rocky Hill',
         'EAST' : 'Flower Meadow',
-        'EXPLORE': line1002,
+        'EXPLORE' : line1002,
         'EXAMINE' : berry_examine,
         'secrets' : ['WAIT', 'PICK'],
         'special' : berry_special,
@@ -1381,7 +1601,7 @@ rooms = {
         'EAST' : 'Great Oak',
         'SOUTH' : 'Quiet Village',
         'WEST' : 'Berry Patch',
-        'EXPLORE': line1702,
+        'EXPLORE' : line1702,
         'spawn_rate' : 3,
         'enemy_spawn_set' : enemy_spawn9,
         'foe' : None,
@@ -1394,7 +1614,7 @@ rooms = {
         'map' : witch_map1,
         'discovered' : [],
         'SOUTH' : 'Flower Meadow',
-        'EXPLORE': line2402,
+        'EXPLORE' : line2402,
         'SPEAK' : witch_speak,
         'CRAFT' : witch_crafting,
         'speach' : 0,
@@ -1412,7 +1632,7 @@ rooms = {
         'EAST' : 'Farm House',
         'SOUTH' : 'Tavern & Inn',
         'WEST' : "Smith's Workshop",
-        'EXPLORE': line1802,
+        'EXPLORE' : line1802,
         'spawn_rate' : 0,
     },
 
@@ -1423,8 +1643,8 @@ rooms = {
         'discovered' : [],
         'NORTH' : 'Quiet Village',
         'EXIT' : 'Quiet Village',
-        'EXPLORE': line404b,
-        'REST' : 'rest',
+        'EXPLORE' : line404b,
+        'REST' : city_inn,
         'spawn_rate' : 0,
     },
 
@@ -1435,7 +1655,7 @@ rooms = {
         'discovered' : [],
         'EAST' : 'Quiet Village',
         'EXIT' : 'Quiet Village',
-        'EXPLORE': line1902,
+        'EXPLORE' : line1902,
         'UPGRADE' : village_smith,
         'upgrade_cost' : 75,
         'spawn_rate' : 0,
@@ -1447,7 +1667,7 @@ rooms = {
         'map' : farm_map1,
         'discovered' : [],
         'WEST' : 'Quiet Village',
-        'EXPLORE': line2202,
+        'EXPLORE' : line2202,
         'SPEAK' : farm_speak,
         'CRAFT' : farm_crafting,
         'crafting' : 'INACTIVE',
@@ -1463,7 +1683,7 @@ rooms = {
         'discovered' : [],
         'WEST' : 'Flower Meadow',
         'CLIMB': 'Bee Hive',
-        'EXPLORE': line2002,
+        'EXPLORE' : line2002,
         'EXAMINE' : oak_examine,
         'spawn_rate' : 0,
  
@@ -1476,7 +1696,7 @@ rooms = {
         'discovered' : [],
         'EXIT' : 'Great Oak',
         'CLIMB' : 'Great Oak',
-        'EXPLORE': line2105,
+        'EXPLORE' : line2105,
         'EXAMINE' : hive_examine,
         'spawn_rate' : 0,
         'enemy_spawn_set' : enemy_spawn10,
@@ -1494,7 +1714,7 @@ rooms = {
         'NORTH' : 'Rotting Woods',
         'SOUTH' : 'Fairy Circle',
         'WEST' : 'Lake Beach',
-        'EXPLORE': line1602,
+        'EXPLORE' : line1602,
         'EXAMINE' : mushroom_examine,
         'spawn_rate' : 3,
         'enemy_spawn_set' : enemy_spawn7,
@@ -1509,7 +1729,7 @@ rooms = {
         'map' : fairy_map1,
         'discovered' : [],
         'NORTH' : 'Mushroom Grove',
-        'EXPLORE': line2902,
+        'EXPLORE' : line2902,
         'EXAMINE' : fairy_examine,
         'SPEAK' : fairy_speak,
         'speach' : 0,
@@ -1528,7 +1748,7 @@ rooms = {
         'NORTH' : 'Frog Marsh',
         'SOUTH' : 'Mushroom Grove',
         'WEST' : 'Rotten Swamp 1',
-        'EXPLORE': line2602,
+        'EXPLORE' : line2602,
         'spawn_rate' : 2,
         'enemy_spawn_set' : enemy_spawn11,
     },
@@ -1541,7 +1761,7 @@ rooms = {
         'discovered' : [],
         'EAST' : 'Rotting Woods',
         'WEST' : 'Rotten Swamp 2',
-        'EXPLORE': line2702,
+        'EXPLORE' : line2702,
         'spawn_rate' : 3,
         'enemy_spawn_set' : enemy_spawn12,
     },
@@ -1553,7 +1773,7 @@ rooms = {
         'EAST' : 'Rotten Swamp 1',
         'SOUTH' : 'Rotten Swamp 6',
         'WEST' : 'Rotten Swamp 3',
-        'EXPLORE': line2704,
+        'EXPLORE' : line2704,
         'spawn_rate' : 4,
         'enemy_spawn_set' : enemy_spawn13,
     },
@@ -1565,7 +1785,7 @@ rooms = {
         'NORTH' : 'Rotten Swamp 4',
         'EAST' : 'Rotten Swamp 2',
         'SOUTH' : 'Rotten Swamp 5',
-        'EXPLORE': line2706,
+        'EXPLORE' : line2706,
         'spawn_rate' : 4,
         'enemy_spawn_set' : enemy_spawn13,
     },
@@ -1575,7 +1795,7 @@ rooms = {
         'map' : swamp4_map1,
         'discovered' : [],
         'SOUTH' : 'Rotten Swamp 3',
-        'EXPLORE': line2708,
+        'EXPLORE' : line2708,
         'EXAMINE' : swamp4_examine,
         'event' : 0,
         'spawn_rate' : 4,
@@ -1591,7 +1811,7 @@ rooms = {
         'EAST' : 'Rotten Swamp 6',
         'SOUTH' : 'Rotten Swamp 8',
         'WEST' : 'Rotten Swamp 7',
-        'EXPLORE': line2718,
+        'EXPLORE' : line2718,
         'spawn_rate' : 4,
         'enemy_spawn_set' : enemy_spawn13,
     },
@@ -1602,7 +1822,7 @@ rooms = {
         'discovered' : [],
         'NORTH' : 'Rotten Swamp 2',
         'WEST' : 'Rotten Swamp 5',
-        'EXPLORE': line2720,
+        'EXPLORE' : line2720,
         'special' : swamp6_special,
         'secrets' : ['DRINK', 'SWIM', 'DIVE'],
         'secret_path' : 0,
@@ -1615,7 +1835,7 @@ rooms = {
         'map' : swamp7_map1,
         'discovered' : [],
         'EAST' : 'Rotten Swamp 5',
-        'EXPLORE': line2724,
+        'EXPLORE' : line2724,
         'special' : swamp7_special,
         'secrets' : ['DRINK', 'SWIM', 'DIVE', 'RIBBIT', 'RIBBITING', 'CROAK','CROAKING', 'KERO', 'KEROKERO'],
         'secret_path' : 0,
@@ -1629,7 +1849,7 @@ rooms = {
         'map' : swamp8_map1,
         'discovered' : [],
         'NORTH' : 'Rotten Swamp 5',
-        'EXPLORE': line2728,
+        'EXPLORE' : line2728,
         'special' : swamp8_special,
         'secrets' : ['PLAY', 'DRINK', 'SWIM', 'DIVE'],
         'secret_path' : 0,
@@ -1645,9 +1865,9 @@ rooms = {
         'intro' : line2801,
         'map' : marsh_map1,
         'discovered' : [],
-        #'EAST' : None,
+        'EAST' : 'Grassy Plains',
         'SOUTH' : 'Rotting Woods',
-        'EXPLORE': line2802,
+        'EXPLORE' : line2802,
         'SPEAK' : marsh_speak,
         'CRAFT' : marsh_crafting,
         'speach' : 0,
@@ -1658,12 +1878,120 @@ rooms = {
         'chest' : None,
         'event' : None,
     },
+  'Grassy Plains' : {
+        'name' : 'Grassy Plains',
+        'intro' : line3001,
+        'map' : plains_map1,
+        'discovered' : [],
+        'NORTH' : 'Northern Coast',
+        'EAST' : 'Foot Hills',
+        'WEST' : 'Frog Marsh',
+        'EXPLORE' : line3002,
+        'spawn_rate' : 4,
+        'enemy_spawn_set' : enemy_spawnT,
+    },
+  'Foot Hills' : {
+        'name' : 'Foot Hills',
+        'intro' : line3101,
+        'map' : foothills_map1,
+        'discovered' : [],
+        'NORTH' : 'Shipwreck',
+        'WEST' : 'Grassy Plains',
+        'EXPLORE' : line3102,
+        'spawn_rate' : 3,
+        'enemy_spawn_set' : enemy_spawnT,
+    },
+  'Northern Coast' : {
+        'name' : 'Northern Coast',
+        'intro' : line3201,
+        'map' : coast_map1,
+        'discovered' : [],
+        'EAST' : 'Shipwreck',
+        'SOUTH' : 'Grassy Plains',
+        'WEST' : 'Harbor Town',
+        'EXPLORE' : line3202,
+        'spawn_rate' : 4,
+        'enemy_spawn_set' : enemy_spawn16,
+    },
+  'Shipwreck' : {
+        'name' : 'Shipwreck',
+        'intro' : line3301,
+        'map' : shipwreck_map1,
+        'discovered' : [],        
+        'SOUTH' : 'Foot Hills',
+        'WEST' : 'Northern Coast',
+        'EXPLORE' : line3302,
+        'EXAMINE' : shipwreck_examine,
+        'spawn_rate' : 3,
+        'enemy_spawn_set' : enemy_spawn16,
+        'chest' : 'CLOSED',
+        'event' : 0,
+    },
+  #Harbor Town Start
+    'Harbor Town' : {
+        'name' : 'Harbor Town',
+        'intro' : line3401,
+        'map' : harbor1_map1,
+        'discovered' : [],
+        'NORTH' : 'Harbor Markets',
+        'EAST' : 'Northern Coast',
+        'WEST' : 'Harbor Inn',
+        'EXPLORE' : line3402,
+        'spawn_rate' : 0,
+    },
+    'Harbor Inn' : {
+        'name' : 'Harbor Inn',
+        'intro' : line401c,
+        'map' : harborinn_map1,
+        'discovered' : [],
+        'EAST' : 'Harbor Town',
+        'EXIT' : 'Harbor Town',
+        'EXPLORE' : line404c,
+        'REST' : city_inn,
+        'spawn_rate' : 0,
+    },
+    'Harbor Markets' : {
+        'name' : 'Harbor Markets',
+        'intro' : line302,
+        'map' : harbormarket_map1,
+        'discovered' : [],
+        'SOUTH' : 'Harbor Town',
+        'WEST' : 'Docked Ship',
+        'EXPLORE' : line303,
+        'BUY' : harbor_shop,
+        'spawn_rate' : 0,
+        'items' : ['MAP', 'CRAFTING POUCH', 'DRAGON SCALE', 'EXTRA POUCH', 'GORGET',],
+    },
+    'Docked Ship' : {
+        'name' : 'Docked Ship',
+        'intro' : line3501,
+        'map' : harborship_map1,
+        'discovered' : [],
+        'EAST' : 'Harbor Markets',
+        'EXPLORE' : line3502,
+        'SPEAK' : ship_speak,
+        'speach' : 0,
+        'spawn_rate' : 0,
+        'event' : 0,
+    },
+      
+  'Misty Woods - Bend' : {
+        'name' : 'Misty Woods - Bend',
+        'intro' : line3801,
+        'map' : woodsBend_map1,
+        'discovered' : [],
+        #'NORTH' : None,
+        'WEST' : 'Mystic Shrine',
+        'EXPLORE' : line3802,
+        'spawn_rate' : 3,
+        'enemy_spawn_set' : enemy_spawn15,
+    },
   
 }
 
 song_term = ['RIBBIT', 'RIBBITING', 'CROAK','CROAKING', 'KERO', 'KEROKERO']
-#define player key items
 
+#define player key items
 
 key_items = {
     '': {
@@ -1691,7 +2019,11 @@ key_items = {
         'description': None,
         'price' : 30,
     },
-
+  'DRAGON SCALE': {
+        'name': 'DRAGON SCALE',
+        'description': None,
+        'price' : 350
+    },
   
     'MAP': {
         'name': 'MAP',
@@ -1778,11 +2110,40 @@ key_items = {
         'name': 'CRYSTAL NECKLACE',
         'description': 'A necklace made from an unusual crystal. A faint warmth can be felt emanating from it. Wearing it fills you with magical energy.',
     },
+  'EXTRA POUCH': {
+        'name': 'EXTRA POUCH',
+        'description': None,
+        'price' : 500,
+    },
+  'MYTHRIL MAIL': {
+        'name': 'MYTHRIL MAIL',
+        'description': 'A shirt made with rings of pure mythril. This legendary metal is stronger and tougher than steel, yet weighs as much as silk. Even a king would be jealous of such a fine piece of armor.',
+    },
+  'GORGET': {
+        'name': 'GORGET',
+        'description': 'A collar of metal plates covered in leather. Offers additional protection against blows to the throat; an essential piece of armor by all accounts.',
+        'price' : 1250,
+    },
+  'STRANGE GREASE': {
+        'name': 'STRANGE GREASE',
+        'description': 'A strange grease found in the Waterfall Cave after defeating the River Serpant. Perhaps you should ask a SMITH about it...',
+    },
+  'MAGIC GREASE': {
+        'name': 'MAGIC GREASE',
+        'description': 'A strange grease found in the Waterfall Cave after defeating the River Serpant. Blades coated in it seem to never rust and retain their edge indefinitely.',
+    },
+  'SERPANT EYE': {
+        'name': 'SERPANT EYE',
+        'description': 'An eye plucked from the River Serpent. This trophy was requested by the old Captain as retribution for his lost eye from many years ago. Hopefully it was worth the trouble to get this nasty thing.'
 }
 
 
-shop_items = ['POTION', 'ANTIDOTE', 'ETHER', 'SMOKE BOMB', 'MAP', 'LANTERN', 'CRAFTING POUCH', 'SPECIAL FEED']
-shop_keyItems = ['MAP', 'LANTERN', 'CRAFTING POUCH', 'SPECIAL FEED']
+shop_items = ['POTION', 'ANTIDOTE', 'ETHER', 'SMOKE BOMB', 'MAP', 'LANTERN', 'CRAFTING POUCH', 'SPECIAL FEED', 'DRAGON SCALE', 'EXTRA POUCH', 'GORGET']
+
+
+shop_keyItems = ['MAP', 'LANTERN', 'CRAFTING POUCH', 'SPECIAL FEED', 'DRAGON SCALE', 'EXTRA POUCH', 'GORGET']
+travelingMerchant_items = ['MAP', 'LANTERN', 'GORGET']
+
 
 crafting_items = {
       '': {
