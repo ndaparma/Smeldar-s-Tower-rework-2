@@ -2,6 +2,7 @@ import sys
 import time
 def player_input():
   selc = input().upper().strip()
+  print('\n')
 def print_slow(str, typingActive):
   if typingActive == "ON":
     for char in str:
