@@ -206,7 +206,11 @@ def sales_mechanic(p1, rooms, current_room, typingActive):
     global traveling_shop
     global merchant_alive
 
-    def merchant_battle():
+    sale = 0
+    selc = (input().upper()).strip()
+    print_slow("\n", typingActive)
+
+    if (selc == "ATK" or selc == "ATTACK") and traveling_shop == 1:
       foe = p28
       print_slow(
           f"{p1.name} assaults the Traveling Merchant! The Merchant narrowly avoids the attack before drawing his own weapon!\n",
@@ -224,14 +228,7 @@ def sales_mechanic(p1, rooms, current_room, typingActive):
       traveling_shop = 0
       merchant_alive = 0
       return
-      
-   
-    sale = 0
-    selc = (input().upper()).strip()
-    print_slow("\n", typingActive)
 
-    if (selc == "ATK" or selc == "ATTACK") and traveling_shop == 1:
-        merchant_battle()
     if selc in shop_items or selc in shop_keyItems:
 
         if p1.GP < key_items[selc]['price']:
@@ -1496,10 +1493,10 @@ def smith_speak(p1, rooms, typingActive):
       print_slow(line1906, typingActive)
       rooms["Smith's Workshop"]['event'] = 1
       if 'Goblin Queen' not in rooms["Queen's Chamber"]['boss']:
-      print_slow(line1907b, typingActive)
-      rooms["Smith's Workshop"]['event'] = 2
-      p1.inventory.remove('AXE')
-      p1.inventory.append('SHARP AXE')
+        print_slow(line1907b, typingActive)
+        rooms["Smith's Workshop"]['event'] = 2
+        p1.inventory.remove('AXE')
+        p1.inventory.append('SHARP AXE')
     elif 'GOBLIN FINGER' not in p1.inventory and rooms["Smith's Workshop"]['event'] == 1:
       print_slow(line1906b, typingActive)
     elif 'GOBLIN FINGER' in p1.inventory and rooms["Smith's Workshop"]['event'] == 1:

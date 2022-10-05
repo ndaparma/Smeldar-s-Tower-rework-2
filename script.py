@@ -82,7 +82,7 @@ line802 = 'Small animal bones litter ther entrance to the cave EAST of you. Larg
 line804 = 'Small animal bones litter ther entrance to the cave EAST of you. Large claw marks can be seen across several nearby trees. Past the HILL and in the woods to the NORTH you can just make out a blue glow through the trees. The path continues in the direction of the glow. Looking SOUTH a path has been cleared. The woods sound like they are teeming with life in that direction and you catch a sweet smell in the air.\n' 
   #EXAMINE
 line805 = "The tree appears to have been struck by lightning and broke; it's tipped over and is blocking the path SOUTH. If only you had a way to finish knocking the tree over...\n" 
-line805b = "The tree appears to have been struck by lightning and broke; it's tipped over and is blocking the path SOUTH. You'll need to finish knocking it down to get through. Your AXE should be perfect for the job. CUT the tree down, or LEAVE it be?\n"
+line805b = "The tree appears to have been struck by lightning and broke; it's tipped over and is blocking the path SOUTH. You'll need to finish knocking it down to get through. Your AXE should do the job. CUT the tree down, or LEAVE it be?\n"
 line806 = "You take your AXE and begin chopping into the tree. After a few good whacks the tree finishes toppling over. A familiy of squirrels curses you for destroying their home. Don't worry though; squirrel magic is lame. You can easily step over the trunk and continue now.\n" 
 line806b = "You decide to leave the tree alone.\n"
 line811 = "The tree has been cleared from the path. You can head SOUTH now.\n"
@@ -91,8 +91,8 @@ line812 = "The way SOUTH is blocked by a damaged tree. If only you had a way to 
 line901 = "As you enter the cave a foul stench fills your nostrils. You soon discover the source; a sleeping Bear lies in front of you.\n" 
 line902 = "As you enter the cave a foul stench fills your nostrils. The Bear is gone but its smell lingers.\n" 
   #Examine
-line903 = "You notice the Bear is gaurding a large bearded AXE. Theres no way you're getting it without dealing with that Bear. Do you POKE or BACK out?\n" 
-line904 = "You notice the Bear is gaurding a large bearded AXE. Theres no way you're getting it without dealing with that Bear. You remember the SALMON you found at the WATERFALL. Maybe this will help? Do you POKE, FEED, or BACK out?\n" 
+line903 = "You notice the Bear is gaurding a large woodcutting AXE. Theres no way you're getting it without dealing with that Bear. Do you POKE or BACK out?\n" 
+line904 = "You notice the Bear is gaurding a large woodcutting AXE. Theres no way you're getting it without dealing with that Bear. You remember the SALMON you found at the WATERFALL. Maybe this will help? Do you POKE, FEED, or BACK out?\n" 
   #EXPLORE
 line906 = "The cave reeks of somthing foul, like rotting fish. It's dark, but it appears that the cave continues on EAST. Just a few paces ahead, a sleeping Bear lies; it seems to be guarding something. EXAMINE for a closer look?\n" 
 line906b = "The cave reeks of somthing foul, like rotting fish. Now that the Bear is gone the stench isn't quite so bad... It's dark, but it appears that the cave continues on EAST.\n"
@@ -253,6 +253,7 @@ line1405 = "The flower blocking the path is massive. It stands one and a half me
 line1406 = "You take your AXE and begin chopping into the flower. Before you can get a second strike in, the flower starts to shift and pull itself out of the ground. Soon you realize that standing before you is a legendary Mandragora! It doesn't look too happy with you. \n" 
 line1407 = "You LEAVE the flower alone for now. No sense in harming it right?\n" 
 line1408 = "You stare at the remnants of the mangled Mandragora. The sap dripping from its broken stems and tattered petals make for a shockingly distrubing sight. You take notice of a pair of coiled thorns that could be used as bracers. You grab the THORN BRACERS and place them in your pack. Best to keep going and not think about how you murdered an endangered species.\n" 
+line1409 = "You try to chop into the flower, but your AXE merely bounces off. You're going to need something sharper to get through this plant... Maybe you can find someone who can perform some maintenance on your AXE for you.\n" 
   #EAST
 line1410 = "Your path is blocked by a massive flower. You've never seen anything like it in your travels before. EXAMINE for a closer look?\n" 
 line1411 = "You continue on the cleared path and re-enter the woods.\n" 
