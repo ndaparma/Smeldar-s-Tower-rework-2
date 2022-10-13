@@ -2,6 +2,7 @@ import random
 import os
 import sys
 import shelve
+import pickle
 import character 
 import combat 
 import world 
@@ -354,11 +355,10 @@ def save():
         print_slow('\nType name for your save:\n', typingActive)
         savefile1 = input().lower().strip()
         savePath = Path(sys.argv[0]).parent / Path(f'saves/{savefile1}')
-        shelfFile = shelve.open(f'{savePath}')
-        shelfFile['playerVar'] = p1 
-        shelfFile['croomVar'] = current_room 
-        shelfFile['roomVar'] = world.rooms 
-        shelfFile.close()
+        saveState = (p1, world.rooms, current_room)
+        pickleFile = open(f'{savePath}', 'wb')
+        pickle.dump(saveState, pickleFile)
+        pickleFile.close()
         print_slow('\n*****[Save Complete]*****', typingActive)
         saveMenu = "CLOSED"
         break
@@ -381,18 +381,19 @@ def load():
         savefile1 = selc      
         loadPath = Path(sys.argv[0]).parent / Path(f'saves/{savefile1}')
         if loadPath.is_file():
-            shelfFile = shelve.open(f'{loadPath}')
-            p1 = shelfFile['playerVar'] 
-            current_room = shelfFile['croomVar'] 
-            world.rooms = shelfFile['roomVar']
-            shelfFile.close()
+            pickleFile = open(f'{loadPath}', 'rb')
+            loadState = pickle.load(pickleFile)
+            p1 = loadState[0]
+            world.rooms = loadState[1]
+            current_room = loadState[2]
+            pickleFile.close()
             loadMenu = "CLOSED"
             gameSetup = 0
             print_slow('\n*****[Load Complete]*****', typingActive)
             break
         if selc == 'show':
-            path = Path('saves/')
-            files = [file.stem for file in path.rglob('*')]
+            showPath = Path(sys.argv[0]).parent / Path(f'saves/')
+            files = [file.stem for file in showPath.rglob('*')]
             print(sorted(files))
         elif selc == 'back':
             loadMenu = "CLOSED"

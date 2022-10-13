@@ -6,7 +6,7 @@ from map import *
 import random
 
 
-#define room mechanics/events
+
 def equip_stat_update(p1, selc, previous_gear):
   if previous_gear != None and previous_gear != 'EMPTY':
     p1.ATK += key_items[previous_gear]['ATK'] * -1
@@ -515,7 +515,7 @@ def traveling_merchant(p1, foe, current_room, typingActive):
             break
 
 
-def city_inn(p1, typingActive):#general inn mechanics  
+def city_inn(p1, current_room, typingActive):#general inn mechanics  
     inn_room = 40
 
     while True:
@@ -701,7 +701,7 @@ def waterfall_examine(p1, rooms, typingActive):
                 print_slow(line1305, typingActive)
                 break
             else:
-                print_slow('\nInvalid selection. Try again.\n')
+                print_slow('\nInvalid selection. Try again.\n', typingActive)
         elif rooms['Waterfall Pool']['chest'] == 'OPEN':
             if rooms['Waterfall Pool']['event'] == 1:
                 print_slow(line1307, typingActive)
@@ -1850,6 +1850,11 @@ def kobold_speak(p1, rooms, typingActive):
             p1.inventory.remove("SLEEPY SQUIRELL")
         if "WET TOAD" in p1.inventory:
             p1.inventory.remove("WET TOAD")
+        rooms['Deep Woods - Forest Hut']['intro'] = line4724
+        rooms['Deep Woods - Forest Hut']['EXPLORE'] = line4727
+        rooms['Deep Woods - Forest Hut']['BUY'] = kobold_shop
+        rooms['Deep Woods - Forest Hut']['speach'] = 4
+        rooms['Deep Woods - Forest Hut']['event'] = 2
     elif rooms['Deep Woods - Forest Hut']['speach'] == 3 and ("WET TOAD" or "SLEEPY SQUIRELL") in p1.inventory:
         print_slow(line4732, typingActive)
         while True:
@@ -1859,11 +1864,6 @@ def kobold_speak(p1, rooms, typingActive):
             elif "WET TOAD" in p1.inventory:
                 p1.inventory.remove("WET TOAD")
                 break
-        rooms['Deep Woods - Forest Hut']['intro'] = line4724
-        rooms['Deep Woods - Forest Hut']['EXPLORE'] = line4727
-        rooms['Deep Woods - Forest Hut']['BUY'] = kobold_shop
-        rooms['Deep Woods - Forest Hut']['speach'] = 4
-        rooms['Deep Woods - Forest Hut']['event'] = 2
     elif rooms['Deep Woods - Forest Hut']['speach'] == 3 and any(x in rooms['Deep Woods - Forest Hut']['items2'] for x in p1.inventory) == False:
         print_slow(line4731, typingActive)
     elif rooms['Deep Woods - Forest Hut']['speach'] == 4:
