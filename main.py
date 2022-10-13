@@ -1,10 +1,12 @@
 import random
-import pickle
-from character import *
-from combat import *
-from world import *
+import os
+import sys
+import shelve
+import character 
+import combat 
+import world 
 from script import line2004
-from slowprint import *
+from slowprint import print_slow
 from pathlib import Path
 
 
@@ -42,29 +44,29 @@ def setup():
             player_job = input().upper().strip()
             print_slow('', typingActive)
             if player_job == "WARRIOR":
-                p1 = player(player_name, player_job, ['HARDEN',], ['RUSTY DAGGER'],
+                p1 = character.player(player_name, player_job, ['HARDEN',], ['RUSTY DAGGER'],
                             [], 1, 100, 0, 70, 70, 3, 3, 16, 70, 0, 100, 95, 100, 10, 4,
                             5, 1, 5, 0, 5, 1, 0, 1, 'RUSTY DAGGER', None, None, None, None, None, None, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
                             'alive')
                 gameSetup = 3
             elif player_job == "WIZARD" or player_job == "WITCH":
-                p1 = player(player_name, player_job, ['FOCUS',], ['RUSTY DAGGER', 'FULGUR'], [],
+                p1 = character.player(player_name, player_job, ['FOCUS',], ['RUSTY DAGGER',], [],
                             1, 100, 0, 45, 45, 6, 6, 22, 89, 0, 100, 95, 100, 10, 3, 5,
-                            1, 5, 1, 5, 1, 0, 0, 'RUSTY DAGGER', None, None, None, None, None, None, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 'alive')
+                            1, 5, 1, 5, 1, 0, 1, 'RUSTY DAGGER', None, None, None, None, None, None, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 'alive')
                 gameSetup = 3
             elif player_job == "THIEF":
-                p1 = player(player_name, player_job, ['STEAL',], ['RUSTY DAGGER'],
+                p1 = character.player(player_name, player_job, ['STEAL',], ['RUSTY DAGGER'],
                             [], 1, 100, 0, 55, 55, 5, 5, 19, 78, 0, 100, 95, 100, 10, 3,
                             5, 2, 5, 1, 5, 3, 0, 1, 'RUSTY DAGGER', None, None, None, None, None, None, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
                             'alive')
                 gameSetup = 3
             elif player_job == "GOD":
-                p1 = player(
+                p1 = character.player(
                     player_name, player_job,
-                    ['HARDEN', 'STRIKE', 'BERSERK', 'FOCUS', 'BOLT', 'STORM', 'BLAST', 'STEAL', 'THROW', 'MUG', 'HASTE'], ['MAP', 'AXE', 'LANTERN', 'MESSER', 'ADAMANTITE SWORD', 'BUCKLER', 'MYTHRIL MAIL', 'BRIGANDINE', 'AETHON', 'FULGUR', 'MIDAS'], [], 1, 999999, 0, 999, 999, 99, 99, 99, 30, 0, 100, 100, 5000, 10, 10, 5, 5, 5, 5, 5, 5, 0, 1, None, None, None, None, None, None, None, 0, 1, 20, 10, 10, 10, 10, 10, 0, 0, 'alive')
+                    ['HARDEN', 'STRIKE', 'BERSERK', 'FOCUS', 'BOLT', 'STORM', 'BLAST', 'STEAL', 'THROW', 'MUG', 'HASTE'], ['MAP', 'SHARP AXE', 'LANTERN', 'MESSER', 'ADAMANTITE SWORD', 'BUCKLER', 'MYTHRIL MAIL', 'BRIGANDINE', 'AETHON', 'FULGUR', 'MIDAS'], [], 1, 999999, 0, 999, 999, 99, 99, 99, 30, 0, 100, 100, 5000, 10, 10, 5, 5, 5, 5, 5, 5, 0, 1, None, None, None, None, None, None, None, 0, 1, 20, 10, 10, 10, 10, 10, 0, 0, 'alive')
                 gameSetup = 3
             elif player_job == "INFO":
-                stat_check_menu(typingActive)
+                character.stat_check_menu(typingActive)
 
             elif player_job == 'HELP':
                 print_slow(
@@ -106,37 +108,34 @@ def move_rooms():
     global player_choice
   
     while True:
-        if 'secret_path' in rooms[current_room]:
-          if rooms[current_room]['secret_path'] == 1:
+        if 'secret_path' in world.rooms[current_room]:
+          if world.rooms[current_room]['secret_path'] == 1:
             previous_room = current_room
-            current_room = rooms[current_room]['SECRET_ROUTE']
-            rooms[previous_room]['secret_path']  = 0
+            current_room = world.rooms[current_room]['SECRET_ROUTE']
+            world.rooms[previous_room]['secret_path']  = 0
             player_choice = 1
             break
-          #else:
-           # continue
-        if (selc in rooms[current_room] and selc in directions) and rooms[current_room][
+        if (selc in world.rooms[current_room] and selc in directions) and world.rooms[current_room][
                 selc] == 'LOCKED':
-            rooms[current_room]['LOCK'](p1, selc, rooms, typingActive)
-            #break
-        if (selc in rooms[
-                current_room] and selc in directions) and rooms[current_room][selc] != 'LOCKED' and selc != 'SECRET_ROUTE':
-            if rooms[current_room][selc] not in rooms[current_room][
+            world.rooms[current_room]['LOCK'](p1, selc, world.rooms, typingActive)
+        if (selc in world.rooms[
+                current_room] and selc in directions) and world.rooms[current_room][selc] != 'LOCKED' and selc != 'SECRET_ROUTE':
+            if world.rooms[current_room][selc] not in world.rooms[current_room][
                     'discovered']:
-                rooms[current_room]['discovered'].append(
-                    rooms[current_room][selc])
+                world.rooms[current_room]['discovered'].append(
+                    world.rooms[current_room][selc])
             previous_room = current_room
-            current_room = rooms[current_room][selc]
-            if previous_room not in rooms[current_room]['discovered']:
-                rooms[current_room]['discovered'].append(previous_room)
+            current_room = world.rooms[current_room][selc]
+            if previous_room not in world.rooms[current_room]['discovered']:
+                world.rooms[current_room]['discovered'].append(previous_room)
             if selc in directions and selc != "CLIMB":
                 print_slow(f'\nYou move to the {selc}.\n', typingActive)
             if selc == "CLIMB":
                 print_slow(line2004, typingActive)
             encounter_initiaiton(current_room, typingActive)
             player_choice = 1
-            if 'boss_ambush' in rooms[current_room]:
-                rooms[current_room]['boss_ambush'](p1, typingActive)
+            if 'boss_ambush' in world.rooms[current_room]:
+                world.rooms[current_room]['boss_ambush'](p1, typingActive)
                 break
             break
         elif selc in directions and selc != "CLIMB":
@@ -148,9 +147,9 @@ def move_rooms():
 def special_actions():
     global current_room
     while True:
-      if 'secrets' in rooms[current_room]:
-        if selc in rooms[current_room]['secrets']:
-          rooms[current_room]['special'](p1, selc, typingActive)
+      if 'secrets' in world.rooms[current_room]:
+        if selc in world.rooms[current_room]['secrets']:
+          world.rooms[current_room]['special'](p1, selc, typingActive)
           move_rooms()
         else:
           print_slow('\nInvalid selection. Try again.', typingActive)
@@ -165,44 +164,44 @@ def take_actions():
     while True:
 
         if selc == "EXPLORE":
-              print_slow(rooms[current_room][selc], typingActive)
+              print_slow(world.rooms[current_room][selc], typingActive)
               break
-        elif selc == "EXAMINE" and selc in rooms[current_room]:
-              rooms[current_room]['EXAMINE'](p1, rooms, typingActive)
+        elif selc == "EXAMINE" and selc in world.rooms[current_room]:
+              world.rooms[current_room]['EXAMINE'](p1, world.rooms, typingActive)
               move_rooms()
               break
-        elif selc == "SPEAK" and selc in rooms[current_room]:
-              rooms[current_room]['SPEAK'](p1, rooms, typingActive)
+        elif selc == "SPEAK" and selc in world.rooms[current_room]:
+              world.rooms[current_room]['SPEAK'](p1, world.rooms, typingActive)
               break
         elif selc == "HEAL":
             if p1.POTS > 0:
-                potion_healing(p1, typingActive)
+                world.potion_healing(p1, typingActive)
                 break
             else:
                 print_slow(
                   f'{p1.name} is out of POTIONS and unable to heal at this time\n',
                   typingActive)
-        elif selc == 'BUY' and selc in rooms[current_room]:
-              rooms[current_room]['BUY'](p1, rooms, current_room, typingActive)
+        elif selc == 'BUY' and selc in world.rooms[current_room]:
+              world.rooms[current_room]['BUY'](p1, world.rooms, current_room, typingActive)
               break
-        elif selc == 'TRADE' and selc in rooms[current_room]:
-              rooms[current_room]['TRADE'](p1, rooms, current_room, typingActive)
+        elif selc == 'TRADE' and selc in world.rooms[current_room]:
+              world.rooms[current_room]['TRADE'](p1, world.rooms, current_room, typingActive)
               break
-        elif selc == 'REST' and selc in rooms[current_room]:
-              rooms[current_room]['REST'](p1, current_room, typingActive)
+        elif selc == 'REST' and selc in world.rooms[current_room]:
+              world.rooms[current_room]['REST'](p1, current_room, typingActive)
               break
-        elif selc == 'PRAY' and selc in rooms[current_room]:
-              rooms[current_room]['PRAY'](p1, typingActive)
+        elif selc == 'PRAY' and selc in world.rooms[current_room]:
+              world.rooms[current_room]['PRAY'](p1, typingActive)
               break
-        elif selc == "UPGRADE" and selc in rooms[current_room]:
-              rooms[current_room]['UPGRADE'](p1, current_room, typingActive)
+        elif selc == "UPGRADE" and selc in world.rooms[current_room]:
+              world.rooms[current_room]['UPGRADE'](p1, current_room, typingActive)
               break
-        elif (selc == "CRAFT" and selc in rooms[current_room]
-              ) and rooms[current_room]['crafting'] == 'ACTIVE':
-              rooms[current_room]['CRAFT'](p1, typingActive)
+        elif (selc == "CRAFT" and selc in world.rooms[current_room]
+              ) and world.rooms[current_room]['crafting'] == 'ACTIVE':
+              world.rooms[current_room]['CRAFT'](p1, typingActive)
               break
-        elif selc == "TEST" and selc in rooms[current_room]:
-              rooms[current_room]['TEST']()
+        elif selc == "TEST" and selc in world.rooms[current_room]:
+              world.rooms[current_room]['TEST']()
               break
         else:
               print_slow('Unable to do that here.\n', typingActive)
@@ -229,43 +228,43 @@ def helper_actions():
         elif selc == "LOCATION" or selc == "MAP":
             if 'MAP' in p1.inventory:
                 print_slow(
-                    f"\n**********[ {rooms[current_room]['name']} ]**********\n",
+                    f"\n**********[ {world.rooms[current_room]['name']} ]**********\n",
                     typingActive)
-                print(rooms[current_room]['map'])
-                if 'NORTH' in rooms[current_room]:
-                    if rooms[current_room]['NORTH'] in rooms[current_room][
+                print(world.rooms[current_room]['map'])
+                if 'NORTH' in world.rooms[current_room]:
+                    if world.rooms[current_room]['NORTH'] in world.rooms[current_room][
                             'discovered']:
-                        print(f"N. {rooms[current_room]['NORTH']}")
+                        print(f"N. {world.rooms[current_room]['NORTH']}")
                     else:
                         print('N. ???')
-                if 'EAST' in rooms[current_room]:
-                    if rooms[current_room]['EAST'] in rooms[current_room][
+                if 'EAST' in world.rooms[current_room]:
+                    if world.rooms[current_room]['EAST'] in world.rooms[current_room][
                             'discovered']:
-                        print(f"E. {rooms[current_room]['EAST']}")
+                        print(f"E. {world.rooms[current_room]['EAST']}")
                     else:
                         print('E. ???')
-                if 'SOUTH' in rooms[current_room]:
-                    if rooms[current_room]['SOUTH'] in rooms[current_room][
+                if 'SOUTH' in world.rooms[current_room]:
+                    if world.rooms[current_room]['SOUTH'] in world.rooms[current_room][
                             'discovered']:
-                        print(f"S. {rooms[current_room]['SOUTH']}")
+                        print(f"S. {world.rooms[current_room]['SOUTH']}")
                     else:
                         print('S. ???')
-                if 'WEST' in rooms[current_room]:
-                    if rooms[current_room]['WEST'] in rooms[current_room][
+                if 'WEST' in world.rooms[current_room]:
+                    if world.rooms[current_room]['WEST'] in world.rooms[current_room][
                             'discovered']:
-                        print(f"W. {rooms[current_room]['WEST']}")
+                        print(f"W. {world.rooms[current_room]['WEST']}")
                     else:
                         print('W. ???')
-                if 'CLIMB' in rooms[current_room]:
-                    if rooms[current_room]['CLIMB'] in rooms[current_room][
+                if 'CLIMB' in world.rooms[current_room]:
+                    if world.rooms[current_room]['CLIMB'] in world.rooms[current_room][
                             'discovered']:
-                        print(f"C. {rooms[current_room]['CLIMB']}")
+                        print(f"C. {world.rooms[current_room]['CLIMB']}")
                     else:
                         print('C. ???')
                 
             else:
                 print_slow(
-                    f"\n**********[ {rooms[current_room]['name']} ]**********\n",
+                    f"\n**********[ {world.rooms[current_room]['name']} ]**********\n",
                     typingActive)
             break
         elif selc == "TYPE":
@@ -281,7 +280,7 @@ def helper_actions():
             quit_game()
             break
         elif selc == "PRINT":
-            print(rooms[current_room])
+            print(world.rooms[current_room])
             break
 
 
@@ -295,9 +294,9 @@ def item_check(p1, typingActive):
                    typingActive)
         selc = input().upper().strip()
         if selc in p1.inventory:
-            print_slow(f"\n{key_items[selc]['description']}", typingActive)
-            if 'description2' in key_items[selc]:
-              print_slow(f"\n{key_items[selc]['description2']}", typingActive)
+            print_slow(f"\n{world.key_items[selc]['description']}", typingActive)
+            if 'description2' in world.key_items[selc]:
+              print_slow(f"\n{world.key_items[selc]['description2']}", typingActive)
             if selc == 'CRAFTING POUCH':
                 while True:
                     p1.materials_list()
@@ -311,7 +310,7 @@ def item_check(p1, typingActive):
                         break
                     elif selc in p1.materials:
                         print_slow("test", typingActive)
-                        print_slow(f"\n{crafting_items[selc]['description']}",
+                        print_slow(f"\n{world.crafting_items[selc]['description']}",
                                    typingActive)
                     else:
                         print_slow('\nInvalid selection. Try again.',
@@ -324,65 +323,74 @@ def item_check(p1, typingActive):
 
 def encounter_initiaiton(current_room, typingActive):
     encounter = random.randrange(1, 6)
-    if encounter <= rooms[current_room]['spawn_rate']:
-        foe = random.choice(rooms[current_room]['enemy_spawn_set'])
-        if foe == p28:
-          traveling_merchant(p1, foe, current_room, typingActive)
-        elif foe == p34:
-          standard_battle(p1, foe, typingActive)
-          enemy_spawn14.remove(p34)
+    if encounter <= world.rooms[current_room]['spawn_rate']:
+        foe = random.choice(world.rooms[current_room]['enemy_spawn_set'])
+        if foe == character.p28:
+          world.traveling_merchant(p1, foe, current_room, typingActive)
+        elif foe == character.p34:
+          combat.standard_battle(p1, foe, typingActive)
+          character.enemy_spawn14.remove(p34)
         else:
-          standard_battle(p1, foe, typingActive)
+          combat.standard_battle(p1, foe, typingActive)
 
 
 def ambush_initiaiton(current_room, typingActive):
     encounter = random.randrange(1, 6)
-    if encounter <= rooms[current_room]['spawn_rate']:
+    if encounter <= world.rooms[current_room]['spawn_rate']:
         print_slow(f'{p1.name} is ambushed by an enemy!', typingActive)
-        foe = random.choice(rooms[current_room]['enemy_spawn_set'])
-        standard_battle(p1, foe, typingActive)
+        foe = random.choice(world.rooms[current_room]['enemy_spawn_set'])
+        combat.standard_battle(p1, foe, typingActive)
 
 
 def save():
     global p1
-    global rooms
+    #global world.rooms
     global current_room
-    print_slow('\nType name for your save:\n', typingActive)
-    savefile1 = input().lower().strip()
-    savefile2 = savefile1 + '_rooms'
-    savefile3 = savefile2 + '2'
-    save_rooms1(savefile2)
-    save_rooms2(savefile3)
-    with open(f'saves/{savefile1}', 'wb') as f:
-        pickle.dump([p1, current_room], f)
-    print_slow('\n*****[Save Complete]*****', typingActive)
+    saveMenu = "OPEN"
+    while saveMenu == "OPEN":
+      print_slow('\nWould you like to save? YES or NO:\n', typingActive)
+      selc = input().upper().strip()
+      if selc == 'YES':
+        print_slow('\nType name for your save:\n', typingActive)
+        savefile1 = input().lower().strip()
+        savePath = Path(sys.argv[0]).parent / Path(f'saves/{savefile1}')
+        shelfFile = shelve.open(f'{savePath}')
+        shelfFile['playerVar'] = p1 
+        shelfFile['croomVar'] = current_room 
+        shelfFile['roomVar'] = world.rooms 
+        shelfFile.close()
+        print_slow('\n*****[Save Complete]*****', typingActive)
+        saveMenu = "CLOSED"
+        break
+      elif selc == 'NO':
+        saveMenu = "CLOSED"
+        break
+      else:
+        print_slow('\nInvalid selection. Try again.', typingActive)
 
- 
 def load():
+  #"""sys.argv[0] is used to """
     global p1
-    global rooms
+    #global world.rooms
     global current_room
     global gameSetup
-    print_slow(
-        '\nType name for your save file you wish to load, SHOW to see saves, or BACK to exit menu:',
-        typingActive)
+    print_slow('\nType name for your save file you wish to load, SHOW to see saves, or BACK to exit menu:', typingActive)
     loadMenu = "OPEN"
     while loadMenu == "OPEN":
         selc = input().lower().strip()
-        savefile1 = selc
-        path = Path(f'saves/{savefile1}')
-        savefile2 = savefile1 + '_rooms'
-        savefile3 = savefile2 + '2'
-        if path.is_file():
-            load_rooms1(savefile2)
-            load_rooms2(savefile3)
-            with open(f'saves/{savefile1}', 'rb') as f:
-                p1, current_room = pickle.load(f)
+        savefile1 = selc      
+        loadPath = Path(sys.argv[0]).parent / Path(f'saves/{savefile1}')
+        if loadPath.is_file():
+            shelfFile = shelve.open(f'{loadPath}')
+            p1 = shelfFile['playerVar'] 
+            current_room = shelfFile['croomVar'] 
+            world.rooms = shelfFile['roomVar']
+            shelfFile.close()
             loadMenu = "CLOSED"
             gameSetup = 0
             print_slow('\n*****[Load Complete]*****', typingActive)
             break
-        elif selc == 'show':
+        if selc == 'show':
             path = Path('saves/')
             files = [file.stem for file in path.rglob('*')]
             print(sorted(files))
@@ -392,19 +400,6 @@ def load():
         else:
             print_slow('\nInvalid selection. Try again.', typingActive)
 
-
-def save_rooms1(savefile2):
-    global rooms
-    with open(f'saved_rooms/{savefile2}', 'wb') as f:
-        pickle.dump(rooms, f)
-
-
-def load_rooms1(savefile2):
-    global rooms
-    with open(f'saved_rooms/{savefile2}', 'rb') as f:
-        rooms = pickle.load(f)
-
- 
 def quit_game():
   while True:
     print_slow('\nAre you sure you wish to exit? YES or NO:\n', typingActive)
@@ -447,12 +442,12 @@ def equipment_check(p1, typingActive):
       selc = input().upper().strip()
       print('\n')
       if selc == 'MAIN HAND':
-        s = set(mainHand_equipment)
+        s = set(world.mainHand_equipment)
         equipment = [x for x in p1.inventory if x in s]
         if p1.mainHand == None or p1.mainHand == 'EMPTY':
           print_slow(f'Equipped: None\nATK: 0\nDEF: 0\n"Nothing equipped."\n', typingActive)
         elif p1.mainHand != None and p1.mainHand != 'EMPTY':
-          print_slow(f'Equipped: {p1.mainHand}\nATK: {key_items[p1.mainHand]["ATK"]}\nDEF: {key_items[p1.mainHand]["DEF"]}%\nLVL: {key_items[p1.mainHand]["gear_level"]}\n"{key_items[p1.mainHand]["description2"]}"\n', typingActive)
+          print_slow(f'Equipped: {p1.mainHand}\nATK: {world.key_items[p1.mainHand]["ATK"]}\nDEF: {world.key_items[p1.mainHand]["DEF"]}%\nLVL: {world.key_items[p1.mainHand]["gear_level"]}\n"{world.key_items[p1.mainHand]["description2"]}"\n', typingActive)
         print_slow(f'Inventory: {equipment}\n',typingActive)
         change_gear = 1
         while change_gear == 1:
@@ -460,14 +455,14 @@ def equipment_check(p1, typingActive):
           selc = input().upper().strip()
           print('\n')
           if selc in equipment:
-            if p1.job in key_items[selc]['classes']:
-              if (p1.MaxHP + key_items[selc]['HP']) <= 0:
+            if p1.job in world.key_items[selc]['classes']:
+              if (p1.MaxHP + world.key_items[selc]['HP']) <= 0:
                 print_slow(f"Unable to equip this item; {p1.name}'s HP will be reduced to 0.\n", typingActive)
               else:
                 change_gear = 0
                 previous_gear = p1.mainHand
                 p1.mainHand = selc
-                equip_stat_update(p1, selc, previous_gear)
+                world.equip_stat_update(p1, selc, previous_gear)
             else:
               print_slow('\nThis piece of equipment cannot be used by your class. Please select a different item.\n', typingActive)
           elif selc == 'BACK':
@@ -476,12 +471,12 @@ def equipment_check(p1, typingActive):
             print_slow('\nInvalid selection. Try again.\n', typingActive)
             
       elif selc == 'OFF HAND':
-        s = set(offHand_equipment)
+        s = set(world.offHand_equipment)
         equipment = [x for x in p1.inventory if x in s]
         if p1.offHand == None:
           print_slow(f'Equipped: None\nATK: 0\nDEF: 0\n"Nothing equipped."\n', typingActive)
         if p1.offHand != None:
-          print_slow(f'Equipped: {p1.offHand}\nATK: {key_items[p1.offHand]["ATK"]}\nDEF: {key_items[p1.offHand]["DEF"]}%\nLVL: N/A\n"{key_items[p1.offHand]["description2"]}"\n', typingActive)
+          print_slow(f'Equipped: {p1.offHand}\nATK: {world.key_items[p1.offHand]["ATK"]}\nDEF: {world.key_items[p1.offHand]["DEF"]}%\nLVL: N/A\n"{world.key_items[p1.offHand]["description2"]}"\n', typingActive)
         print_slow(f"\nInventory: {equipment}\n", typingActive)
         change_gear = 1
         while change_gear == 1:
@@ -489,14 +484,14 @@ def equipment_check(p1, typingActive):
           selc = input().upper().strip()
           print('\n')
           if selc in equipment:
-            if p1.job in key_items[selc]['classes']:
-              if (p1.MaxHP + key_items[selc]['HP']) <= 0:
+            if p1.job in world.key_items[selc]['classes']:
+              if (p1.MaxHP + world.key_items[selc]['HP']) <= 0:
                 print_slow(f"Unable to equip this item; {p1.name}'s HP will be reduced to 0.\n", typingActive)
               else:
                 change_gear = 0
                 previous_gear = p1.offHand
                 p1.offHand = selc
-                equip_stat_update(p1, selc, previous_gear)
+                world.equip_stat_update(p1, selc, previous_gear)
             else:
               print_slow('\nThis piece of equipment cannot be used by your class. Please select a different item.\n', typingActive)
           elif selc == 'BACK':
@@ -505,12 +500,12 @@ def equipment_check(p1, typingActive):
             print_slow('\nInvalid selection. Try again.\n', typingActive)
 
       elif selc == 'HEAD':
-        s = set(head_equipment)
+        s = set(world.head_equipment)
         equipment = [x for x in p1.inventory if x in s]
         if p1.head == None:
           print_slow(f'Equipped: None\nATK: 0\nDEF: 0\n"Nothing equipped."\n', typingActive)
         if p1.head != None:
-          print_slow(f'Equipped: {p1.head}\nATK: {key_items[p1.head]["ATK"]}\nDEF: {key_items[p1.head]["DEF"]}%\nLVL: {key_items[p1.head]["gear_level"]}\n"{key_items[p1.head]["description2"]}"\n', typingActive)
+          print_slow(f'Equipped: {p1.head}\nATK: {world.key_items[p1.head]["ATK"]}\nDEF: {world.key_items[p1.head]["DEF"]}%\nLVL: {world.key_items[p1.head]["gear_level"]}\n"{world.key_items[p1.head]["description2"]}"\n', typingActive)
         print_slow(f"\nInventory: {equipment}\n", typingActive)
         change_gear = 1
         while change_gear == 1:
@@ -518,14 +513,14 @@ def equipment_check(p1, typingActive):
           selc = input().upper().strip()
           print('\n')
           if selc in equipment:
-            if p1.job in key_items[selc]['classes']:
-              if (p1.MaxHP + key_items[selc]['HP']) <= 0:
+            if p1.job in world.key_items[selc]['classes']:
+              if (p1.MaxHP + world.key_items[selc]['HP']) <= 0:
                 print_slow(f"Unable to equip this item; {p1.name}'s HP will be reduced to 0.\n", typingActive)
               else:
                 change_gear = 0
                 previous_gear = p1.head
                 p1.head = selc
-                equip_stat_update(p1, selc, previous_gear)
+                world.equip_stat_update(p1, selc, previous_gear)
             else:
               print_slow('\nThis piece of equipment cannot be used by your class. Please select a different item.\n', typingActive)
           elif selc == 'BACK':
@@ -534,12 +529,12 @@ def equipment_check(p1, typingActive):
             print_slow('\nInvalid selection. Try again.\n', typingActive)
 
       elif selc == 'CHEST':
-        s = set(chest_equipment)
+        s = set(world.chest_equipment)
         equipment = [x for x in p1.inventory if x in s]
         if p1.chest == None:
           print_slow(f'Equipped: None\nATK: 0\nDEF: 0\n"Nothing equipped."\n', typingActive)
         if p1.chest != None:
-          print_slow(f'Equipped: {p1.chest}\nATK: {key_items[p1.chest]["ATK"]}\nDEF: {key_items[p1.chest]["DEF"]}%\nLVL: {key_items[p1.chest]["gear_level"]}\n"{key_items[p1.chest]["description2"]}"\n', typingActive)
+          print_slow(f'Equipped: {p1.chest}\nATK: {world.key_items[p1.chest]["ATK"]}\nDEF: {world.key_items[p1.chest]["DEF"]}%\nLVL: {world.key_items[p1.chest]["gear_level"]}\n"{world.key_items[p1.chest]["description2"]}"\n', typingActive)
         print_slow(f"\nInventory: {equipment}\n", typingActive)
         change_gear = 1
         while change_gear == 1:
@@ -547,14 +542,14 @@ def equipment_check(p1, typingActive):
           selc = input().upper().strip()
           print('\n')
           if selc in equipment:
-            if p1.job in key_items[selc]['classes']:
-              if (p1.MaxHP + key_items[selc]['HP']) <= 0:
+            if p1.job in world.key_items[selc]['classes']:
+              if (p1.MaxHP + world.key_items[selc]['HP']) <= 0:
                 print_slow(f"Unable to equip this item; {p1.name}'s HP will be reduced to 0.\n", typingActive)
               else:
                 change_gear = 0
                 previous_gear = p1.chest
                 p1.chest = selc
-                equip_stat_update(p1, selc, previous_gear)
+                world.equip_stat_update(p1, selc, previous_gear)
             else:
               print_slow('\nThis piece of equipment cannot be used by your class. Please select a different item.\n', typingActive)
           elif selc == 'BACK':
@@ -563,12 +558,12 @@ def equipment_check(p1, typingActive):
             print_slow('\nInvalid selection. Try again.\n', typingActive)
 
       elif selc == 'LEGS':
-        s = set(legs_equipment)
+        s = set(world.legs_equipment)
         equipment = [x for x in p1.inventory if x in s]
         if p1.legs == None:
           print_slow(f'Equipped: None\nATK: 0\nDEF: 0\n"Nothing equipped."\n', typingActive)
         if p1.legs != None:
-          print_slow(f'Equipped: {p1.legs}\nATK: {key_items[p1.legs]["ATK"]}\nDEF: {key_items[p1.legs]["DEF"]}%\nLVL: {key_items[p1.legs]["gear_level"]}\n"{key_items[p1.legs]["description2"]}"\n', typingActive)
+          print_slow(f'Equipped: {p1.legs}\nATK: {world.key_items[p1.legs]["ATK"]}\nDEF: {world.key_items[p1.legs]["DEF"]}%\nLVL: {world.key_items[p1.legs]["gear_level"]}\n"{world.key_items[p1.legs]["description2"]}"\n', typingActive)
         print_slow(f"\nInventory: {equipment}\n", typingActive)
         change_gear = 1
         while change_gear == 1:
@@ -576,14 +571,14 @@ def equipment_check(p1, typingActive):
           selc = input().upper().strip()
           print('\n')
           if selc in equipment:
-            if p1.job in key_items[selc]['classes']:
-              if (p1.MaxHP + key_items[selc]['HP']) <= 0:
+            if p1.job in world.key_items[selc]['classes']:
+              if (p1.MaxHP + world.key_items[selc]['HP']) <= 0:
                 print_slow(f"Unable to equip this item; {p1.name}'s HP will be reduced to 0.\n", typingActive)
               else:
                 change_gear = 0
                 previous_gear = p1.legs
                 p1.legs = selc
-                equip_stat_update(p1, selc, previous_gear)
+                world.equip_stat_update(p1, selc, previous_gear)
             else:
               print_slow('\nThis piece of equipment cannot be used by your class. Please select a different item.\n', typingActive)
           elif selc == 'BACK':
@@ -592,12 +587,12 @@ def equipment_check(p1, typingActive):
             print_slow('\nInvalid selection. Try again.\n', typingActive)
 
       elif selc == 'ACCS1':
-        s = set(accs_equipment)
+        s = set(world.accs_equipment)
         equipment = [x for x in p1.inventory if x in s]
         if p1.accs1 == None:
           print_slow(f'Equipped: None\nATK: 0\nDEF: 0\n"Nothing equipped."\n', typingActive)
         if p1.accs1 != None:
-          print_slow(f'Equipped: {p1.accs1}\nATK: {key_items[p1.accs1]["ATK"]}\nDEF: {key_items[p1.accs1]["DEF"]}%\nLVL: N/A\n"{key_items[p1.accs1]["description2"]}"\n', typingActive)
+          print_slow(f'Equipped: {p1.accs1}\nATK: {world.key_items[p1.accs1]["ATK"]}\nDEF: {world.key_items[p1.accs1]["DEF"]}%\nLVL: N/A\n"{world.key_items[p1.accs1]["description2"]}"\n', typingActive)
         print_slow(f"\nInventory: {equipment}\n", typingActive)
         change_gear = 1
         while change_gear == 1:
@@ -605,14 +600,14 @@ def equipment_check(p1, typingActive):
           selc = input().upper().strip()
           print('\n')
           if selc in equipment and selc != p1.accs2:
-            if p1.job in key_items[selc]['classes']:
-              if (p1.MaxHP + key_items[selc]['HP']) <= 0:
+            if p1.job in world.key_items[selc]['classes']:
+              if (p1.MaxHP + world.key_items[selc]['HP']) <= 0:
                 print_slow(f"Unable to equip this item; {p1.name}'s HP will be reduced to 0.\n", typingActive)
               else:
                 change_gear = 0
                 previous_gear = p1.accs1
                 p1.accs1 = selc
-                equip_stat_update(p1, selc, previous_gear)
+                world.equip_stat_update(p1, selc, previous_gear)
           elif selc in equipment and selc == p1.accs2:
             print_slow('\nThat item is equipped in another slot. Try another item.\n', typingActive)
           elif selc == 'BACK':
@@ -621,12 +616,12 @@ def equipment_check(p1, typingActive):
             print_slow('\nInvalid selection. Try again.\n', typingActive)
 
       elif selc == 'ACCS2':
-        s = set(accs_equipment)
+        s = set(world.accs_equipment)
         equipment = [x for x in p1.accs2 if x in s]
         if p1.accs2 == None:
           print_slow(f'Equipped: None\nATK: 0\nDEF: 0\n"Nothing equipped."\n', typingActive)
         if p1.accs2 != None:
-          print_slow(f'Equipped: {p1.accs2}\nATK: {key_items[p1.accs2]["ATK"]}\nDEF: {key_items[p1.accs2]["DEF"]}%\nLVL: N/A\n"{key_items[p1.accs2]["description2"]}"\n', typingActive)
+          print_slow(f'Equipped: {p1.accs2}\nATK: {world.key_items[p1.accs2]["ATK"]}\nDEF: {world.key_items[p1.accs2]["DEF"]}%\nLVL: N/A\n"{world.key_items[p1.accs2]["description2"]}"\n', typingActive)
         print_slow(f"\nInventory: {equipment}\n", typingActive)
         change_gear = 1
         while change_gear == 1:
@@ -634,14 +629,14 @@ def equipment_check(p1, typingActive):
           selc = input().upper().strip()
           print('\n')
           if selc in equipment and selc != p1.accs1:
-            if p1.job in key_items[selc]['classes']:
-              if (p1.MaxHP + key_items[selc]['HP']) <= 0:
+            if p1.job in world.key_items[selc]['classes']:
+              if (p1.MaxHP + world.key_items[selc]['HP']) <= 0:
                 print_slow(f"Unable to equip this item; {p1.name}'s HP will be reduced to 0.\n", typingActive)
               else:
                 change_gear = 0
                 previous_gear = p1.accs2
                 p1.accs2 = selc
-              equip_stat_update(p1, selc, previous_gear)
+              world.equip_stat_update(p1, selc, previous_gear)
           elif selc in equipment and selc == p1.accs1:
             print_slow('\nThat item is equipped in another slot. Try another item.\n', typingActive)
           elif selc == 'BACK':
@@ -662,7 +657,7 @@ actions = [
     "CRAFT"
 ]
 
-special_list = ['JUMP', 'FLY', 'SWIM', 'DIVE', 'DRINK', 'RIBBIT', 'RIBBITING', 'CROAK','CROAKING', 'KERO', 'KEROKERO', 'PLAY', 'WAIT', 'PICK', 'SAIL', 'THROW WEAPON', 'TANNINIM']
+special_list = ['JUMP', 'FLY', 'SWIM', 'DIVE', 'DRINK', 'SEARCH', 'RIBBIT', 'RIBBITING', 'CROAK','CROAKING', 'KERO', 'KEROKERO', 'PLAY', 'WAIT', 'PICK', 'SAIL', 'THROW WEAPON', 'TANNINIM']
 
 helper = [
     'HELP', 'STATS', 'ITEMS', 'LOCATION', 'MAP', 'TYPE', 'SAVE', 'LOAD',
@@ -680,9 +675,9 @@ while True:
     while gameSetup == 1:
         setup()
     while gameSetup == 0:
-      print_slow(f"\n**********[ {rooms[current_room]['name']} ]**********\n",
+      print_slow(f"\n**********[ {world.rooms[current_room]['name']} ]**********\n",
                  typingActive)
-      print_slow(rooms[current_room]['intro'], typingActive)
+      print_slow(world.rooms[current_room]['intro'], typingActive)
       player_choice = 0
       while player_choice == 0:
           print_slow('\nEnter command or type HELP:\n', typingActive)
@@ -699,6 +694,8 @@ while True:
   
           elif selc in helper:
               helper_actions()
+          elif selc == 'TRASH':
+            p1.inventory.remove('MAP')
             
           else:
               print_slow('\nInvalid selection. Try again.\n', typingActive)

@@ -632,10 +632,79 @@ line4614 = "The sky has started to clear and the sun has started shining through
 line4615 = """The sky is filled with dark swirling storm clouds. Lightning darts across the sky and thunder rumbles the mountains. Snow begins to whip through the air as the wind picks up.\n\nYou have a dreadful feeling about this place... You go to leave but before you have a chance to move you feel the mountain shake with such tremendous force you are knocked off your feet. While looking straight up into the sky you see it; four colossal dragon wings carrying a three headed dragon the size of a fortress making its way directly towards the summit. You quickly gather yourself just in time for the monumental serpent to land on the mountain, blocking any chance of escape. The dragon whips its forked tail back and forth as it unleashes an unholy screach that pierces the ears and chills sends a chill down your spine. You draw your weapon and prepare yourself for battle..."""
 line4616 = """After delivering the fatal blow, the dragon's body ignites in bright green flames that consumes all its flesh and bones, untill all that reamins is its still beating heart. As you approach it, the heart begins to shrivel and harden into a crimson gem. You take the stone and place it in your bag, then you being to rest.\n\nAfter taking a moment to gather yourself from a well-fought battle, you continue on your quest..."""
 
-#47.Misty Woods - Bend
-line4701 = "As you make your way through the woods the path begins to narrow and a thick fog obscures your view. You take a moment to get your bearings.\n"
+#47.Deep Woods
+  #Deep Woods- Entrance
+line4701 = "As you make your way through the woods the path begins to narrow and curve. You take a moment to get your bearings.\n"
+    #EXPLORE
+line4702 = 'You take a look around, but struggle to see through the dense forest. The narrow path sharply curves from the NORTH to the WEST. The wind blowing through the leaves sounds like whispers. You start to feel a chill.\n'
+  #Deep Woods- SOUTH
+line4703 = "The woods grow dark as you make your way through the Pinerift Forest. The surrounding woods are too dense to leave the path leading NORTH to SOUTH...\n"
+    #EXPLORE
+line4704 = 'The rustling of the leaves and branches come deep within the woods keep you on edge. At any moment it sounds as though a creature may leap out at you for an ambush. You make sure to stay on your guard as you make your way down the path...\n'
+  #Deep Woods- Fork
+line4705 = "The path widens a bit as you reach a fork in the road, deep within the Pinerift Forest. You stop for a moment to decide your next course of action. \n"
+    #EXPLORE
+line4706 = 'You stand in the middle of the fork and look around. The forked path runs from EAST to WEST, and back SOUTH. To the EAST, a dense mass of branches have fallen over and now block the way forward. EXAMINE for a closer look?\n'
+line4707 = 'You stand in the middle of the fork and look around. The forked path runs from EAST to WEST, and back SOUTH. To the EAST, the mess of branches has been cleared away and the path forward is cleared.\n'
+    #EXAMINE
+line4708 = 'You walk up to the mess of dead branches lying on the path to the EAST. It does not look like there is an alternative way through. The branches look rather sturdy... If only you had a way to cut them away...\n'
+line4709 = 'You walk up to the mess of dead branches lying on the path to the EAST. It does not look like there is an alternative way through. The branches look rather sturdy... Try to CUT them, or LEAVE them alone?\n'
+line4710 = "You take your AXE and begin cutting away the dead branches. After a few moments you clear enough away to be able to make it through. Now the path to the EAST is clear!\n"
+line4711 = "You attempt to cut away the dead branches, but your AXE is too dull and barely bites into the wood. You'll need a sharper AXE to clear these branches...\n"
+line4711b = "You attempt to head east but are blocked by dead branches lying in the path. EXAMINE for a closer look?\n"
+line4711c = "You look at the freshly cleared path; the way EAST is now open.\n"
+line4711d = "You think about how much work it would be to clear away the branches and turn around. You've got better things to do than play with sticks.\n"
+  #Deep Woods- WEST
+line4712 = "You walk into a small clearing along the forest path; a lone bright patch in the middle of these dark woods. \n"
+    #EXPLORE
+line4713 = """The clearing here leaves enough space in the canopy for the sun's rays to reach the forest floor. You enjoy the warmth after walking through the dark and chilled forest. To the NORTH a group of sapplings has overgrown the path, making the way forward inaccessible. You spot a tree with a meassage crudely carved quite low on the trunk. The message reads "Forest Shoppe located SOUTH; all fairy folk welcome. NO HUMANS!"\n"""
+line4714 = """The clearing here leaves enough space in the canopy for the sun's rays to reach the forest floor. You enjoy the warmth after walking through the dark and chilled forest. To the NORTH a group of sapplings has been cleared from the path, making the way forward accessible. You spot a tree with a meassage crudely carved quite low on the trunk. The message reads "Forest Shoppe located SOUTH; all fairy folk welcome. NO HUMANS!"\n"""
+    #EXAMINE
+line4715 = "You approach the sapplings and check for anyway around. Unfortunately, the forest is too dense to go around and the sapplings are too strong to try pushing through. You'll need a good AXE to clear the path.\n"
+line4716 = "You approach the sapplings and check for anyway around. Unfortunately, the forest is to dense to go around and the sapplings are too strong to try pushing through. You can try to CUT them away with your AXE, or leave them alone?\n"
+line4717 = "You try to chop down the sapplings, but your AXE is too dull and bounces off them. Maybe if your AXE was sharper you'd be able to make it through with ease.\n"
+line4718 = "You grab your AXE and start hacking through the sapplings. Before you know it the path is cleared! Now you can continue NORTH.\n"
+line4718b = 'You attempt to travel NORTH, but the path is inaccessible; sapplings have grown over the trail. EXAMINE for a closer look?\n'
+line4718c = 'The sapplings have been cleared away and the path NORTH has been made accessible once again.\n'
+line4719 = 'You decide that whatever is on the other side of those sapplings isnt worth the trouble of chopping them down and leave them be.\n'
+  #Deep Woods- Fallen Hive
+line4720 = "You reach a giant hive at the base of an enormous pine tree. The hive appears to have taken a serious beating and been knocked over...\n"
+line4721 = "The forest smells like pollen and honey thanks to the massive hive lying on the ground. The hive ahead has been damaged heavily, but the entrance is accessible to the NORTH. Besides the rustling of leaves in the wind, it is quiet and there are no bees to be seen.\n"
+  #Deep Woods- Forest Hut
+line4722 = "Deep in the forest you come to a small hut tucked away between the trees. Outside, a strange blue creature with a rumpled face darts about nervously, muttering to itself frantically.\n"
+line4723 = "Deep in the forest you come to a small hut tucked away between the trees. The Kobold Merchant seems to have calmed a bit, but he still looks nervous.\n"
+line4724 = "Deep in the forest you come to a small hut tucked away between the trees. The Kobold Merchant is outside tidying up around its home with its 'friend'. They finally seem to trust you.\n"
+    #EXPLORE
+line4725 = "The hut between the trees is a strange building made from wood scraps and covered in moss. Out front is a small vegetable garden, although the plants look to be in a rather sorry state. The strange blue creature paces around with its head down, occasionally glancing at you making sure to keep its distance. It seems like it is looking for something.\n"
+line4726 = "The hut between the trees is a strange building made from wood scraps and covered in moss. Out front is a small vegetable garden, although the plants look to be in a rather sorry state. The Kobold is still looking for its missing friend... Maybe you should help it SEARCH?\n"
+line4727 = "The hut between the trees is a strange building made from wood scraps and covered in moss. Out front is a small vegetable garden, although the plants look to be in a rather sorry state. The Kobold has offered to sell you his wares now if you are looking to BUY.\n"
+    #SPEAK
+line4728 = """"Gets away! Its kind is nasty to Kobold. This Kobold wants peace. Eats its veggies, share its treasures with friend. Stay backs!"\n"""
+line4729 = """"Evil humans be gone! Its come to harm us and I wont lets it! I'll protect friend... just where did friend go..."\n"""
+line4730 = """"If its wonts leave then makes itself useful and help SEARCH for friend. He's disappeared! Brings him back, brings him back!"\n"""
+line4731 = """"Its back again? If its don't has friend then go away! Go SEARCH for friend!"\n"""
+line4732 = """"Its back again? Wait, whats its has? Thats not friend! Its tries to trick, but we Kobold are much too clever! Bring me friend for real!"\n"""
+line4733 = """"Its back again? Wait, it has friend?! It has friend! Maybe its kind doesn't hate all Kobolds... Its can be my friend and we can share treasures! Yes, you give me shiny, shiny coins, and I will give you good things, helpful things!" (You can now BUY from the Kobold)\n"""
+line4734 = """"Hello other friend! Come to bring the shiny coins? Me and friend have many good things to trade for!"\n """
+    #SEARCH
+line4735 = "You check behind a shrub and spy a snail sitting on a twig, chewing on a leaf. The snail has a smiley face painted on its shell. Could this be 'friend'?..\n"
+line4736 = "You check around some trees and see a squirrel resting on a low branch. Could this be 'friend'?..\n"
+line4737 = "You check out a small puddle near the garden. A toad is splashing around the water. Could this be 'friend'?..\n"
+line4738 = "You can see 'friend' with the Kobold, resting on its shoulder and chomping down on a leaf."
+
+#48. Tattered Hive
+line4801 = "You step into the Tattered Hive. Honey drips from broken cells, and holes pockmark the hive's walls.\n"
   #EXPLORE
-line4702 = 'You try to look around, but between the fog and the trees you cannot see any deeper into the woods. You can barely make out the path you are on leading from the WEST to the NORTH. The wind blowing through the leaves sounds like whispers. You start to feel a chill.\n'
+line4802 = "The hive have must have seen much better days based on its sorry present state. The holes in the walls look like they were chewed through from the outside. Corpses and severed bee limbs are spread all across the hive... It looks like a battle happened here recently; the attackers may still be near by.  Most of the hives cells have been broken apart and drip with honey. A few intact cells remain, and appear to be sealed. Perhaps they have something inside worth trying to EXAMINE?\n"
+line4803 = "The hive have must have seen much better days based on its sorry present state. The holes in the walls look like they were chewed through from the outside. Corpses and severed bee limbs are spread all across the hive... It looks like a battle happened here recently; lets hope that wasp was the only one hanging around... Most of the hives cells have been broken apart and drip with honey. A single intact cell remains sealed. Perhaps is has something inside worth trying to EXAMINE?\n"
+line4804 = "The hive have must have seen much better days based on its sorry present state. The holes in the walls look like they were chewed through from the outside. Corpses and severed bee limbs are spread all across the hive... It looks like a battle happened here recently; lets hope that wasp was the only one hanging around... Most of the hives cells have been broken apart and drip with honey. The last of the cells have already been opened and searched.\n"
+  #EXAMINE
+line4805 = "You go to approach the intact cells when suddenly a wriggling mass bursts from one! A massive Larva squirms its way out of the cell. The newborn insect immediately turns towards you and rushes forward. The creature opens its maw and attempts to make you its first meal! You jump back and draw your weapon, preparing for battle!\n"
+line4806 = "The Larva draws the last breath of its short life, but before you have time to rejoice, you hear a buzzing rappidly approaching. Your troubles are far from over; you look up and watch a Giant Wasp crawl through one of the holes in he side of the hive. The Giant Wasp instantly turns its sights on you, charging flying forward like a missile! You manage to perry the flying pests spear-like stinger, evading it's first attack. You ready yourself for combat once again!\n"
+line4807 = "The Giant Wasp is crushed, and you are finally able relax for a moment. You help yourself to some of the honey dripping from the broken cells to regain some energy. Almost as sweet as your victory!\n"
+line4808 = "You go back to search the remaining intact cell. After removing the wax and unsealing the cell you find it contains ROYAL JELLY! This jelly has an unusually deep red color. You take a large vial and fill it with the STRANGE JELLY.\n"
+line4809 = "You've already searched everything of interest here.\n"
+#'The notice that the woods are eerily quiet here; the rustling of branches and leaves can only be faintly heard in the distance. It is as if the life has all fled from this area of the forest...\n'
 ##26.TOWER OUTER*******************************
 #line2601 = "You approach the dark tower and gaze up the crooked spire. A shiver runs down your spine as the sky darkens and the air becomes cold. You take a step closer to the tower when you hear a distant roar and pause. Before you are able to take another step you hear it again, this time much closer. You manage to draw your weapon just a moment before a DRAGON crashes through the canopy!\n"
 #line2602 = "The DRAGON lets out an ear piercing screach that echos through the entire woods before meeting it's demise. You narrrowly avoided being made into a meal. You rest a moment before carrying on with your quest.\n"

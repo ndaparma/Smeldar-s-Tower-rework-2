@@ -4,19 +4,6 @@ from combat import *
 from slowprint import *
 from map import *
 import random
-import pickle
-
-
-def save_rooms2(savefile3):
-    global rooms
-    with open(f'saved_rooms/{savefile3}', 'wb') as f:
-        pickle.dump(rooms, f)
-
-
-def load_rooms2(savefile3):
-    global rooms
-    with open(f'saved_rooms/{savefile3}', 'rb') as f:
-        rooms = pickle.load(f)
 
 
 #define room mechanics/events
@@ -46,6 +33,8 @@ def equip_stat_update(p1, selc, previous_gear):
     p1.skills.append('SHOCK')
   if selc == 'MIDAS':
     p1.skills.append('$TOSS')
+
+
 def potion_healing(p1, typingActive):
     heal = 15 + p1.RJ
     p1.POTS -= 1
@@ -109,7 +98,7 @@ def merchant_death():
     enemy_spawn5.remove(p28)
     enemy_spawn9.remove(p28)
     enemy_spawn17.remove(p28)
-
+    enemy_spawnT.remove(p28)
 
 def key_itemBought(p1, selc, typingActive):
     if selc == 'MAP':
@@ -132,10 +121,15 @@ def key_itemBought(p1, selc, typingActive):
         print_slow(
             f'{p1.name} purchases the EXTRA POUCH. Now {p1.name} can now store an additional 5 each of POTIONS, ANTIDOTES, ETHERS, and SMOKE BOMBS. {p1.GP}GP remaining.\n',
             typingActive)
+        p1.MaxPOTS += 5
+        p1.MaxANT += 5
+        p1.MaxETR += 5
+        p1.MaxSMB += 5
     if selc == 'DRAGON SCALE':
         print_slow(
             f'{p1.name} purchases the DRAGON SCALE. What a lucky find for such a deal! {p1.GP}GP remaining.\n',
             typingActive)
+        p1.DragonP += 1
 
 
     if selc == 'MACE':
@@ -233,81 +227,89 @@ def sales_mechanic(p1, rooms, current_room, typingActive):
 
         if p1.GP < key_items[selc]['price']:
             print_slow(
-                """"Sorry, it doesn't look like you have enough GP for that."\n""",
+                f"""{p1.name} does not have enough GP.\n""",
                 typingActive)
 
         if p1.GP >= key_items[selc]['price']:
-            if selc == 'POTION':
-                if p1.POTS < p1.MaxPOTS:
-                    p1.POTS += 1
-                    sale = 2
-                else:
-                    sale = 1
-            if selc == 'ANTIDOTE':
-                if p1.ANT < p1.MaxANT:
-                    p1.ANT += 1
-                    sale = 2
-                else:
-                    sale = 1
-            if selc == 'ETHER':
-                if p1.ETR < p1.MaxETR:
-                    p1.ETR += 1
-                    sale = 2
-                else:
-                    sale = 1
-            if selc == 'SMOKE BOMB':
-                if p1.SMB < p1.MaxSMB:
-                    p1.SMB += 1
-                    sale = 2
-                else:
-                    sale = 1
-            if selc in shop_keyItems:
-                if selc in p1.inventory:
-                    print_slow(
-                        f""""It looks like that isn't available, sorry about that!"\n""",
-                        typingActive)
-                    sale = 3
-                elif traveling_shop == 1 and selc in travelingMerchant_items:
-                    p1.GP -= key_items[selc]['price']
-                    travelingMerchant_items.remove(selc)
-                    p1.inventory.append(selc)
-                    key_itemBought(p1, selc, typingActive)
-                elif 'items' in rooms[current_room]:
-                    if selc in rooms[current_room]['items']:
-                        if selc == 'EXTRA POUCH':
-                            p1.MaxPOTS += 5
-                            p1.MaxANT += 5
-                            p1.MaxETR += 5
-                            p1.MaxSMB += 5
-                            rooms[current_room]['items'].remove(selc)
-                        elif selc == 'DRAGON SCALE':
-                            if 'CRAFTING POUCH' in p1.inventory:
-                                p1.DragonP += 1
-                                rooms[current_room]['items'].remove(selc)
-                            else:
-                                print_slow(
-                                    f""""You'll need a CRAFTING POUCH to be able to purchase this item!"\n""",
-                                    typingActive)
-                        else:
-                            p1.inventory.append(selc)
-                            rooms[current_room]['items'].remove(selc)
-                        p1.GP -= key_items[selc]['price']
-                        key_itemBought(p1, selc, typingActive)
-                else:
-                    print_slow(
-                        f""""It looks like that isn't available, sorry about that!"\n""",
-                        typingActive)
-                    sale = 3
 
+            if selc in shop_items:
+                if selc == 'POTION':
+                    if p1.POTS < p1.MaxPOTS:
+                        p1.POTS += 1
+                        sale = 2
+                    else:
+                        sale = 1
+                if selc == 'ANTIDOTE':
+                    if p1.ANT < p1.MaxANT:
+                        p1.ANT += 1
+                        sale = 2
+                    else:
+                        sale = 1
+                if selc == 'ETHER':
+                    if p1.ETR < p1.MaxETR:
+                        p1.ETR += 1
+                        sale = 2
+                    else:
+                        sale = 1
+                if selc == 'SMOKE BOMB':
+                    if p1.SMB < p1.MaxSMB:
+                        p1.SMB += 1
+                        sale = 2
+                    else:
+                        sale = 1               
+            if selc in shop_keyItems:
+                if traveling_shop == 1:
+                    if selc in travelingMerchant_items:
+                        sale = 5
+                    else:
+                        print_slow("""That item is unavailable!\n""", typingActive)
+                        sale = 3
+                else:
+                    if selc in rooms[current_room]['items']:
+                        sale = 5
+                    else:
+                        print_slow(f""""That item is unavailable!"\n""", typingActive)
+                        sale = 3
+                
+                  
+
+            if sale == 5:
+                if selc in p1.inventory:
+                    print_slow( 
+                        f"""{p1.name} already has one in their inventory and cannot carry another!\n""", typingActive)
+                    sale = 3
+                else:
+                    if 'classes' in key_items[selc]:
+                        if p1.job in key_items[selc]['classes']:
+                            sale = 4
+                        else:
+                            print_slow( f"""{p1.name} is unable to purchase this. (Cannot be used by {p1.job}'s.)\n""", typingActive)
+                            sale = 3               
+                    else:
+                        sale = 4
+            if sale == 4:
+              if traveling_shop == 1:
+                      p1.GP -= key_items[selc]['price']
+                      p1.inventory.append(selc)
+                      travelingMerchant_items.remove(selc)
+                      key_itemBought(p1, selc, typingActive)
+              else:
+                  if selc == 'DRAGON SCALE' and 'CRAFTING POUCH' not in p1.inventory:
+                    print_slow(f""""You'll need a CRAFTING POUCH in order to carry this item!"\n""", typingActive)
+                  else:
+                      p1.inventory.append(selc)
+                      rooms[current_room]['items'].remove(selc)
+                      p1.GP -= key_items[selc]['price']
+                      key_itemBought(p1, selc, typingActive)
             if sale == 3:
                 pass
             if sale == 2:
                 p1.GP -= key_items[selc]['price']
                 print_slow(
-                    f"{p1.name} purchases a {selc} for {key_items[selc]['price']} GP and adds it to their inventory. {p1.name} has {p1.GP} GP.\n",
+                    f"{p1.name} purchases a {selc}. {p1.name} has {p1.GP} GP.\n",
                     typingActive)
             if sale == 1:
-                print_slow('"Looks like your inventory is full."\n',
+                print_slow(f"""{p1.name} is unable to cary any more {selc}S. {p1.name}'s inventory is full!""",
                            typingActive)
 
     elif selc == "BACK":
@@ -325,54 +327,32 @@ def dwarf_sales(p1, rooms, current_room, typingActive):
     if p1.GP < key_items[selc]['price']:
       print_slow(""""Stoap wasting mah time 'n' come back whin ye hae th' coin!"\n""",typingActive)
     else:
-      if selc in mainHand_equipment:
         if p1.job in key_items[selc]['classes']:
-          p1.inventory.append(selc)
-          p1.GP -= key_items[selc]['price']
-          rooms[current_room]['items'].remove(selc)
-          key_itemBought(p1, selc, typingActive)
+            p1.inventory.append(selc)
+            p1.GP -= key_items[selc]['price']
+            rooms[current_room]['items'].remove(selc)
+            key_itemBought(p1, selc, typingActive)
         else:
-          print_slow('\nAh kin tell ye that wont dae ye ony guid...\n', typingActive)
-      if selc in armor_equipment:
-        if p1.job in key_items[selc]['classes']:
-          p1.inventory.append(selc)
-          p1.GP -= key_items[selc]['price']
-          rooms[current_room]['items'].remove(selc)
-          key_itemBought(p1, selc, typingActive)
-        else:
-          print_slow('\nAh kin tell ye that wont dae ye ony guid...\n', typingActive)
+            print_slow('\nAh kin tell ye that wont dae ye ony guid...\n', typingActive)
   elif selc == "BACK":
         shop_open = 0
   else:
       print_slow('\nInvalid selection. Try again.\n', typingActive)
+
+
 def dwarf_shop(p1, rooms, current_room, typingActive):
   global shop_open
   
   shop_open = 1
   while shop_open == 1:
     print_slow(""""The finest weapons and armor in the realm!"\n """, typingActive)
-    if 'BROAD SWORD' in rooms[current_room]['items']:
-            print_slow(f"BROAD SWORD:[{key_items['BROAD SWORD']['price']}GP]\n",
-                typingActive)
-    if 'SIDE SWORD' in rooms[current_room]['items']:
-            print_slow(f"SIDE SWORD:[{key_items['SIDE SWORD']['price']}GP]\n",
-                typingActive)
-    if 'HANGER' in rooms[current_room]['items']:
-            print_slow(f"HANGER:[{key_items['HANGER']['price']}GP]\n",
-                typingActive)
-    if 'SALLET' in rooms[current_room]['items']:
-            print_slow(f"SALLET:[{key_items['SALLET']['price']}GP]\n",
-                typingActive)
-    if 'CUISSES' in rooms[current_room]['items']:
-            print_slow(f"CUISSES:[{key_items['CUISSES']['price']}GP]\n",
-                typingActive)
-    if 'ORICHALCUM BRIGANDINE' in rooms[current_room]['items']:
-            print_slow(f"ORICHALCUM BRIGANDINE:[{key_items['ORICHALCUM BRIGANDINE']['price']}GP]\n",
-                typingActive)
+    for k in rooms[current_room]['items']:
+        item = k
+        print_slow(f'{key_items[item]["name"]}: [{key_items[item]["price"]} GP]\n', typingActive)      
     print_slow(f"\n{p1.name}'s Wallet:[{p1.GP} GP]\n", typingActive)
-    print_slow('\nType your selection or BACK to leave shopping window.\n',
-               typingActive)
+    print_slow('\nType your selection or BACK to leave shopping window.\n', typingActive)
     dwarf_sales(p1, rooms, current_room, typingActive)
+
 
 def dwarf_trade(p1, rooms, current_room, typingActive):
   global line4506
@@ -414,6 +394,8 @@ def dwarf_trade(p1, rooms, current_room, typingActive):
         break
       else:
         print_slow('\nInvalid selection. Select YES or NO.\n', typingActive)
+
+
 def city_shop(p1, rooms, current_room, typingActive):
     global shop_open
     global traveling_shop
@@ -468,31 +450,11 @@ def city_shop(p1, rooms, current_room, typingActive):
 
     while shop_open == 1:
         print_slow(""""Well what will it be?"\n """, typingActive)
-        print_slow(f"POTION:[{key_items['POTION']['price']} GP]\n",
-                   typingActive)
-        print_slow(f"SMOKE BOMB:[{key_items['SMOKE BOMB']['price']} GP]\n",
-                   typingActive)
-        print_slow(f"ANTIDOTE:[{key_items['ANTIDOTE']['price']} GP]\n",
-                   typingActive)
-        print_slow(f"ETHER:[{key_items['ETHER']['price']} GP]\n", typingActive)
-        if 'MAP' not in p1.inventory:
-            print_slow(f"MAP:[{key_items['MAP']['price']} GP]\n", typingActive)
-        if 'LANTERN' not in p1.inventory:
-            print_slow(f"LANTERN:[{key_items['LANTERN']['price']} GP]\n",
-                       typingActive)
-        if 'CRAFTING POUCH' not in p1.inventory:
-            print_slow(
-                f"CRAFTING POUCH:[{key_items['CRAFTING POUCH']['price']} GP]\n",
-                typingActive)
-        if rooms['Farm House']['speach'] == 3 and 'SPECIAL FEED' in rooms[
-                'Shop']['items']:
-            print_slow(
-                f"SPECIAL FEED:[{key_items['SPECIAL FEED']['price']}GP]\n",
-                typingActive)
+        for k in rooms[current_room]['items']:
+            item = k
+            print_slow(f'{key_items[item]["name"]}: [{key_items[item]["price"]} GP]\n', typingActive)      
         print_slow(f"\n{p1.name}'s Wallet:[{p1.GP} GP]\n", typingActive)
-
-        print_slow('\nType your selection or BACK to leave shopping window.\n',
-                   typingActive)
+        print_slow('\nType your selection or BACK to leave shopping window.\n', typingActive)
         sales_mechanic(p1, rooms, current_room, typingActive)
 
 
@@ -501,39 +463,31 @@ def harbor_shop(p1, rooms, current_room, typingActive):
     global traveling_shop
     shop_open = 1
     traveling_shop = 0
-
+  
     while shop_open == 1:
         print_slow(""""Anything catch your eye?"\n """, typingActive)
-        print_slow(f"POTION:[{key_items['POTION']['price']} GP]\n",
-                   typingActive)
-        print_slow(f"SMOKE BOMB:[{key_items['SMOKE BOMB']['price']} GP]\n",
-                   typingActive)
-        print_slow(f"ANTIDOTE:[{key_items['ANTIDOTE']['price']} GP]\n",
-                   typingActive)
-        print_slow(f"ETHER:[{key_items['ETHER']['price']} GP]\n", typingActive)
-        if 'MAP' not in p1.inventory:
-            print_slow(f"MAP:[{key_items['MAP']['price']} GP]\n", typingActive)
-        if 'GORGET' not in p1.inventory:
-            print_slow(f"GORGET:[{key_items['GORGET']['price']} GP]\n",
-                       typingActive)
-        if 'CRAFTING POUCH' not in p1.inventory:
-            print_slow(
-                f"CRAFTING POUCH:[{key_items['CRAFTING POUCH']['price']} GP]\n",
-                typingActive)
-        if 'EXTRA POUCH' in rooms[current_room]['items']:
-            print_slow(
-                f"EXTRA POUCH:[{key_items['EXTRA POUCH']['price']}GP]\n",
-                typingActive)
-        if 'DRAGON SCALE' in rooms[current_room]['items']:
-            print_slow(
-                f"DRAGON SCALE:[{key_items['DRAGON SCALE']['price']}GP]\n",
-                typingActive)
+        for k in rooms[current_room]['items']:
+            item = k
+            print_slow(f'{key_items[item]["name"]}: [{key_items[item]["price"]} GP]\n', typingActive)      
         print_slow(f"\n{p1.name}'s Wallet:[{p1.GP} GP]\n", typingActive)
-
-        print_slow('\nType your selection or BACK to leave shopping window.\n',
-                   typingActive)
+        print_slow('\nType your selection or BACK to leave shopping window.\n', typingActive)
         sales_mechanic(p1, rooms, current_room, typingActive)
 
+
+def kobold_shop(p1, rooms, current_room, typingActive):
+    global shop_open
+    global traveling_shop
+    shop_open = 1
+    traveling_shop = 0
+  
+    while shop_open == 1:
+        print_slow(""""Many helpful things for other friend!"\n """, typingActive)
+        for k in rooms[current_room]['items']:
+            item = k
+            print_slow(f'{key_items[item]["name"]}: [{key_items[item]["price"]} GP]\n', typingActive)      
+        print_slow(f"\n{p1.name}'s Wallet:[{p1.GP} GP]\n", typingActive)
+        print_slow('\nType your selection or BACK to leave shopping window.\n', typingActive)
+        sales_mechanic(p1, rooms, current_room, typingActive)
 
 def traveling_merchant(p1, foe, current_room, typingActive):
     global shop_open
@@ -546,21 +500,11 @@ def traveling_merchant(p1, foe, current_room, typingActive):
     print_slow(line305, typingActive)
     while shop_open == 1:
         print_slow(""""Take a look!"\n""", typingActive)
-        print_slow(f"POTION:[{key_items['POTION']['price']} GP]\n",
-                   typingActive)
-        print_slow(f"SMOKE BOMB:[{key_items['SMOKE BOMB']['price']} GP]\n",
-                   typingActive)
-        print_slow(f"ANTIDOTE:[{key_items['ANTIDOTE']['price']} GP]\n",
-                   typingActive)
-        print_slow(f"ETHER:[{key_items['ETHER']['price']} GP]\n", typingActive)
-        if 'MAP' not in p1.inventory:
-            print_slow(f"MAP:[{key_items['MAP']['price']} GP]\n", typingActive)
-        if 'LANTERN' not in p1.inventory:
-            print_slow(f"LANTERN:[{key_items['LANTERN']['price']} GP]\n",
-                       typingActive)
+        for k in travelingMerchant_items:
+            item = k
+            print_slow(f'{key_items[item]["name"]}: [{key_items[item]["price"]} GP]\n', typingActive)      
         print_slow(f"\n{p1.name}'s Wallet:[{p1.GP} GP]\n", typingActive)
-        print_slow('\nType your selection or BACK to leave merchant.\n',
-                   typingActive)
+        print_slow('\nType your selection or BACK to leave shopping window.\n', typingActive)
         sales_mechanic(p1, rooms, current_room, typingActive)
 
         if shop_open == 0:
@@ -571,7 +515,7 @@ def traveling_merchant(p1, foe, current_room, typingActive):
             break
 
 
-def city_inn(p1, typingActive):  #Inn Mechanics
+def city_inn(p1, typingActive):#general inn mechanics  
     inn_room = 40
 
     while True:
@@ -1223,6 +1167,104 @@ def riverwest_examine(p1, rooms, typingActive):
         print_slow(line3808, typingActive)
 
 
+def deepwoodsfork_examine(p1, rooms, typingActive):
+    if rooms['Deep Woods - Fork']['EAST'] == 'LOCKED':
+      if 'AXE' not in p1.inventory and 'SHARP AXE' not in p1.inventory:
+        print_slow(line4708, typingActive)
+      elif 'AXE' in p1.inventory:
+        print_slow(line4709, typingActive)
+        while True:
+          selc = input().upper().strip()
+          print('\n')
+          if selc == 'CUT':
+            print_slow(line4711, typingActive)
+            break
+          elif selc == 'LEAVE':
+            print_slow(line4711d, typingActive)
+            break
+          else:
+            print_slow('\nInvalid selection. Select CUT or LEAVE.\n', typingActive)
+      elif 'SHARP AXE' in p1.inventory:
+        print_slow(line4709, typingActive)
+        while True:
+          selc = input().upper().strip()
+          print('\n')
+          if selc == 'CUT':
+            print_slow(line4710, typingActive)
+            rooms['Deep Woods - Fork']['EAST'] = 'Deep Woods - EAST'
+            rooms['Deep Woods - Fork']['map'] = deepwoodsfork_map2
+            rooms['Deep Woods - Fork']['EXPLORE'] = line4707
+            break
+          elif selc == 'LEAVE':
+            print_slow(line4711d, typingActive)
+            break
+          else:
+            print_slow('\nInvalid selection. Select CUT or LEAVE.\n', typingActive)
+    else:
+        print_slow(line4711c, typingActive)
+
+
+def deepwoodswest_examine(p1, rooms, typingActive):
+  if rooms['Deep Woods - WEST']['NORTH'] == 'LOCKED':
+      if 'AXE' not in p1.inventory and 'SHARP AXE' not in p1.inventory:
+        print_slow(line4715, typingActive)
+      elif 'AXE' in p1.inventory:
+        print_slow(line4716, typingActive)
+        while True:
+          selc = input().upper().strip()
+          print('\n')
+          if selc == 'CUT':
+            print_slow(line4717, typingActive)
+            break
+          elif selc == 'LEAVE':
+            print_slow(line4719, typingActive)
+            break
+          else:
+            print_slow('\nInvalid selection. Select CUT or LEAVE.\n', typingActive)
+      elif 'SHARP AXE' in p1.inventory:
+        print_slow(line4716, typingActive)
+        while True:
+          selc = input().upper().strip()
+          print('\n')
+          if selc == 'CUT':
+            print_slow(line4718, typingActive)
+            rooms['Deep Woods - WEST']['NORTH'] = 'Deep Woods - Fallen Hive'
+            rooms['Deep Woods - WEST']['map'] = deepwoodswest_map2
+            rooms['Deep Woods - WEST']['EXPLORE'] = line4714
+            break
+          elif selc == 'LEAVE':
+            print_slow(line4719, typingActive)
+            break
+          else:
+            print_slow('\nInvalid selection. Select CUT or LEAVE.\n', typingActive)
+  else:
+      print_slow(line4718c, typingActive)
+      
+
+def tatteredhive_examine(p1, rooms, typingActive):
+    if rooms['Tattered Hive']['event'] == 0:
+      print_slow(line4805, typingActive)
+      foe = p74
+      standard_battle(p1, foe, typingActive)
+      print_slow(line4806, typingActive)
+      foe = p75
+      standard_battle(p1, foe, typingActive)
+      print_slow(line4807, typingActive)
+      p1.HP += round(p1.MaxHP // 2)
+      p1.stat_check(typingActive)
+      rooms['Tattered Hive']['event'] = 1
+      rooms['Tattered Hive']['EXPLORE'] = line4803
+      rooms['Tattered Hive']['map'] = hive2_map2
+    elif rooms['Tattered Hive']['event'] == 1:
+      print_slow(line4808, typingActive)
+      p1.inventory.append('STRANGE JELLY')
+      p1.RJ += 20
+      rooms['Tattered Hive']['EXPLORE'] = line4804
+      rooms['Tattered Hive']['map'] = hive2_map3
+    else:
+      print_slow(line4809, typingActive)
+
+
 def hill_lock(p1, selc, rooms, typingActive):
     while True:
         if rooms['Rocky Hill']['SOUTH'] == 'LOCKED':
@@ -1277,6 +1319,24 @@ def waterfallcave2_lock(p1, selc, rooms, typingActive):
             continue
 
 
+def deepwoodsfork_lock(p1, selc, rooms, typingActive):
+    while True:
+      if rooms['Deep Woods - Fork']['EAST'] == 'LOCKED':
+          print_slow(line4711b, typingActive)
+          break
+      else:
+          continue
+        
+
+def deepwoodswest_lock(p1, selc, rooms, typingActive):
+    while True:
+      if rooms['Deep Woods - WEST']['NORTH'] == 'LOCKED':
+          print_slow(line4718b, typingActive)
+          break
+      else:
+          continue
+
+
 def cave4_boss_ambush(p1, typingActive):
     if 'Hobgoblin Gang' in rooms['Rocky Cave 4']['boss']:
         print_slow(line935, typingActive)
@@ -1299,7 +1359,7 @@ def cave5_boss_ambush(p1, typingActive):
         print_slow(line949, typingActive)
         if rooms["Smith's Workshop"]['event'] == 1:
           p1.inventory.append('GOBLIN FINGER')
-          print_slow(line949, typingActive)
+          print_slow(line951, typingActive)
 
 
 def foresteast_ambush(p1, typingActive):
@@ -1338,7 +1398,7 @@ def hive_boss_ambush(p1, typingActive):
         enemy_spawn9.remove(p14)
         enemy_spawn3.append(p25)
         enemy_spawn9.append(p25)
-        p1.RJ += 5
+        p1.RJ += 10
         print_slow(line2103, typingActive)
 
 
@@ -1404,6 +1464,8 @@ def dragon_ambush(p1, typingActive):
       print_slow(
           f'{p1.name} adds the DRAGON HEART to their inventory!\n',
           typingActive)
+
+
 def castle_speak(p1, rooms, typingActive):
     while True:
         if rooms['Royal Castle']['speach'] == 0:
@@ -1557,7 +1619,6 @@ def farm_speak(p1, rooms, typingActive):
             break
 
 
-#define rooms/areas for game
 def witch_speak(p1, rooms, typingActive):
     while True:
         if rooms["Witch's Cabin"]['speach'] == 0:
@@ -1667,6 +1728,7 @@ def harbortemple_speak(p1, rooms, typingActive):
   elif rooms['Harbor Temple']['speach'] == 2:
     print_slow(line3407, typingActive)
     
+
 def ship_speak(p1, rooms, typingActive):
     while True:
         if rooms['Docked Ship']['speach'] == 0:
@@ -1765,6 +1827,48 @@ def dwarf_speak(p1, rooms, typingActive):
             else:
                 print_slow('\nInvalid command. Type YES or NO.\n',
                            typingActive)
+
+
+def kobold_speak(p1, rooms, typingActive):
+    if rooms['Deep Woods - Forest Hut']['speach'] == 0:
+        print_slow(line4728, typingActive)
+        rooms['Deep Woods - Forest Hut']['speach'] = 1
+    elif rooms['Deep Woods - Forest Hut']['speach'] == 1:
+        print_slow(line4729, typingActive)
+        rooms['Deep Woods - Forest Hut']['speach'] = 2
+    elif rooms['Deep Woods - Forest Hut']['speach'] == 2:
+        print_slow(line4730, typingActive)
+        rooms['Deep Woods - Forest Hut']['intro'] = line4723
+        rooms['Deep Woods - Forest Hut']['EXPLORE'] = line4726
+        rooms['Deep Woods - Forest Hut']['speach'] = 3
+        rooms['Deep Woods - Forest Hut']['secrets'].append('SEARCH')
+        rooms['Deep Woods - Forest Hut']['event'] = 1
+    elif rooms['Deep Woods - Forest Hut']['speach'] == 3 and 'PAINTED SNAIL' in p1.inventory:
+        print_slow(line4733, typingActive)
+        p1.inventory.remove("PAINTED SNAIL")
+        if "SLEEPY SQUIRELL" in p1.inventory:
+            p1.inventory.remove("SLEEPY SQUIRELL")
+        if "WET TOAD" in p1.inventory:
+            p1.inventory.remove("WET TOAD")
+    elif rooms['Deep Woods - Forest Hut']['speach'] == 3 and ("WET TOAD" or "SLEEPY SQUIRELL") in p1.inventory:
+        print_slow(line4732, typingActive)
+        while True:
+            if "SLEEPY SQUIRELL" in p1.inventory:
+                p1.inventory.remove("SLEEPY SQUIRELL")
+                break
+            elif "WET TOAD" in p1.inventory:
+                p1.inventory.remove("WET TOAD")
+                break
+        rooms['Deep Woods - Forest Hut']['intro'] = line4724
+        rooms['Deep Woods - Forest Hut']['EXPLORE'] = line4727
+        rooms['Deep Woods - Forest Hut']['BUY'] = kobold_shop
+        rooms['Deep Woods - Forest Hut']['speach'] = 4
+        rooms['Deep Woods - Forest Hut']['event'] = 2
+    elif rooms['Deep Woods - Forest Hut']['speach'] == 3 and any(x in rooms['Deep Woods - Forest Hut']['items2'] for x in p1.inventory) == False:
+        print_slow(line4731, typingActive)
+    elif rooms['Deep Woods - Forest Hut']['speach'] == 4:
+        print_slow(line4734, typingActive)
+        
 
 
 def farm_crafting(p1, typingActive):
@@ -2114,6 +2218,7 @@ def crescent_special(p1, selc, typingActive):
     else:
         print_slow('\nInvalid selection. Try again.\n', typingActive)
 
+
 def drake_special(p1, selc, typingActive):
   if rooms['Drake Mountains 3']['event'] == 0:
     rooms['Drake Mountains 3']['SOUTH'] = 'Drake Mountains Summit'
@@ -2122,7 +2227,45 @@ def drake_special(p1, selc, typingActive):
     print_slow(line4607c, typingActive)
   else: 
     print_slow('You speak the name "TANNINIM" once more, but nothing else seems to happen...', typingActive)
-  
+
+
+def kobold_special(p1, selc, typingActive):
+    if rooms['Deep Woods - Forest Hut']['event'] == 1:
+        hit = random.randrange(0,11)
+        investigate = rooms['Deep Woods - Forest Hut']['event2'] + hit
+        if investigate >=7:
+            if bool(rooms['Deep Woods - Forest Hut']['items2']):
+              friend = random.choice(rooms['Deep Woods - Forest Hut']['items2'])
+              if friend == "PAINTED SNAIL":
+                  p1.inventory.append("PAINTED SNAIL")
+                  rooms['Deep Woods - Forest Hut']['items2'].remove("PAINTED SNAIL")
+                  print_slow(line4735, typingActive)
+              if friend == "SLEEPY SQUIRELL":
+                  p1.inventory.append("SLEEPY SQUIRELL")
+                  rooms['Deep Woods - Forest Hut']['items2'].remove("SLEEPY SQUIRELL")
+                  print_slow(line4736, typingActive)
+              if friend == "WET TOAD":
+                  p1.inventory.append("WET TOAD")
+                  rooms['Deep Woods - Forest Hut']['items2'].remove("WET TOAD")
+                  print_slow(line4737, typingActive)
+              print_slow(f"{p1.name} picks up the {friend} and carefully places it in their bag.\n", typingActive)
+            else:
+              print_slow(f"You search around the area, but turn up nothing.\n", typingActive)
+        if 2 < investigate < 7:
+          foe = random.choice(enemy_spawn26)
+          print_slow(f"You search around the area, and soon hear a rustling come from the woods. Suddenly a {foe.name} rushes to attack you! You draw your weapon and defend yourself against the ambush!\n", typingActive)
+          standard_battle(p1, foe, typingActive)
+          rooms['Deep Woods - Forest Hut']['event2'] += 1
+        if investigate <= 2:
+          foe = random.choice(enemy_spawn27)
+          print_slow(f"You search around the area, and soon hear crashing come from the woods. Suddenly a {foe.name} emerges and sets its sights on you! You draw your weapon and defend yourself against the ambush!\n", typingActive)
+          standard_battle(p1, foe, typingActive)
+          rooms['Deep Woods - Forest Hut']['event2'] += 2
+    if rooms['Deep Woods - Forest Hut']['event'] == 2:
+        print_slow(line4738, typingActive)
+            
+            
+
 rooms = {
     '': {
         'name': '',
@@ -2162,7 +2305,7 @@ rooms = {
         'map': blank_map1,
         'discovered': [],
         'NORTH': 'Harbor Markets',
-        'EAST': 'Drake Mountains 3',
+        'EAST': 'River - West Bank',
         'SOUTH': 'Berry Patch',
         'WEST': 'Camp Site',
         'EXPLORE': 'Nothing to see here....',
@@ -2239,7 +2382,7 @@ rooms = {
         'BUY': city_shop,
         'spawn_rate': 0,
         'event': 0,
-        'items': ['MAP','LANTERN','CRAFTING POUCH', 'MACE', 'GAMBESON', 'LEATHER BOOTS', 'LEATHER CAP'],
+        'items': ['POTION', 'ANTIDOTE', 'ETHER', 'SMOKE BOMB', 'MAP','LANTERN','CRAFTING POUCH', 'MACE', 'GAMBESON', 'LEATHER BOOTS', 'LEATHER CAP'],
     },
     'Inn': {
         'name': 'Inn',
@@ -2322,7 +2465,7 @@ rooms = {
         'intro': line1101,
         'map': shrine_map1,
         'discovered': [],
-        'EAST': 'Misty Woods - Bend',
+        'EAST': 'Deep Woods - Entrance',
         'SOUTH': 'Rocky Hill',
         'EXPLORE': line1102,
         'SPEAK': shrine_speak,
@@ -2903,7 +3046,7 @@ rooms = {
         'EXPLORE': line303,
         'BUY':harbor_shop,
         'spawn_rate': 0,
-        'items': ['MAP','CRAFTING POUCH','DRAGON SCALE','EXTRA POUCH','GORGET', 'ARMING SWORD'],
+        'items': ['POTION', 'ANTIDOTE', 'ETHER', 'SMOKE BOMB', 'MAP','CRAFTING POUCH','DRAGON SCALE','EXTRA POUCH','ARMING SWORD', 'PARMA', 'BASCINET', 'BRIGANDINE', 'OLD CUIRASS', 'GREAVES', 'GORGET',],
     },
     'Docked Ship': {
         'name': 'Docked Ship',
@@ -2944,13 +3087,13 @@ rooms = {
         'speach': 0,
         'spawn_rate': 0,
     },
-    #harbor town end
+    #Harbor town end
     'Western Lake': {
         'name': 'Western Lake',
         'intro': line3701,
         'map': westlake_map1,
         'discovered': [],
-        'EAST': 'Rotten Swamp 8',
+        'WEST': 'Rotten Swamp 8',
         'SOUTH': 'River - West Bank',
         'EXPLORE': line3702,
         'secrets': [],
@@ -3069,6 +3212,7 @@ rooms = {
         'event': 0,
         'event2' : 0,
     },
+    #Drake Mountain Dungeon start
     'Drake Mountains 1': {
         'name': 'Drake Mountains 1',
         'intro': line4601,
@@ -3144,17 +3288,99 @@ rooms = {
         'foe': None,
         'event': None,
     },
-    'Misty Woods - Bend': {
-        'name': 'Misty Woods - Bend',
-        'intro': line4501,
-        'map': woodsBend_map1,
+    #Drake Mountain Dungeon end
+  
+    'Deep Woods - Entrance': {
+        'name': 'Deep Woods - Entrance',
+        'intro': line4701,
+        'map': deepwoodsentrance_map1,
         'discovered': [],
-        #'NORTH' : None,
+        'NORTH' : 'Deep Woods - SOUTH',
         'WEST': 'Mystic Shrine',
-        'EXPLORE': line4502,
+        'EXPLORE': line4702,
         'spawn_rate': 3,
         'enemy_spawn_set': enemy_spawn15,
     },
+    'Deep Woods - SOUTH': {
+        'name': 'Deep Woods - SOUTH',
+        'intro': line4703,
+        'map': deepwoodssouth_map1,
+        'discovered': [],
+        'NORTH' : 'Deep Woods - Fork',
+        'SOUTH': 'Deep Woods - Entrance',
+        'EXPLORE': line4704,
+        'spawn_rate': 3,
+        'enemy_spawn_set': enemy_spawn15,
+    },
+    'Deep Woods - Fork': {
+        'name': 'Deep Woods - Fork',
+        'intro': line4705,
+        'map': deepwoodsfork_map1,
+        'discovered': [],
+        'EAST' : 'LOCKED',
+        'SOUTH': 'Deep Woods - SOUTH',
+        'WEST': 'Deep Woods - WEST',
+        'EXPLORE': line4706,
+        'EXAMINE' : deepwoodsfork_examine,
+        'spawn_rate': 3,
+        'enemy_spawn_set': enemy_spawn15,
+        'LOCK': deepwoodsfork_lock,
+    },
+    'Deep Woods - WEST': {
+        'name': 'Deep Woods - WEST',
+        'intro': line4712,
+        'map': deepwoodswest_map1,
+        'discovered': [],
+        'NORTH' : 'LOCKED',
+        'EAST': 'Deep Woods - Fork',
+        'SOUTH': 'Deep Woods - Forest Hut',
+        'EXPLORE': line4713,
+        'EXAMINE' : deepwoodswest_examine,
+        'spawn_rate': 3,
+        'enemy_spawn_set': enemy_spawn15,
+        'LOCK': deepwoodswest_lock,
+    },
+    'Deep Woods - Forest Hut': {
+        'name': 'Deep Woods - Forest Hut',
+        'intro': line4722,
+        'map': None,
+        'discovered': [],
+        'NORTH': 'Deep Woods - WEST',
+        'EXPLORE': line4725,
+        'SPEAK': kobold_speak,
+        'speach': 0,
+        'secrets': [],
+        'special': kobold_special,
+        'spawn_rate': 0,
+        'items': ['POTION', 'ANTIDOTE', 'ETHER', 'SMOKE BOMB', 'MAP', 'LANTERN', 'GORGET', 'OBSIDIAN DAGGER', 'VELVET SLIPPERS' ],
+        'items2': ['PAINTED SNAIL', 'SLEEPY SQUIRELL', 'WET TOAD'],
+        'event': 0,
+        'event2': 0,
+    },
+    'Deep Woods - Fallen Hive': {
+        'name': 'Deep Woods - Fallen Hive',
+        'intro': 'place holder txt',
+        'map': deepwoodshive_map1,
+        'discovered': [],
+        'NORTH': 'Tattered Hive',
+        'SOUTH': 'Deep Woods - WEST',
+        'EXPLORE': 'place holder txt',
+        'spawn_rate': 3,
+        'enemy_spawn_set': enemy_spawn15,
+    },
+    'Tattered Hive': {
+        'name': 'Tattered Hive',
+        'intro': line4801,
+        'map': hive2_map1,
+        'discovered': [],
+        'SOUTH': 'Deep Woods - Fallen Hive',
+        'EXPLORE': line4802,
+        'EXAMINE': tatteredhive_examine,
+        'spawn_rate': 0,
+        'enemy_spawn_set': enemy_spawn15,
+        'event': 0,
+    },
+    
 }
 
 song_term = ['RIBBIT', 'RIBBITING', 'CROAK', 'CROAKING', 'KERO', 'KEROKERO']
@@ -3951,6 +4177,10 @@ key_items = {
         'name': 'ROYAL JELLY',
         'description':'A jar of Giant Bee Royal Jelly. This substance is capable of enhancing the healing properties of potions. Just a tiny bit mixed in will greatly increase the potancy.',
     },
+    'STRANGE JELLY': {
+        'name': 'STRANGE JELLY',
+        'description':'A jar of Giant Bee Royal Jelly. This substance is capable of enhancing the healing properties of potions. This jelly has an unusually vibrant red colouring.',
+    },
     'MOUTH-PIECE': {
         'name':'MOUTH-PIECE',
         'description': 'A mouth piece belonging to a musical horn. Not much use on its own, but it could be attached to the right instrument...',
@@ -3986,9 +4216,24 @@ shop_items = [
 ]
 shop_keyItems = [
     'MAP', 'LANTERN', 'CRAFTING POUCH', 'SPECIAL FEED', 'DRAGON SCALE',
-    'EXTRA POUCH', 'GORGET', 'MACE', 'OBSIDIAN DAGGER', 'ARMING SWORD', 'GAMBESON', 'LEATHER BOOTS', 'VELVET SLIPPERS', 'LEATHER CAP'
+    'EXTRA POUCH', 
+  
+  'MACE', 'OBSIDIAN DAGGER', 'ARMING SWORD', 'BROAD SWORD', 'SIDE SWORD', 'HANGER', 
+
+  'PARMA', 'BATTLE AXE', 'STAFF', 'CLOAK',
+  
+  'POINTED HAT', 'COWL', 'LEATHER CAP', 'BASCINET', 'SALLET', 
+  
+  'MAGIC ROBE', 'GAMBESON', 'STEEL MAIL', 'BRIGANDINE', 'OLD CUIRASS',
+  
+    'MYTHRIL MAIL', 'ORICHALCUM BRIGANDINE', 'ADAMANTITE CUIRASS', 
+  
+  'LEATHER BOOTS', 'VELVET SLIPPERS', 'CUISSES', 'CHAUSSES', 'GREAVES',
+  
+  'GORGET',
 ]
-travelingMerchant_items = ['MAP', 'LANTERN', 'GORGET', 'OBSIDIAN DAGGER', 'VELVET SLIPPERS' ]
+
+travelingMerchant_items = ['POTION', 'ANTIDOTE', 'ETHER', 'SMOKE BOMB', 'MAP', 'LANTERN', 'GORGET', 'OBSIDIAN DAGGER', 'VELVET SLIPPERS' ]
 
 
 mainHand_equipment = [

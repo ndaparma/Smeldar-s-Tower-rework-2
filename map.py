@@ -181,7 +181,7 @@ ______________________
 
 berry_map1 = """
 _________^[N]^________
-|Y Y Y         BRB YB|
+|Y Y Y         B B YB|
 |Y BBB          BB  Y|
 |Y YBB            '''>
 | Y  B            [E]>
@@ -231,7 +231,7 @@ hive_map1 = """
 ______________________
 |0000____________0000|
 |000/     __     \\000|
-|00/    / RR \    \\00|
+|00/    / CC \    \\00|
 |0/     \ __ /     \\0|
 |0\                /0|
 |00\              /00|
@@ -1114,7 +1114,7 @@ _________^[N]^________
 
 """
 
-woodsBend_map1 = """
+deepwoodsentrance_map1 = """
 _________^[N]^________
 |Y Y YY Y      Y  Y Y|
 |YY Y  Y        YY Y |
@@ -1125,6 +1125,140 @@ _________^[N]^________
 |_YY_Y_YY_YY_Y__Y__Y_|
 
 """
+
+deepwoodssouth_map1 = """
+_________^[N]^________
+|Y Y YY Y      Y  Y Y|
+|YY Y  Y        YY Y |
+| YY  Y           Y Y|
+| Y Y  Y       Y Y Y |
+|Y Y   Y        Y Y Y|
+|Y Y YY        Y  YY |
+|_Y_Y_YY_v[S]v__YY__Y|
+
+"""
+
+deepwoodsfork_map1 = """
+______________________
+|YY  YY Y  Y  YY YY Y|
+|Y  Y  Y  Y Y  Y  Y Y|
+<[W]    Y     Y Y zzz>
+<                z[E]>
+|Y Y   Y         YYzY|
+|YYY Y         Y  YY |
+|Y_Y_Y___v[S]v__Y___Y|
+
+"""
+
+deepwoodsfork_map2 = """
+______________________
+|YY  YY Y  Y  YY YY Y|
+|Y  Y  Y  Y Y  Y  Y Y|
+<[W]    Y     Y Y    >
+<                 [E]>
+|Y Y   Y         YY Y|
+|YYY Y         Y  YY |
+|Y_Y_Y___v[S]v__Y___Y|
+
+"""
+
+deepwoodswest_map1 = """
+_________^[N]^________
+| Y   Y Y yyy YY Y YY|
+|Y  Y  Y       Y  Y Y|
+| Y Y                >
+|  Y              [E]>
+|YY   Y           YY |
+|Y Y Y           Y Y |
+|YY____Y_v[S]v__Y___Y|
+
+"""
+
+deepwoodswest_map2 = """
+_________^[N]^________
+| Y   Y Y     YY Y YY|
+|Y  Y  Y       Y  Y Y|
+| Y Y                >
+|  Y              [E]>
+|YY    Y          YY |
+|Y Y Y           Y Y |
+|YY____Y_v[S]v__Y___Y|
+
+"""
+
+
+deepwoodshive_map1 = """
+_________^[N]^________
+|YY Y  \__   __/ YY Y|
+|Y Y YY        Y  Y Y|
+| YY  Y           Y Y|
+|Y Y YY         Y YY |
+| YY  Y           Y Y|
+| Y Y  Y       Y  YY |
+|Y__YY___v[S]v__Y_Y__|
+
+"""
+
+hive2_map1 = """
+______________________
+|0000____________0000|
+|000/   * __   * \\000|
+|00/*   / CC \    \\00|
+|0/     \ __ /     \\0|
+|0\ *           *  /0|
+|00\  *          */00|
+|000\____v[S]v___/000|
+
+"""
+
+hive2_map2 = """
+______________________
+|0000____________0000|
+|000/   * __   * \\000|
+|00/*   / C  \    \\00|
+|0/     \ __ /     \\0|
+|0\ *           *  /0|
+|00\  *          */00|
+|000\____v[S]v___/000|
+
+"""
+
+hive2_map3 = """
+______________________
+|0000____________0000|
+|000/   * __   * \\000|
+|00/*   /    \    \\00|
+|0/     \ __ /     \\0|
+|0\ *           *  /0|
+|00\  *          */00|
+|000\____v[S]v___/000|
+
+"""
+
+woods_map1 = """
+_________^[N]^________
+|YY Y  Y Y     Y YY  |
+|Y Y YY   Y    Y   YY|
+| YY       Y      Y Y|
+|Y Y               Y |
+| YY         Y Y Y Y |
+| Y Y      Y Y  Y Y Y|
+|Y__YY__Y_Y_YY_Y_Y_Y_|
+
+"""
+
+deepwoodseast_map1 = """
+_________^[N]^________
+| Y   Y Y     YY Y YY|
+|Y  Y  Y       Y  Y Y|
+<[W]                 >
+<                 [E]>
+|YY    Y   Y  Y  Y YY|
+|Y Y YY  YY  Y Y  Y Y|
+|YY____Y____Y___Y___Y|
+
+"""
+
 
 _map1 = """
 ______________________

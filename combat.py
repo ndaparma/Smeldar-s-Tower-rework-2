@@ -180,7 +180,7 @@ def standard_battle(p1, foe, typingActive):
                 break
             #Out of MP for skill
             elif command in p1.skills and p1.MP < combat_skills[command]['MP']:
-                print_slow(f'{p1.name} does not have enough MP and is unable to use their {command} \n', typingActive)
+                print_slow(f'{p1.name} does not have enough MP and is unable to use {command} \n', typingActive)
             #Player needs help
             elif command == "STATS":
                 p1.stat_check(typingActive)
@@ -360,7 +360,7 @@ def blind_effect(p1, foe, typingActive):
       if foe.BLIND == 0:
         print_slow(f"{foe.name}'s vision has cleared!",typingActive)
         foe.ACC = foe.MACC
-#Player death
+ 
 def player_death(p1, typingActive):
   if p1.HP <= 0:
     p1.alive = "dead"
@@ -376,7 +376,6 @@ def player_death(p1, typingActive):
         else:
             print_slow('Please select YES or NO.\n', typingActive)
 
-#Enemy Death
 def enemy_death(p1, foe, command, damage, typingActive):
   global battle
   global enemy_turn
@@ -414,6 +413,7 @@ def enemy_death(p1, foe, command, damage, typingActive):
       p1.level_up(typingActive)
       print_slow("********** VICTORY!!! **********\n", typingActive)
       combat_end_reset(p1, foe)
+    
 def combat_end_reset(p1, foe):
   global battle
   global enemy_turn
@@ -697,16 +697,16 @@ def thief_steal(p1, foe, typingActive):
     if mug == 5:
         GPE = round(random.randrange(foe.MinGP, round(foe.MaxGP * 0.8)) * p1.GR)
         p1.GP = p1.GP + GPE
-        p1.MP -= 1
         print_slow(
             f'{p1.name} manages to steal {GPE} GP from the enemy {foe.name}. {p1.name} now has {p1.GP}GP.\n', typingActive
         )
     elif 0 < mug < 5:
-        p1.MP -= 1
+        GPE = round(random.randrange(foe.MinGP * 0.5 , round(foe.MaxGP * 0.5)) * p1.GR)
+        p1.GP = p1.GP + GPE
         print_slow(f'{p1.name} manages to steal {GPE} GP from the enemy {foe.name}. {p1.name} now has {p1.GP}GP.\n', typingActive)
     elif mug == 0:
-        p1.MP -= 1
         print_slow(f'{p1.name} failed to steal anything! \n', typingActive)
+    p1.MP -= 1
 
 def thief_poisondagger(p1, foe, typingActive):
     dagger = 0
@@ -763,7 +763,7 @@ def thief_haste(p1, foe, typingActive):
     print_slow(f'{p1.name} has {haste} more action(s) this turn.\n',typingActive)
 
 
-#def summoner_
+
 def thief_cointhrow(p1, foe, typingActive):
   while True:
     print_slow(f"Input amount of GP you would like to throw (0-{p1.GP})\n", typingActive)
@@ -1094,7 +1094,10 @@ def enemy_skills(p1, foe, typingActive):
       damage = max(round(dam * (cDEF * 0.01 * p1.TDEF * 0.01)), 0)
       p1.HP = min(max(p1.HP - damage, 0), p1.MaxHP)
       hit = random.randrange(0, 101)
-      print_slow(f'The enemy {foe.name} strikes with a crippling blow!\n', typingActive)
+      if foe.name == "Tiger":
+        print_slow(f'The enemy {foe.name} bites down with crippling force!\n', typingActive)
+      else:
+        print_slow(f'The enemy {foe.name} strikes with a crippling blow!\n', typingActive)
       print_slow(f'{p1.name} has taken {damage} damage. {p1.name} has {p1.HP}/{p1.MaxHP} HP. \n', typingActive)
       if hit <= 65:
         focus = .5
@@ -1280,7 +1283,6 @@ def combat_menu(p1, typingActive):
         warrior_menu += 'STRIKE: Wildy strike foe for high damage. Chance to miss.\n'
       if p1.lvl >= 5:
         warrior_menu += 'BERSERK: Become blinded by range for several turns. Can only attack while berserk, but damage is increased.\n'
-      print_slow(warrior_menu, typingActive)
       if p1.lvl >= 10:
         warrior_menu += 'BLOOD: Become filled with a lust for blood. Absorb 50% of damage dealt as HP.\n'
       if p1.mainHand == 'AETON':
@@ -1293,15 +1295,14 @@ def combat_menu(p1, typingActive):
         wizard_menu += "\nBOLT: Cast magical bolt dealing high damage.\n"
       if p1.lvl >= 5:
         wizard_menu += "\nSTORM: Cast magical storm, hitting the enemy multiple times. Chance to miss.\n"
-      print_slow(wizard_menu, typingActive)
       if p1.lvl >= 10:
         wizard_menu += "\nBLAST: Send a concentrated magical blast at the enemy. Damaged based on enemy HP; high chance to miss.\n"
-      print_slow(wizard_menu, typingActive)
       if p1.mainHand == 'FULGUR':
         wizard_menu =+ 'SHOCK: Spend 3 MP to conjure a massive ball of lightning to shock the enemy for high damamge. Chance to paralyze enemy. Low chance to backfire.\n'
+      print_slow(wizard_menu, typingActive)
 
   elif p1.job == "THIEF":
-      thief_menu = "Battle commands:\nATK: Regular attack.\nDEF: Temp. increase DEF for 1 turn.\nITEM: Open items menu.\n\nFLEE: Use a SMOKE BOMB to escape combat. Does not work in Boss fights.\nSTEAL: Steal GP from enemy. Chance to fail.\n"
+      thief_menu = "Battle commands:\nATK: Regular attack.\nDEF: Temp. increase DEF for 1 turn.\nITEM: Open items menu.\nFLEE: Use a SMOKE BOMB to escape combat. Does not work in Boss fights.\nSTEAL: Steal GP from enemy. Chance to fail.\n"
       if p1.lvl >= 2:
         thief_menu =+ 'THROW: Throw up to 3 poison daggers at the enemy. Deals damage and poisons.\n'
       if p1.lvl >= 5:

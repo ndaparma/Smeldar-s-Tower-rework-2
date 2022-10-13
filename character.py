@@ -60,7 +60,7 @@ class player:
         cDEF = max(self.DEF - self.GDEF, 25)
         print_slow(f'\nCurrent Stats:\n{self.name}\n{self.job} Lvl {self.lvl}\n{self.xp}/{self.Nlvl}EXP\n{self.HP}/{self.MaxHP} HP\n{self.MP}/{self.MaxMP} MP\n{self.ATK} ATK\n{(100 - cDEF)}% DEF\n', typingActive)
       
-#define combat structure
+#define level gains
     def level_up(self, typingActive):
       if self.lvl == 21:
         print_slow(f'{self.name} has reached the max level. \n', typingActive)
@@ -72,50 +72,51 @@ class player:
             self.lvl += 1
             self.xp -= self.Nlvl
             if self.lvl < 21:
-              self.Nlvl = round(self.Nlvl * 1.65)
+              self.Nlvl = round(self.Nlvl * 1.25)
             elif self.lvl == 21:
               self.Nlvl = 'MAX'
             print_slow("*****LEVEL UP!*****", typingActive)
             print_slow(f'{self.name} Leveled up! {self.name} is now {self.lvl} \n', typingActive)
+
             if (self.lvl % 3) != 0:
               if self.job == "WARRIOR": 
-                self.HP = self.MaxHP 
-                self.MP = self.MaxMP
                 self.MaxHP += 20
                 self.DEF = max(self.DEF - 1, 25)
-              elif self.job == 'WIZARD' or self.job == "WITCH":
-                self.HP = self.MaxHP
+                self.HP = self.MaxHP 
                 self.MP = self.MaxMP
+              elif self.job == 'WIZARD' or self.job == "WITCH":
                 self.MaxHP += 10
                 self.ATK += 2
-              elif self.job == 'THIEF':
                 self.HP = self.MaxHP
                 self.MP = self.MaxMP
+              elif self.job == 'THIEF':
                 self.MaxHP += 15
                 self.ATK += 1
                 self.DEF = max(self.DEF - 1.5, 25)
-                
-            if (self.lvl % 3) == 0:
-              if self.job == "WARRIOR": 
                 self.HP = self.MaxHP
                 self.MP = self.MaxMP
+
+            if (self.lvl % 3) == 0:
+              if self.job == "WARRIOR": 
                 self.MaxHP += 30
                 self.MaxMP += 1
                 self.ATK += 2
                 self.DEF = max(self.DEF - 1, 25)
-              elif self.job == 'WIZARD' or self.job == "WITCH":
                 self.HP = self.MaxHP
                 self.MP = self.MaxMP
+              elif self.job == 'WIZARD' or self.job == "WITCH":
                 self.MaxHP += 20
                 self.MaxMP += 2
                 self.ATK += 2
                 self.DEF = max(self.DEF - 2, 25)
-              elif self.job == 'THIEF':
                 self.HP = self.MaxHP
                 self.MP = self.MaxMP
+              elif self.job == 'THIEF':
                 self.MaxHP += 30
                 self.MaxMP += 1
                 self.ATK += 2
+                self.HP = self.MaxHP
+                self.MP = self.MaxMP
                # self.DEF = max(self.DEF - 2, 25)
                 
             if self.lvl == 2:
@@ -224,6 +225,7 @@ p9 = enemy("Dark Mage", [4, 4], 8, 92, 40, 40, 40, 4, 4, 18, 95, 100, 95, 95, 45
 p10 = enemy("Wyrm", [3, 6], 5, 94, 100, 120, 120, 3, 3, 22, 70, 100, 95, 95, 110, 75, 0, 0, 0, 0, 0)
 p11 = enemy("Death", [6, 6], 5, 99, 999, 999, 999, 99, 99, 99, 25, 100, 95, 95, 999, 99, 9, 9, 0, 0, 0)
 p12 = enemy("Bear", [3, 3], 2, 55, 65, 75, 75, 3, 3, 16, 85, 100, 95, 95, 65, 45, 1, 1, 0, 0, 1)
+p12b = enemy("Bear", [3, 3], 2, 55, 65, 75, 75, 3, 3, 16, 85, 100, 95, 95, 65, 45, 1, 1, 0, 0, 0)
 p13 = enemy("Thief", [2, 5], 9, 95, 35, 55, 55, 3, 3, 11, 85, 100, 95, 95, 65, 40, 1, 1, 0, 0, 0)
 p14 = enemy("Giant Bee", [7, 7], 2, 85, 20, 15, 15, 2, 2, 8, 90, 100, 95, 95, 20, 5, 0, 0, 0, 0, 0)
 p14b = enemy("Giant Bee", [7, 7], 2, 85, 20, 15, 15, 2, 2, 8, 90, 100, 95, 95, 20, 5, 0, 0, 0, 0, 1)
@@ -291,10 +293,14 @@ p70 = enemy("Wyvern", [6, 13, 25], 5, 94, 175, 150, 150, 4, 4, 28, 78, 100, 95, 
 p71 = enemy("Drake", [6, 8, 11], 5, 93, 190, 180, 180, 4, 4, 30, 75, 100, 95, 95, 125, 55, 1, 1, 0, 0, 0)
 p72 = enemy("Dragon", [6, 8, 17], 5, 92, 210, 200, 200, 5, 5, 35, 70, 100, 95, 95, 155, 65, 1, 1, 0, 0, 0)
 p73 = enemy("Dragon King, Tanninim", [6, 9, 11, 13, 17,], 5, 0, 550, 670, 670, 10, 10, 43, 62, 100, 95, 95, 325, 155, 2, 2, 0, 0, 1)
+p74 = enemy("Giant Bee Larva", [7, 10], 3, 20, 130, 175, 175, 4, 4, 21, 80, 95, 95, 100, 60, 45, 0, 0, 0, 0, 1)
+p75 = enemy("Giant Wasp", [7, 10], 3, 20, 130, 175, 175, 4, 4, 21, 80, 95, 95, 100, 60, 45, 0, 0, 0, 0, 1)
+p76 = enemy("Owl", [24, 25], 2, 100, 30, 40, 40, 2, 2, 15, 85, 100, 95, 95, 15, 5, 1, 1, 0, 0, 0)
+p77 = enemy("Tiger", [3, 11, 17], 2, 75, 80, 115, 115, 6, 6, 27, 85, 100, 95, 95, 65, 35, 0, 0, 0, 0, 0)
 #p28 = enemy("Smeldar", 4, 1, 300, 300, 5, 5, 24, 8, 10, 100, 50, 0, 0, 0, 1)
 
 
-enemy_spawnT = [p28,p28]
+enemy_spawnT = [p28,p2] #testing
 enemy_spawn0 = [p2, p5, p7]  #cliff enemies
 enemy_spawn1 = [p2, p3, p7, p13]  #forest enemies
 enemy_spawn2 = [p2, p3, p4, p6]  #thicket enemies
@@ -321,3 +327,5 @@ enemy_spawn22 = [p16b, p22, p37, p38, p46, p58, p57, p60] #fae woods 2
 enemy_spawn23 = [p43, p54, p63, p64, p65,] #Waterfall cave
 enemy_spawn24 = [p6, p67b, p68] #Mountain pass
 enemy_spawn25 = [p10, p56, p68, p69, p70, p71, p72,] #Drake Mountains
+enemy_spawn26 = [p5, p46, p76] #kobold Special 1 
+enemy_spawn27 = [p6, p12b, p77] #kobold Special 2 
